@@ -3,6 +3,7 @@ import { api, ApiError, type SessionUser, type StudentDashboard, type TeacherStu
 import { calculateScore, findNode, getNextHint, getTranslation, matchesObjective, type FileNode, type ScoreResult } from './domain/mission';
 import { missionOne } from './missions/mission-one';
 import { LOGIN_COPY, preferredLoginLanguages, type LoginMessage, type LoginSupportLanguage } from './i18n/login';
+import { getStudentHomeCopy } from './i18n/student';
 
 type Screen = 'login' | 'home' | 'settings' | 'briefing' | 'tutorial' | 'mission' | 'results' | 'teacher' | 'teacher-student';
 type EventType = 'mission_started' | 'tutorial_completed' | 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed' | 'mission_completed';
@@ -53,7 +54,7 @@ function Topbar({ user, onHome, onLogout }: { user: SessionUser; onHome: () => v
   return <header className="topbar"><button className="brand-button" onClick={onHome}><Brand /></button><div className="top-actions"><span className="identity"><i />{user.displayName}</span><button className="quiet-button" onClick={onLogout}>Log out</button></div></header>;
 }
 
-function LoginScreen({ onAuthenticated, onPreview }: { onAuthenticated: (user: SessionUser) => void; onPreview: () => void }) {
+function LoginScreen({ onAuthenticated }: { onAuthenticated: (user: SessionUser) => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -80,13 +81,13 @@ function LoginScreen({ onAuthenticated, onPreview }: { onAuthenticated: (user: S
       <label><span>{LOGIN_COPY.password.en}</span><LoginTranslations message={LOGIN_COPY.password} languages={languages} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></label>
       {error && <p className="error" role="alert">{error}</p>}
       <button className="primary-button login-submit" disabled={busy}><span><b>{busy ? LOGIN_COPY.connecting.en : LOGIN_COPY.enter.en}</b><LoginTranslations message={busy ? LOGIN_COPY.connecting : LOGIN_COPY.enter} languages={languages} /></span><i>→</i></button>
-      {import.meta.env.DEV && <button type="button" className="preview-button" onClick={onPreview}><span>{LOGIN_COPY.preview.en}</span><LoginTranslations message={LOGIN_COPY.preview} languages={languages} /></button>}
     </form>
   </main>;
 }
 
 function StudentHome({ user, dashboard, onBriefing, onSettings }: { user: SessionUser; dashboard: StudentDashboard; onBriefing: () => void; onSettings: () => void }) {
-  return <main className="page home-page"><section className="welcome-strip"><div><p className="eyebrow">AGENT HOME / LEVEL 01</p><h1>Welcome back, <em>{user.displayName}</em>.</h1><p>Your next computer skill is ready when you are.</p></div><div className="rank-badge"><span>RANK</span><strong>{dashboard.rank}</strong><small>{dashboard.totalPoints} total points</small></div></section>
+  const copy = getStudentHomeCopy(user.supportLanguage, user.displayName);
+  return <main className="page home-page"><section className="welcome-strip"><div><p className="eyebrow">AGENT HOME / LEVEL 01</p><h1>{copy.welcome.en}</h1><small className="home-support-heading" lang={copy.welcome.lang}>{copy.welcome.support}</small><Bilingual user={user} en={copy.nextSkill.en} it={copy.nextSkill.support} ja={copy.nextSkill.support} /></div><div className="rank-badge"><span>{copy.currentMission.en}</span><small lang={copy.currentMission.lang}>{copy.currentMission.support}</small><strong>Mission {dashboard.currentMission}</strong><span>{copy.totalPoints.en}</span><small lang={copy.totalPoints.lang}>{copy.totalPoints.support}</small><strong>{dashboard.totalPoints}</strong></div></section>
     <section className="mission-callout"><div className="mission-number"><span>MISSION</span><strong>01</strong></div><div className="mission-summary"><p className="status-chip">AVAILABLE NOW</p><h2>{missionOne.title.en}</h2><p>{missionOne.story.en}</p><div className="skill-row">{missionOne.skills.map((skill) => <span key={skill.en}>{skill.en}</span>)}</div></div><div className="mission-action"><dl><div><dt>Personal best</dt><dd>{dashboard.bestScore === null ? 'First attempt' : `${dashboard.bestScore} pts`}</dd></div><div><dt>Best time</dt><dd>{formatTime(dashboard.bestTimeSeconds)}</dd></div></dl><button className="primary-button" onClick={onBriefing}>Open briefing <span>→</span></button></div></section>
     <section className="home-bottom"><div><p className="step-label">YOUR PROGRESS</p><div className="progress-track"><span style={{ width: dashboard.completedMissions.includes(1) ? '100%' : '16%' }} /></div><p>{dashboard.completedMissions.length} missions completed · Your progress is private.</p></div><button className="settings-link" onClick={onSettings}><span>✦</span><div><strong>Agent settings</strong><small>Theme color and profile</small></div><b>→</b></button></section>
   </main>;
@@ -97,7 +98,7 @@ function Settings({ user, onSaved, onBack }: { user: SessionUser; onSaved: (them
   const [saving, setSaving] = useState(false);
   async function save() {
     setSaving(true);
-    try { if (user.id !== 'preview') await api('student.settings', { themeColor: selected }, user.csrfToken); onSaved(selected); } finally { setSaving(false); }
+    try { await api('student.settings', { themeColor: selected }, user.csrfToken); onSaved(selected); } finally { setSaving(false); }
   }
   return <main className="page narrow-page"><button className="back-link" onClick={onBack}>← Agent Home</button><p className="eyebrow">AGENT SETTINGS</p><h1>Choose your signal color.</h1><p className="lead">Your color changes highlights throughout training. The layout stays clear and familiar.</p><div className="theme-grid">{Object.entries(THEMES).map(([name, theme]) => <button key={name} className={selected === name ? 'theme-option selected' : 'theme-option'} onClick={() => setSelected(name as ThemeName)} style={{ '--swatch': theme.color } as React.CSSProperties}><span /><strong>{theme.label}</strong><small>{selected === name ? 'Selected' : 'Choose color'}</small></button>)}</div><button className="primary-button save-button" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save theme'}</button></main>;
 }
@@ -129,7 +130,7 @@ function Mission({ user, attemptId, onComplete }: { user: SessionUser; attemptId
   const current = findNode(missionOne.filesystem, path) ?? missionOne.filesystem;
 
   async function log(type: EventType, data: Record<string, unknown> = {}) {
-    if (user.id !== 'preview') await api('attempt.event', { attemptId, type, data }, user.csrfToken);
+    await api('attempt.event', { attemptId, type, data }, user.csrfToken);
   }
 
   async function markObjectives(eventType: 'folder_opened' | 'file_opened' | 'back_used', targetId?: string) {
@@ -161,7 +162,7 @@ function Mission({ user, attemptId, onComplete }: { user: SessionUser; attemptId
       const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
       const stats = { completed: true, objectivesCompleted: nextObjectives.size, totalObjectives: missionOne.objectives.length, correctActions: correct + 1, incorrectActions: incorrect, hintsUsed: usedHints.length, translationsUsed: translated ? 1 : 0, durationSeconds: duration };
       const score = calculateScore(missionOne.scoring, stats);
-      if (user.id !== 'preview') await api('attempt.finish', { attemptId, score: score.total, durationSeconds: duration, stats }, user.csrfToken);
+      await api('attempt.finish', { attemptId, score: score.total, durationSeconds: duration, stats }, user.csrfToken);
       window.setTimeout(() => onComplete(score, duration, { hints: usedHints.length, translations: translated ? 1 : 0, correct: correct + 1, incorrect }), 600);
     }
   }
@@ -203,7 +204,7 @@ export default function App() {
   const [dashboard, setDashboard] = useState<StudentDashboard>(EMPTY_DASHBOARD);
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [teacherDetail, setTeacherDetail] = useState<TeacherStudentDetail>();
-  const [attemptId, setAttemptId] = useState('preview-attempt');
+  const [attemptId, setAttemptId] = useState<string>();
   const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: { hints: number; translations: number; correct: number; incorrect: number } }>();
 
   useEffect(() => {
@@ -218,13 +219,13 @@ export default function App() {
   async function authenticate(current: SessionUser) {
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
     setUser(current);
-    if (current.role === 'teacher') { const data = current.id === 'preview' ? { students: [] } : await api<{ students: TeacherStudent[] }>('teacher.students', {}, current.csrfToken); setStudents(data.students); setScreen('teacher'); }
-    else { const data = current.id === 'preview' ? EMPTY_DASHBOARD : await api<StudentDashboard>('student.dashboard', {}, current.csrfToken); setDashboard(data); setScreen('home'); }
+    if (current.role === 'teacher') { const data = await api<{ students: TeacherStudent[] }>('teacher.students', {}, current.csrfToken); setStudents(data.students); setScreen('teacher'); }
+    else { const data = await api<StudentDashboard>('student.dashboard', {}, current.csrfToken); setDashboard(data); setScreen('home'); }
   }
 
   async function logout() {
     const activeUser = user;
-    if (activeUser && activeUser.id !== 'preview') {
+    if (activeUser) {
       try {
         if (screen === 'mission') await api('attempt.event', { attemptId, type: 'mission_abandoned', data: {} }, activeUser.csrfToken);
         await api('auth.logout', {}, activeUser.csrfToken);
@@ -233,17 +234,16 @@ export default function App() {
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
     setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setScreen('login');
   }
-  async function beginMission() { if (!user) return; const nextId = user.id === 'preview' ? `preview-${Date.now()}` : (await api<{ attemptId: string }>('attempt.start', { missionId: missionOne.id }, user.csrfToken)).attemptId; if (user.id !== 'preview') await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: 'mission-1-intro' } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
-  function preview() { void authenticate({ id: 'preview', username: 'preview', displayName: 'Himari', role: 'student', supportLanguage: 'ja', themeColor: 'cyan', csrfToken: 'preview' }); }
+  async function beginMission() { if (!user) return; const nextId = (await api<{ attemptId: string }>('attempt.start', { missionId: missionOne.id }, user.csrfToken)).attemptId; await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: 'mission-1-intro' } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
 
-  if (!user || screen === 'login') return <LoginScreen onAuthenticated={(next) => void authenticate(next)} onPreview={preview} />;
+  if (!user || screen === 'login') return <LoginScreen onAuthenticated={(next) => void authenticate(next)} />;
   const theme = THEMES[user.themeColor];
   const content = (() => {
     if (screen === 'home') return <StudentHome user={user} dashboard={dashboard} onBriefing={() => setScreen('briefing')} onSettings={() => setScreen('settings')} />;
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
     if (screen === 'briefing') return <Briefing user={user} onBack={() => setScreen('home')} onStart={() => setScreen('tutorial')} />;
     if (screen === 'tutorial') return <Tutorial user={user} onComplete={() => void beginMission()} />;
-    if (screen === 'mission') return <Mission user={user} attemptId={attemptId} onComplete={(score, duration, stats) => { setResult({ score, duration, stats }); setScreen('results'); }} />;
+    if (screen === 'mission' && attemptId) return <Mission user={user} attemptId={attemptId} onComplete={(score, duration, stats) => { setResult({ score, duration, stats }); setScreen('results'); }} />;
     if (screen === 'results' && result) return <Results user={user} dashboard={dashboard} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
     if (screen === 'teacher-student' && teacherDetail) return <TeacherStudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} />;
     if (screen === 'teacher') return <TeacherDashboard students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;

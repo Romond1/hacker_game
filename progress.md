@@ -17,3 +17,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - PHP API now returns per-mission progress, rejects locked starts, and unlocks the next mission inside the completion transaction.
 - Standard production display names are Himari, Mirko, Cloe, and Teacher.
 - Node server contract passes. PHP is not installed in this Windows environment, so PHP syntax/runtime checks remain deferred.
+- Removed the simulated Himari button and every preview-user/preview-attempt API bypass.
+- Student home copy now derives English + Italian/Japanese from `supportLanguage`; 8 focused UI/i18n tests and TypeScript checks pass.
