@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateScore, findNode, getNextHint, getTranslation } from './mission';
+import { calculateScore, findNode, getNextHint, getTranslation, matchesConfirmationCode, matchesObjective, type Objective } from './mission';
 import { missionOne } from '../missions/mission-one';
 
 describe('mission domain', () => {
@@ -58,5 +58,22 @@ describe('mission domain', () => {
       durationSeconds: 160,
     });
     expect(score.total).toBeGreaterThanOrEqual(650);
+  });
+
+  it('does not complete an objective before its prerequisites', () => {
+    const objective: Objective = {
+      id: 'final',
+      text: missionOne.story,
+      trigger: 'file_opened',
+      targetId: 'final-message',
+      requires: ['clue-two'],
+    };
+    expect(matchesObjective(objective, 'file_opened', 'final-message', new Set())).toBe(false);
+    expect(matchesObjective(objective, 'file_opened', 'final-message', new Set(['clue-two']))).toBe(true);
+  });
+
+  it('normalizes a confirmation code without accepting a different word', () => {
+    expect(matchesConfirmationCode(' orbit ', 'ORBIT')).toBe(true);
+    expect(matchesConfirmationCode('orbital', 'ORBIT')).toBe(false);
   });
 });

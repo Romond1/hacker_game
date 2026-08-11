@@ -8,3 +8,6 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 
 ## Progress
 - Started implementation on `feature/three-mission-progression`.
+- Added Mission 1 regression coverage and a typed three-mission catalog.
+- Added ordered objective prerequisites, confirmation-code matching, Follow the Trail, and File Detective definitions.
+- Domain/catalog checkpoint: 12 tests passing; TypeScript check passing.
