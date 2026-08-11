@@ -24,3 +24,8 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Added bilingual three-card student dashboard with locked/available/completed states, per-mission bests, replay, and coming-soon teaser.
 - Teacher records now label and report attempts from all three mission IDs.
 - Integrated checkpoint: 36 tests passing across 9 files; TypeScript and Node server contracts passing.
+- Added the development automation hooks `window.render_game_to_text()` and `window.advanceTime(ms)` without exposing authentication shortcuts.
+- Browser-tested all three missions through the real Mirko login: Mission 1 remained intact, Mission 2 required its ordered trail, and Mission 3 accepted case-insensitive `ORBIT` after the correct report was opened.
+- Browser-tested replay entry, Italian and Japanese profile-driven screens, Cloe/Himari zero-progress isolation, Teacher's three labelled Mirko attempts, student-to-teacher authorization denial, and locked-mission denial.
+- Visually inspected desktop results, the full mobile three-card dashboard, and the desktop Teacher record. The mobile dashboard had no unintended horizontal overflow.
+- No XServer deployment or live data change was performed.

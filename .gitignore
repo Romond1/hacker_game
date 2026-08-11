@@ -1,0 +1,14 @@
+node_modules/
+dist/
+server/config.php
+.env
+.playwright-cli/
+output/playwright/
+*.log
+*.local
+.dev-auth.local.json
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+.DS_Store
+Thumbs.db

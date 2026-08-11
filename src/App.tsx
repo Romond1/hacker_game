@@ -222,6 +222,19 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    window.render_game_to_text = () => JSON.stringify({
+      screen,
+      username: user?.username ?? null,
+      role: user?.role ?? null,
+      selectedMissionId,
+      completedMissions: dashboard.completedMissions,
+    });
+    window.advanceTime = (_milliseconds: number) => undefined;
+    return () => { delete window.render_game_to_text; delete window.advanceTime; };
+  }, [dashboard.completedMissions, screen, selectedMissionId, user]);
+
+  useEffect(() => {
     void api<{ user: SessionUser }>('auth.session').then(({ user: current }) => void authenticate(current)).catch(() => setScreen('login'));
   }, []);
 
