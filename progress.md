@@ -11,3 +11,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Added Mission 1 regression coverage and a typed three-mission catalog.
 - Added ordered objective prerequisites, confirmation-code matching, Follow the Trail, and File Detective definitions.
 - Domain/catalog checkpoint: 12 tests passing; TypeScript check passing.
+- Local authenticated service now keeps isolated per-user mission progress, rejects locked missions, preserves best score/time, accumulates replay points, unlocks sequentially, and reports all attempts to Teacher.
+- Local API checkpoint: 6 authentication/progression tests passing; TypeScript check passing.
