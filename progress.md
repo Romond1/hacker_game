@@ -13,3 +13,7 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Domain/catalog checkpoint: 12 tests passing; TypeScript check passing.
 - Local authenticated service now keeps isolated per-user mission progress, rejects locked missions, preserves best score/time, accumulates replay points, unlocks sequentially, and reports all attempts to Teacher.
 - Local API checkpoint: 6 authentication/progression tests passing; TypeScript check passing.
+- Added additive MySQL migration 002 for Missions 2–3 and their rewards.
+- PHP API now returns per-mission progress, rejects locked starts, and unlocks the next mission inside the completion transaction.
+- Standard production display names are Himari, Mirko, Cloe, and Teacher.
+- Node server contract passes. PHP is not installed in this Windows environment, so PHP syntax/runtime checks remain deferred.
