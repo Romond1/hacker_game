@@ -4,6 +4,14 @@ import { calculateScore, findNode, getNextHint, getTranslation, matchesObjective
 import { missionOne } from './missions/mission-one';
 import { LOGIN_COPY, preferredLoginLanguages, type LoginMessage, type LoginSupportLanguage } from './i18n/login';
 import { getStudentHomeCopy } from './i18n/student';
+import { getMission } from './missions/catalog';
+import { Briefing as MissionBriefing } from './components/mission/Briefing';
+import { Tutorial as MissionTutorial } from './components/mission/Tutorial';
+import { MissionRunner, type MissionResultStats } from './components/mission/MissionRunner';
+import { Results as MissionResults } from './components/mission/Results';
+import { StudentHome as MissionDashboard } from './components/dashboard/StudentHome';
+import { TeacherDashboard as MissionControl } from './components/teacher/TeacherDashboard';
+import { TeacherStudentRecord as StudentRecord } from './components/teacher/TeacherStudentRecord';
 
 type Screen = 'login' | 'home' | 'settings' | 'briefing' | 'tutorial' | 'mission' | 'results' | 'teacher' | 'teacher-student';
 type EventType = 'mission_started' | 'tutorial_completed' | 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed' | 'mission_completed';
@@ -205,7 +213,8 @@ export default function App() {
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [teacherDetail, setTeacherDetail] = useState<TeacherStudentDetail>();
   const [attemptId, setAttemptId] = useState<string>();
-  const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: { hints: number; translations: number; correct: number; incorrect: number } }>();
+  const [selectedMissionId, setSelectedMissionId] = useState<string>(missionOne.id);
+  const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: MissionResultStats; previousBest: number | null; previousBestTime: number | null }>();
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -232,21 +241,30 @@ export default function App() {
       } catch { /* local state still clears */ }
     }
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
-    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setScreen('login');
+    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setTeacherDetail(undefined); setAttemptId(undefined); setResult(undefined); setSelectedMissionId(missionOne.id); setScreen('login');
   }
-  async function beginMission() { if (!user) return; const nextId = (await api<{ attemptId: string }>('attempt.start', { missionId: missionOne.id }, user.csrfToken)).attemptId; await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: 'mission-1-intro' } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
+  const selectedMission = getMission(selectedMissionId) ?? missionOne;
+  async function beginMission() { if (!user) return; const nextId = (await api<{ attemptId: string }>('attempt.start', { missionId: selectedMission.id }, user.csrfToken)).attemptId; await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: `${selectedMission.id}-intro` } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
+  async function completeMission(score: ScoreResult, duration: number, stats: MissionResultStats) {
+    if (!user) return;
+    const previous = dashboard.missions.find((mission) => mission.missionId === selectedMission.id);
+    const refreshed = await api<StudentDashboard>('student.dashboard', {}, user.csrfToken);
+    setDashboard(refreshed);
+    setResult({ score, duration, stats, previousBest: previous?.bestScore ?? null, previousBestTime: previous?.bestTimeSeconds ?? null });
+    setScreen('results');
+  }
 
   if (!user || screen === 'login') return <LoginScreen onAuthenticated={(next) => void authenticate(next)} />;
   const theme = THEMES[user.themeColor];
   const content = (() => {
-    if (screen === 'home') return <StudentHome user={user} dashboard={dashboard} onBriefing={() => setScreen('briefing')} onSettings={() => setScreen('settings')} />;
+    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('briefing'); }} onSettings={() => setScreen('settings')} />;
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
-    if (screen === 'briefing') return <Briefing user={user} onBack={() => setScreen('home')} onStart={() => setScreen('tutorial')} />;
-    if (screen === 'tutorial') return <Tutorial user={user} onComplete={() => void beginMission()} />;
-    if (screen === 'mission' && attemptId) return <Mission user={user} attemptId={attemptId} onComplete={(score, duration, stats) => { setResult({ score, duration, stats }); setScreen('results'); }} />;
-    if (screen === 'results' && result) return <Results user={user} dashboard={dashboard} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
-    if (screen === 'teacher-student' && teacherDetail) return <TeacherStudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} />;
-    if (screen === 'teacher') return <TeacherDashboard students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
+    if (screen === 'briefing') return <MissionBriefing mission={selectedMission} user={user} onBack={() => setScreen('home')} onStart={() => setScreen('tutorial')} />;
+    if (screen === 'tutorial') return <MissionTutorial mission={selectedMission} user={user} onComplete={() => void beginMission()} />;
+    if (screen === 'mission' && attemptId) return <MissionRunner mission={selectedMission} user={user} attemptId={attemptId} onComplete={(score, duration, stats) => void completeMission(score, duration, stats)} />;
+    if (screen === 'results' && result) return <MissionResults user={user} mission={selectedMission} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
+    if (screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} />;
+    if (screen === 'teacher') return <MissionControl students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
     return null;
   })();
 

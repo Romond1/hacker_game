@@ -19,3 +19,8 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Node server contract passes. PHP is not installed in this Windows environment, so PHP syntax/runtime checks remain deferred.
 - Removed the simulated Himari button and every preview-user/preview-attempt API bypass.
 - Student home copy now derives English + Italian/Japanese from `supportLanguage`; 8 focused UI/i18n tests and TypeScript checks pass.
+- Extracted reusable mission-aware briefing, tutorial, simulated computer, results, and code-confirmation components.
+- Mission 1 open-file completion, Mission 2 ordered clue trail, Mission 3 English-first report translation and ORBIT confirmation are covered by interaction tests.
+- Added bilingual three-card student dashboard with locked/available/completed states, per-mission bests, replay, and coming-soon teaser.
+- Teacher records now label and report attempts from all three mission IDs.
+- Integrated checkpoint: 36 tests passing across 9 files; TypeScript and Node server contracts passing.

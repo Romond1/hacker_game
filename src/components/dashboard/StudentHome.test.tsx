@@ -1,0 +1,44 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import type { MissionProgress, SessionUser, StudentDashboard } from '../../api/client';
+import { StudentHome } from './StudentHome';
+
+const mirko: SessionUser = { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' };
+
+function mission(missionNumber: number, state: Partial<MissionProgress> = {}): MissionProgress {
+  return { missionId: `mission-${missionNumber}`, missionNumber, unlocked: missionNumber === 1, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0, ...state };
+}
+
+function dashboard(missions: MissionProgress[]): StudentDashboard {
+  return { totalPoints: missions.reduce((sum, item) => sum + item.totalPoints, 0), rank: 'Rookie Agent', currentMission: missions.find((item) => item.unlocked && !item.completed)?.missionNumber ?? 3, completedMissions: missions.filter((item) => item.completed).map((item) => item.missionNumber), missions, bestScore: null, bestTimeSeconds: null, attempts: [] };
+}
+
+describe('StudentHome', () => {
+  it('shows one available mission and two locked missions for a new student', () => {
+    render(<StudentHome user={mirko} dashboard={dashboard([mission(1), mission(2), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} />);
+    expect(screen.getAllByRole('article')).toHaveLength(3);
+    expect(screen.getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
+    expect(screen.getAllByText('Locked')).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: /Replay/i })).not.toBeInTheDocument();
+  });
+
+  it('shows per-mission personal bests and replays completed missions', () => {
+    const onMission = vi.fn();
+    render(<StudentHome user={mirko} dashboard={dashboard([
+      mission(1, { unlocked: true, completed: true, bestScore: 820, bestTimeSeconds: 52, totalPoints: 1450, attemptCount: 2 }),
+      mission(2, { unlocked: true }), mission(3),
+    ])} onMission={onMission} onSettings={vi.fn()} />);
+    const first = screen.getByRole('article', { name: /Mission 1/i });
+    expect(within(first).getByText('820 pts')).toBeInTheDocument();
+    expect(within(first).getByText('0:52')).toBeInTheDocument();
+    fireEvent.click(within(first).getByRole('button', { name: /Replay/i }));
+    expect(onMission).toHaveBeenCalledWith('mission-1');
+    expect(screen.getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
+  });
+
+  it('shows a bilingual coming-soon teaser after all three missions', () => {
+    render(<StudentHome user={mirko} dashboard={dashboard([1, 2, 3].map((number) => mission(number, { unlocked: true, completed: true, bestScore: 900, bestTimeSeconds: 50 })))} onMission={vi.fn()} onSettings={vi.fn()} />);
+    expect(screen.getByText('More training missions are coming soon.')).toBeInTheDocument();
+    expect(screen.getByText('Nuove missioni di addestramento arriveranno presto.')).toHaveAttribute('lang', 'it');
+  });
+});
