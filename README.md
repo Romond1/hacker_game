@@ -13,7 +13,7 @@ The application is designed for `https://beahero.fun/hacker/`: Vite builds the R
 - English + Italian/Japanese briefings and tutorial
 - Translation-on-demand and scripted state-aware Cyber Guide during scored play
 - Immutable attempts, extensible event history, scoring, results, and read-only teacher Mission Control
-- Development-only local authentication for all four standard profiles with ephemeral in-memory progress
+- Development-only local authentication for all five standard profiles with ephemeral in-memory progress
 
 ## Requirements
 
@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173/hacker/`. The Vite development server provides a local-only API for `himari.hacker`, `mirko.hacker`, `cloe.hacker`, and `be_a_hacker`. This working copy already has the requested development credentials in the gitignored `.dev-auth.local.json`; that file is never copied into `dist/`.
+Open `http://127.0.0.1:5173/hacker/`. The Vite development server provides a local-only API for `himari.hacker`, `kotone.hacker`, `mirko.hacker`, `cloe.hacker`, and `be_a_hacker`. This working copy already has the requested development credentials in the gitignored `.dev-auth.local.json`; that file is never copied into `dist/`.
 
 Mission attempts, theme changes, and teacher views work locally and are held in memory until Vite restarts. To replace the local passwords later, run `npm run setup:dev-auth`, enter the shared student and teacher passwords, and restart Vite. There is no preview-user bypass: every local profile uses the real login flow.
 
@@ -89,11 +89,12 @@ The provisioner creates or updates:
 | Hacker name | Role | Support language |
 | --- | --- | --- |
 | `himari.hacker` | Student | Japanese |
+| `kotone.hacker` | Student | Japanese |
 | `mirko.hacker` | Student | Italian |
 | `cloe.hacker` | Student | Italian |
 | `be_a_hacker` | Teacher | Teacher dashboard |
 
-Running the command again intentionally resets these four profiles to the entered passwords, roles, languages, and starter themes. Additional accounts can still be created with `server/bin/create_user.php`; the authentication system is not limited to the four standard profiles.
+Running the command again intentionally resets these five profiles to the entered passwords, roles, languages, and starter themes. Additional accounts can still be created with `server/bin/create_user.php`; the authentication system is not limited to the five standard profiles.
 
 ## Test and build
 
