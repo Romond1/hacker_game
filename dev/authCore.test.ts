@@ -18,9 +18,10 @@ function fixture(): DevCredentialFile {
 }
 
 describe('local development authentication', () => {
-  it('contains the four standard profiles with the expected roles and languages', () => {
+  it('contains the five standard profiles with the expected roles and languages', () => {
     expect(STANDARD_DEV_PROFILES.map(({ username, role, supportLanguage }) => ({ username, role, supportLanguage }))).toEqual([
       { username: 'himari.hacker', role: 'student', supportLanguage: 'ja' },
+      { username: 'kotone.hacker', role: 'student', supportLanguage: 'ja' },
       { username: 'mirko.hacker', role: 'student', supportLanguage: 'it' },
       { username: 'cloe.hacker', role: 'student', supportLanguage: 'it' },
       { username: 'be_a_hacker', role: 'teacher', supportLanguage: 'it' },
@@ -32,6 +33,15 @@ describe('local development authentication', () => {
     const login = service.login('himari.hacker', 'student-test-secret');
     expect(login?.user.displayName).toBe('Himari');
     expect(service.login('himari.hacker', 'wrong-secret')).toBeNull();
+    const kotone = service.login('Kotone.hacker', 'student-test-secret');
+    expect(kotone?.user).toMatchObject({
+      id: 'dev-kotone',
+      username: 'kotone.hacker',
+      displayName: 'Kotone',
+      role: 'student',
+      supportLanguage: 'ja',
+      themeColor: 'cyan',
+    });
   });
 
   it('keeps teacher and student credentials separate and resolves sessions', () => {

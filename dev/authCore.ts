@@ -58,6 +58,7 @@ export class DevApiError extends Error {
 
 export const STANDARD_DEV_PROFILES: readonly DevProfile[] = [
   { id: 'dev-himari', username: 'himari.hacker', displayName: 'Himari', role: 'student', supportLanguage: 'ja', themeColor: 'cyan' },
+  { id: 'dev-kotone', username: 'kotone.hacker', displayName: 'Kotone', role: 'student', supportLanguage: 'ja', themeColor: 'cyan' },
   { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue' },
   { id: 'dev-cloe', username: 'cloe.hacker', displayName: 'Cloe', role: 'student', supportLanguage: 'it', themeColor: 'pink' },
   { id: 'dev-teacher', username: 'be_a_hacker', displayName: 'Teacher', role: 'teacher', supportLanguage: 'it', themeColor: 'green' },
