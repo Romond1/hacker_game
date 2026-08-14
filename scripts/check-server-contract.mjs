@@ -17,7 +17,7 @@ for (const table of ['users', 'missions', 'user_progress', 'attempts', 'attempt_
   assert.match(schema, new RegExp(`CREATE TABLE ${table} \\(`), `Schema missing ${table}`);
 }
 assert.ok(!api.includes('SELECT * FROM users WHERE id = ? AND role'), 'Teacher student reads should use an explicit projection.');
-for (const username of ['himari.hacker', 'mirko.hacker', 'cloe.hacker', 'be_a_hacker']) {
+for (const username of ['himari.hacker', 'kotone.hacker', 'mirko.hacker', 'cloe.hacker', 'be_a_hacker']) {
   assert.ok(provisioner.includes(username), `Standard profile provisioner missing ${username}`);
 }
 assert.ok(provisioner.includes('password_hash('), 'Standard profile provisioner must hash passwords.');

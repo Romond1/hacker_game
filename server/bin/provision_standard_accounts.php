@@ -34,6 +34,7 @@ $teacherPassword = confirmed_secret('Teacher password', 10);
 
 $accounts = [
     ['himari.hacker', 'Himari', 'student', 'ja', 'cyan', $studentPassword],
+    ['kotone.hacker', 'Kotone', 'student', 'ja', 'cyan', $studentPassword],
     ['mirko.hacker', 'Mirko', 'student', 'it', 'blue', $studentPassword],
     ['cloe.hacker', 'Cloe', 'student', 'it', 'pink', $studentPassword],
     ['be_a_hacker', 'Teacher', 'teacher', 'it', 'green', $teacherPassword],
