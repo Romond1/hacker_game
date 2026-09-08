@@ -54,3 +54,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Two-stage review: specification compliant and code-quality approved. Optional future test hardening: explicit penalty/clamp and exact time-bonus boundary cases.
 - Task 2 complete: registered the reusable training-module contract and deterministic Systems Calibration catalog entry, with trusted 150-XP/1-Credit/20-Credit-cap configuration and four achievements.
 - Verification: catalog/training/progression tests and TypeScript passed; specification and code-quality reviews approved. Pin a generator-version fixture during the cross-runtime PHP policy task.
+- Task 3 complete: added mission lifecycle metadata and a reusable MissionTemplate that composes the existing briefing, tutorial, runner, reward, and results screens without changing mission mechanics.
+- Verification: 25 lifecycle/mission regression tests and TypeScript passed; specification review passed. Inline quality review found no blocking issue; App integration remains deferred to Task 11.
