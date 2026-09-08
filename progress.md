@@ -59,3 +59,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Task 4 complete: added server-authoritative local training attempts, deterministic evidence validation, canonical score-to-XP conversion, shared reward accounting, independent bests, cap enforcement, achievements, and idempotent receipts.
 - Task 5 complete: persisted per-user training state in version-2 development snapshots with version-1 defaults; added protected training routes plus student/teacher summaries.
 - Verification: 25 development tests and TypeScript passed after tracing and fixing the shared-contract/browser import boundary.
+- Task 6 complete: added migration 004 plus the authoritative PHP training service. TypeScript/PHP generator v1 parity is pinned for seed 42; duplicate response map shapes are stable.
+- Verification: PHP syntax/policy checks passed and a disposable MariaDB run passed locks, tamper rejection, 21-run cap/replay, idempotency, bests, and achievements. Migration 004 reran cleanly.
