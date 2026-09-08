@@ -1,7 +1,7 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import { calculateTrainingResult, improvesTrainingBest, type TrainingAttemptStart, type TrainingBest, type TrainingCompletion, type TrainingProgress } from '../src/domain/training.ts';
 import { getTrainingModule } from '../src/training/catalog.ts';
-import type { CalibrationEvidence } from '../src/training/systems-calibration.ts';
+import type { TrainingEvidence } from '../src/training/catalog.ts';
 import type { PlayerProgression } from '../src/domain/progression.ts';
 import { awardReward, ProgressionError } from './progressionCore.ts';
 
@@ -82,7 +82,7 @@ export function finishTraining(
   progression: PlayerProgression,
   store: DevTrainingStore,
   attemptId: string,
-  evidence: CalibrationEvidence[],
+  evidence: TrainingEvidence[],
   durationSeconds: number,
 ): TrainingCompletion {
   const attempt = store.attempts[attemptId];
@@ -101,14 +101,20 @@ export function finishTraining(
   let streak = 0;
   let longestStreak = 0;
   for (const entry of evidence) {
-    if (round >= attempt.rounds || !entry || typeof entry.selectedCode !== 'string') {
+    if (round >= attempt.rounds || !entry) {
       throw new ProgressionError('validation_failed', 'Invalid training evidence.');
     }
-    const task = module.generateTask(attempt.seed, round);
-    if (!task.choices.includes(entry.selectedCode)) {
-      throw new ProgressionError('validation_failed', 'Invalid training evidence.');
-    }
-    const validation = module.validateTask(task, entry.selectedCode);
+    const validation = module.kind === 'systems-calibration'
+      ? (() => {
+          if (!('selectedCode' in entry) || typeof entry.selectedCode !== 'string') throw new ProgressionError('validation_failed', 'Invalid training evidence.');
+          const task = module.generateTask(attempt.seed, round);
+          if (!task.choices.includes(entry.selectedCode)) throw new ProgressionError('validation_failed', 'Invalid training evidence.');
+          return module.validateTask(task, entry.selectedCode);
+        })()
+      : (() => {
+          if (!('pastedText' in entry) || typeof entry.pastedText !== 'string' || !/^[A-Z0-9-]{1,32}$/.test(entry.pastedText)) throw new ProgressionError('validation_failed', 'Invalid training evidence.');
+          return module.validateTask(module.generateTask(attempt.seed, round), entry.pastedText);
+        })();
     if (validation.valid) {
       round += 1;
       streak += 1;

@@ -14,7 +14,7 @@ describe('training catalog', () => {
     expect(module!.generateTask(42, 0)).toEqual(module!.generateTask(42, 0));
     expect(module!.generateTask(42, 0)).not.toEqual(module!.generateTask(42, 1));
     expect(getTrainingModule('unknown-module')).toBeUndefined();
-    expect(TRAINING_MODULES).toHaveLength(1);
+    expect(TRAINING_MODULES).toHaveLength(2);
   });
 
   it('reports mission locks and completed credit rewards without disabling play', () => {
@@ -70,5 +70,14 @@ describe('training catalog', () => {
       { id: 'speed-operator', name: 'SPEED OPERATOR', description: 'Finish within the module speed target.' },
       { id: 'training-master', name: 'TRAINING MASTER', description: 'Earn all Credits from one training module.' },
     ]);
+  });
+
+  it('registers Data Transfer after Mission 4 with an independent 20 Credit cap', () => {
+    const module = getTrainingModule('data-transfer');
+    expect(TRAINING_MODULES.map(item => item.id)).toEqual(['systems-calibration', 'data-transfer']);
+    expect(module).toMatchObject({ kind: 'data-transfer', linkedMissionId: 'mission-4', requiredCompletedMissions: [1, 2, 3, 4], rounds: 5 });
+    expect(module?.reward).toEqual({ xpMax: 150, creditsPerRun: 1, creditCap: 20 });
+    expect(trainingStatus(module!, [1, 2, 3], 0)).toBe('locked');
+    expect(trainingStatus(module!, [1, 2, 3, 4], 20)).toBe('reward-complete');
   });
 });

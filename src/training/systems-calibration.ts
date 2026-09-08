@@ -32,8 +32,9 @@ function generateTask(seed: number, roundIndex: number): CalibrationTask {
   return { prompt: `VERIFY ${correctCode}`, choices, correctCode };
 }
 
-export const systemsCalibration: TrainingModuleDefinition<CalibrationTask, string, CalibrationEvidence> = {
+export const systemsCalibration: TrainingModuleDefinition<CalibrationTask, string, CalibrationEvidence, 'systems-calibration'> = {
   id: 'systems-calibration',
+  kind: 'systems-calibration',
   title: 'Systems Calibration',
   description: 'Match each access code to verify the training systems.',
   skill: 'Visual matching',

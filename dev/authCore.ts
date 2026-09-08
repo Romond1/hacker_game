@@ -3,7 +3,7 @@ import { emptyProgression, type PlayerProgression, type RewardReceipt } from '..
 import { awardMission, createIdentity, purchaseItem, equipItem, ProgressionError } from './progressionCore.ts';
 import { emptyTrainingStore, finishTraining as finishTrainingAttempt, startTraining as startTrainingAttempt, type DevTrainingStore } from './trainingCore.ts';
 import { TRAINING_MODULES } from '../src/training/catalog.ts';
-import type { CalibrationEvidence } from '../src/training/systems-calibration.ts';
+import type { TrainingEvidence } from '../src/training/catalog.ts';
 import type { TrainingProgress } from '../src/domain/training.ts';
 
 type SupportLanguage = 'it' | 'ja';
@@ -222,7 +222,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');
       return startTrainingAttempt(progressionFor(userId), trainingStoreFor(userId), trainingId, seed);
     },
-    finishTraining(userId: string, attemptId: string, evidence: CalibrationEvidence[], durationSeconds: number) {
+    finishTraining(userId: string, attemptId: string, evidence: TrainingEvidence[], durationSeconds: number) {
       if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');
       return finishTrainingAttempt(progressionFor(userId), trainingStoreFor(userId), attemptId, evidence, durationSeconds);
     },

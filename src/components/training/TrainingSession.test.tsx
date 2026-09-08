@@ -4,6 +4,7 @@ import type { SessionUser } from '../../api/client';
 import type { TrainingAttemptStart, TrainingCompletion } from '../../domain/training';
 import { emptyProgression } from '../../domain/progression';
 import { systemsCalibration } from '../../training/systems-calibration';
+import { dataTransfer } from '../../training/data-transfer';
 import { TrainingSession } from './TrainingSession';
 
 const student: SessionUser = { id: 'student', username: 'student', displayName: 'NOVA', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'csrf' };
@@ -81,5 +82,30 @@ describe('TrainingSession', () => {
     render(<TrainingSession module={systemsCalibration} attempt={attempt({ rounds: 5 })} user={student} finish={vi.fn()} onExit={onExit} />);
     fireEvent.click(screen.getByRole('button', { name: /Return to Training Center/i }));
     expect(onExit).toHaveBeenCalledOnce();
+  });
+
+  it('runs five Data Transfer rounds through right-click Copy and Paste', async () => {
+    const finish = vi.fn().mockResolvedValue({
+      ...completion,
+      reward: { ...completion.reward, source: 'training:data-transfer' },
+      progress: { ...completion.progress, trainingId: 'data-transfer' },
+    });
+    render(<TrainingSession module={dataTransfer} attempt={attempt({ trainingId: 'data-transfer', rounds: 5 })} user={student} finish={finish} onExit={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: /Start training/i }));
+    for (let round = 0; round < 5; round += 1) {
+      const source = screen.getByTestId('data-transfer-source');
+      const code = source.textContent!;
+      vi.spyOn(window, 'getSelection').mockReturnValue({ toString: () => code } as Selection);
+      fireEvent.mouseUp(source);
+      fireEvent.contextMenu(source);
+      fireEvent.click(await screen.findByRole('button', { name: /Copy selected text/i }));
+      const destination = screen.getByLabelText(dataTransfer.generateTask(42, round).destination);
+      fireEvent.contextMenu(destination);
+      fireEvent.click(await screen.findByRole('button', { name: /Paste copied text/i }));
+      await waitFor(() => expect(destination).toHaveValue(code));
+      fireEvent.click(screen.getByRole('button', { name: /Submit transfer/i }));
+    }
+    await waitFor(() => expect(finish).toHaveBeenCalledOnce());
+    expect(finish.mock.calls[0][0].evidence).toEqual(Array.from({ length: 5 }, (_, round) => ({ pastedText: dataTransfer.generateTask(42, round).code })));
   });
 });

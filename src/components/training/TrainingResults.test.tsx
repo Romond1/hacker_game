@@ -29,7 +29,8 @@ describe('TrainingResults', () => {
     setReducedMotion(true);
     const replay = vi.fn();
     const back = vi.fn();
-    render(<TrainingResults language="ja" completion={completion()} onReplay={replay} onReturn={back} />);
+    const home = vi.fn();
+    render(<TrainingResults language="ja" completion={completion()} onReplay={replay} onReturn={back} onHome={home} />);
     expect(screen.getByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
     expect(screen.getByText('トレーニング完了。')).toHaveAttribute('lang', 'ja');
     expect(screen.getByText('トレーニングセンターに戻る')).toHaveAttribute('lang', 'ja');
@@ -41,8 +42,10 @@ describe('TrainingResults', () => {
     expect(screen.getByText(/PERFECT CALIBRATION/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Train again/i }));
     fireEvent.click(screen.getByRole('button', { name: /Return to Training Center/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Return to Home Base/i }));
     expect(replay).toHaveBeenCalledOnce();
     expect(back).toHaveBeenCalledOnce();
+    expect(home).toHaveBeenCalledOnce();
   });
 
   it('holds actions during the standard result animation', () => {

@@ -69,8 +69,11 @@ export type TrainingTaskValidation<TEvidence> = {
 
 export type LocalizedTrainingText = { en: string; it: string; ja: string };
 
-export type TrainingModuleDefinition<TTask, TSelection, TEvidence> = {
+export type TrainingModuleKind = 'systems-calibration' | 'data-transfer';
+
+export type TrainingModuleDefinition<TTask, TSelection, TEvidence, TKind extends TrainingModuleKind = TrainingModuleKind> = {
   id: string;
+  kind: TKind;
   title: string;
   description: string;
   skill: string;

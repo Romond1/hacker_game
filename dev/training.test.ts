@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyProgression, type PlayerProgression } from '../src/domain/progression.ts';
 import { getTrainingModule } from '../src/training/catalog.ts';
 import type { CalibrationEvidence } from '../src/training/systems-calibration.ts';
+import type { DataTransferEvidence } from '../src/training/data-transfer.ts';
 import { emptyTrainingStore, finishTraining, startTraining } from './trainingCore.ts';
 
 function completedRookieState(): PlayerProgression {
@@ -19,7 +20,37 @@ function perfectEvidence(attempt: { seed: number; rounds: number }): Calibration
   }));
 }
 
+function completedMissionFourState(): PlayerProgression {
+  return { ...completedRookieState(), completedMissions: [1, 2, 3, 4] };
+}
+
+function perfectTransferEvidence(attempt: { seed: number; rounds: number }): DataTransferEvidence[] {
+  const module = getTrainingModule('data-transfer');
+  return Array.from({ length: attempt.rounds }, (_, round) => ({ pastedText: module.generateTask(attempt.seed, round).code }));
+}
+
 describe('development training policy', () => {
+  it('caps Data Transfer Credits at 20 while its twenty-first run still awards XP', () => {
+    const state = completedMissionFourState();
+    const training = emptyTrainingStore();
+    let last;
+    for (let run = 0; run < 21; run += 1) {
+      const attempt = startTraining(state, training, 'data-transfer', 2000 + run);
+      last = finishTraining(state, training, attempt.attemptId, perfectTransferEvidence(attempt), 60);
+      expect(last.reward.credits).toBe(run < 20 ? 1 : 0);
+    }
+    expect(training.progress['data-transfer']).toMatchObject({ creditsEarned: 20, rewardedRuns: 20, completedRuns: 21, bestScore: 5000, bestAccuracy: 100, highestRank: 'S' });
+    expect(last?.reward).toMatchObject({ credits: 0, xp: 150 });
+  });
+
+  it('rejects forged Data Transfer evidence and keeps it locked before Mission 4', () => {
+    expect(() => startTraining(completedRookieState(), emptyTrainingStore(), 'data-transfer', 42)).toThrow(/locked/i);
+    const state = completedMissionFourState();
+    const training = emptyTrainingStore();
+    const attempt = startTraining(state, training, 'data-transfer', 42);
+    expect(() => finishTraining(state, training, attempt.attemptId, [{ pastedText: 'FORGED-CODE' }], 60)).toThrow(/evidence/i);
+  });
+
   it('caps Credits at 20 while counting 21 completed runs', () => {
     const state = completedRookieState();
     const training = emptyTrainingStore();

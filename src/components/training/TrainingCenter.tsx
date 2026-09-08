@@ -1,7 +1,7 @@
 import type { TrainingProgress } from '../../domain/training';
 import type { TrainingModule } from '../../training/catalog';
 import type { SupportLanguage } from '../../domain/mission';
-import { localizedTrainingCopy, trainingBeginModule, trainingCopy, trainingCreditPerRun, trainingRoundCount, trainingRunCount, trainingXpMaximum } from '../../i18n/training';
+import { localizedTrainingCopy, trainingBeginModule, trainingCopy, trainingCreditPerRun, trainingMissionRequirement, trainingRoundCount, trainingRunCount, trainingXpMaximum } from '../../i18n/training';
 import { TrainingCopy } from './TrainingCopy';
 
 function formatTime(seconds: number | null): string {
@@ -36,17 +36,17 @@ export function TrainingCenter({ language, modules, progress, onStart, onBack }:
       <div className="training-signal" aria-hidden="true"><span>SYS</span><i /><i /><i /></div>
     </header>
     <section className="training-module-list" aria-label="Training modules">
-      {modules.map(module => {
+      {modules.map((module, moduleIndex) => {
         const state = progress.find(item => item.trainingId === module.id) ?? emptyProgress(module);
         const rewardComplete = state.creditsEarned >= state.creditCap;
         return <article key={module.id} className={`training-module ${state.unlocked ? 'available' : 'locked'}`} aria-label={module.title}>
-          <div className="training-module-index"><TrainingCopy copy={trainingCopy('module', language)} /><strong>01</strong><TrainingCopy copy={trainingCopy('beginner', language)} /></div>
+          <div className="training-module-index"><TrainingCopy copy={trainingCopy('module', language)} /><strong>{String(moduleIndex + 1).padStart(2, '0')}</strong><TrainingCopy copy={trainingCopy('beginner', language)} /></div>
           <div className="training-module-copy">
             <p className="eyebrow"><TrainingCopy copy={localizedTrainingCopy(module.localized.skill, language)} /></p>
             <h2><TrainingCopy copy={localizedTrainingCopy(module.localized.title, language)} /></h2>
             <p><TrainingCopy copy={localizedTrainingCopy(module.localized.description, language)} /></p>
             <div className="training-policy"><TrainingCopy copy={trainingRoundCount(language, module.rounds)} /><TrainingCopy copy={trainingXpMaximum(language, module.reward.xpMax)} /><TrainingCopy copy={trainingCreditPerRun(language, module.reward.creditsPerRun)} /></div>
-            {!state.unlocked && <p className="training-lock-note"><TrainingCopy copy={trainingCopy('completeMissionThree', language)} /></p>}
+            {!state.unlocked && <p className="training-lock-note"><TrainingCopy copy={trainingMissionRequirement(language, Math.max(...module.requiredCompletedMissions))} /></p>}
             {rewardComplete && <p className="training-complete-note"><TrainingCopy copy={trainingCopy('rewardComplete', language)} /></p>}
           </div>
           <div className="training-module-data">

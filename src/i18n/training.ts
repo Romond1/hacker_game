@@ -29,6 +29,7 @@ const messages = {
   completeMissionThree: { en: 'Complete Mission 3 to unlock this module.', it: 'Completa la Missione 3 per sbloccare questo modulo.', ja: 'ミッション3を完了すると、このモジュールがアンロックされます。' },
   rewardComplete: { en: 'Training reward complete · Replay for XP and personal bests.', it: "Ricompensa dell'addestramento completata · Rigioca per ottenere XP e record personali.", ja: 'トレーニング報酬完了 · XPと自己ベストのために再挑戦できます。' },
   returnTrainingCenter: { en: 'Return to Training Center', it: 'Torna al Centro di addestramento', ja: 'トレーニングセンターに戻る' },
+  returnHomeBase: { en: 'Return to Home Base', it: 'Torna alla Base operativa', ja: 'ホームベースに戻る' },
   systemsReady: { en: 'Systems Calibration / Ready', it: 'Calibrazione dei sistemi / Pronto', ja: 'システム調整 / 準備完了' },
   verifySignal: { en: 'Verify the signal.', it: 'Verifica il segnale.', ja: '信号を確認しましょう。' },
   startTraining: { en: 'Start training', it: "Inizia l'addestramento", ja: 'トレーニングを開始' },
@@ -67,11 +68,31 @@ function dynamic(language: SupportLanguage, en: string, it: string, ja: string):
   return { en, support: language === 'it' ? it : ja, lang: language };
 }
 
-export function trainingAgentInstruction(language: SupportLanguage, name: string, count: number): TrainingCopyValue {
+export function trainingAgentInstruction(language: SupportLanguage, name: string, count: number, kind: 'systems-calibration' | 'data-transfer' = 'systems-calibration'): TrainingCopyValue {
+  if (kind === 'data-transfer') return dynamic(language,
+    `Agent ${name}, transfer ${count} codes. Select, right-click Copy, then right-click Paste. Mistakes reduce accuracy, but you can keep going.`,
+    `Agente ${name}, trasferisci ${count} codici. Seleziona, fai clic destro su Copia, poi fai clic destro su Incolla. Gli errori riducono la precisione, ma puoi continuare.`,
+    `エージェント${name}、${count}個のコードを転送します。選択して右クリックでコピーし、右クリックで貼り付けます。間違えても続けられます。`);
   return dynamic(language,
     `Agent ${name}, match ${count} access codes. Mistakes reduce accuracy, but you can keep going.`,
     `Agente ${name}, abbina ${count} codici di accesso. Gli errori riducono la precisione, ma puoi continuare.`,
     `エージェント${name}、${count}個のアクセスコードを一致させましょう。間違えると正確さは下がりますが、続けられます。`);
+}
+
+export function trainingModuleState(language: SupportLanguage, title: string, localizedTitle: string, state: 'Ready' | 'Live' | 'Verified'): TrainingCopyValue {
+  const it = state === 'Ready' ? 'Pronto' : state === 'Live' ? 'In corso' : 'Verificato';
+  const ja = state === 'Ready' ? '準備完了' : state === 'Live' ? '実行中' : '確認完了';
+  return dynamic(language, `${title} / ${state}`, `${localizedTitle} / ${it}`, `${localizedTitle} / ${ja}`);
+}
+
+export function trainingSessionTitle(language: SupportLanguage, kind: 'systems-calibration' | 'data-transfer'): TrainingCopyValue {
+  return kind === 'data-transfer'
+    ? dynamic(language, 'Transfer the data.', 'Trasferisci i dati.', 'データを転送しましょう。')
+    : trainingCopy('verifySignal', language);
+}
+
+export function trainingMissionRequirement(language: SupportLanguage, missionNumber: number): TrainingCopyValue {
+  return dynamic(language, `Complete Mission ${missionNumber} to unlock this module.`, `Completa la Missione ${missionNumber} per sbloccare questo modulo.`, `ミッション${missionNumber}を完了すると、このモジュールがアンロックされます。`);
 }
 
 export function trainingRoundProgress(language: SupportLanguage, current: number, total: number): TrainingCopyValue {
