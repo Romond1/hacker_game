@@ -2,12 +2,18 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { SessionUser } from '../../api/client';
 import type { TrainingAttemptStart, TrainingCompletion } from '../../domain/training';
+import { emptyProgression } from '../../domain/progression';
 import { systemsCalibration } from '../../training/systems-calibration';
 import { TrainingSession } from './TrainingSession';
 
 const student: SessionUser = { id: 'student', username: 'student', displayName: 'NOVA', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'csrf' };
 const attempt = (overrides: Partial<TrainingAttemptStart> = {}): TrainingAttemptStart => ({ attemptId: 'attempt-1', trainingId: 'systems-calibration', seed: 42, generatorVersion: 1, rounds: 3, ...overrides });
-const completion = { result: { score: 5000, accuracy: 100, longestStreak: 3, rank: 'S' } } as TrainingCompletion;
+const completion: TrainingCompletion = {
+  result: { score: 5000, accuracy: 100, longestStreak: 3, rank: 'S' },
+  reward: { source: 'training:systems-calibration', eventId: 'attempt-1', xp: 150, credits: 1, totalXP: 150, currentCredits: 1, creditLimitReached: false },
+  progress: { trainingId: 'systems-calibration', unlocked: true, completedRuns: 1, rewardedRuns: 1, creditsEarned: 1, creditCap: 20, bestScore: 5000, bestTimeSeconds: 20, bestAccuracy: 100, longestStreak: 3, highestRank: 'S', lastCompletedAt: '2026-09-08' },
+  progression: emptyProgression(), achievements: [], isPersonalBest: true,
+};
 
 function currentTarget() {
   return screen.getByTestId('calibration-target').getAttribute('data-calibration-target')!;
@@ -39,7 +45,7 @@ describe('TrainingSession', () => {
     await waitFor(() => expect(finish).toHaveBeenCalledTimes(1));
     expect(finish.mock.calls[0][0]).toMatchObject({ attemptId: 'attempt-1' });
     expect(finish.mock.calls[0][0].evidence).toHaveLength(3);
-    expect(screen.getByText(/Training saved/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
   });
 
   it('counts mistakes without advancing and updates accuracy and streak', () => {

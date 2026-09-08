@@ -3,6 +3,7 @@ import type { SessionUser } from '../../api/client';
 import type { TrainingAggregate, TrainingAttemptStart, TrainingCompletion, TrainingModuleDefinition } from '../../domain/training';
 import type { CalibrationEvidence, CalibrationTask } from '../../training/systems-calibration';
 import { SystemsCalibrationTask } from './SystemsCalibrationTask';
+import { TrainingResults } from './TrainingResults';
 
 type RoundState = {
   phase: 'round'; roundIndex: number; evidence: CalibrationEvidence[];
@@ -13,12 +14,13 @@ type SessionState = { phase: 'intro' } | RoundState | PendingState | { phase: 'c
 
 export type FinishTrainingInput = { attemptId: string; evidence: CalibrationEvidence[]; durationSeconds: number };
 
-export function TrainingSession({ module, attempt, user, finish, onExit, onComplete, renderTask }: {
+export function TrainingSession({ module, attempt, user, finish, onExit, onReplay, onComplete, renderTask }: {
   module: TrainingModuleDefinition<CalibrationTask, string, CalibrationEvidence>;
   attempt: TrainingAttemptStart;
   user: SessionUser;
   finish: (input: FinishTrainingInput) => Promise<TrainingCompletion>;
   onExit: () => void;
+  onReplay?: () => void;
   onComplete?: (completion: TrainingCompletion) => void;
   renderTask?: (task: CalibrationTask, onAnswer: (selection: string) => void) => ReactNode;
 }) {
@@ -72,7 +74,7 @@ export function TrainingSession({ module, attempt, user, finish, onExit, onCompl
 
   if (state.phase === 'saving') return <main className="page training-session training-saving" aria-busy="true"><div className="training-spinner" /><p className="eyebrow">VERIFYING EVIDENCE</p><h1>Saving training…</h1></main>;
   if (state.phase === 'save-error') return <main className="page training-session training-save-error"><p className="eyebrow">CONNECTION INTERRUPTED</p><h1>Evidence retained.</h1><p role="alert">{state.message}</p><div className="training-actions"><button className="quiet-button" onClick={onExit}>Return to Training Center</button><button className="primary-button" onClick={() => void save(state.evidence, state.aggregate)}>Retry save <span>↻</span></button></div></main>;
-  if (state.phase === 'complete') return <main className="page training-session"><p className="eyebrow">SYSTEM VERIFIED</p><h1>Training saved.</h1><button className="primary-button" onClick={onExit}>Return to Training Center <span>→</span></button></main>;
+  if (state.phase === 'complete') return <TrainingResults completion={state.completion} onReplay={onReplay ?? onExit} onReturn={onExit} />;
   if (state.phase !== 'round') return null;
 
   const task = module.generateTask(attempt.seed, state.roundIndex);
