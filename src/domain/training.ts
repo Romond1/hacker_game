@@ -1,3 +1,5 @@
+import type { PlayerProgression, RewardReceipt } from './progression';
+
 export type TrainingRank = 'C' | 'B' | 'A' | 'S';
 
 export type TrainingScoreRules = {
@@ -28,6 +30,33 @@ export type TrainingBest = {
   bestAccuracy: number | null;
   longestStreak: number;
   highestRank: TrainingRank | null;
+};
+
+export type TrainingProgress = TrainingBest & {
+  trainingId: string;
+  unlocked: boolean;
+  completedRuns: number;
+  rewardedRuns: number;
+  creditsEarned: number;
+  creditCap: number;
+  lastCompletedAt: string | null;
+};
+
+export type TrainingAttemptStart = {
+  attemptId: string;
+  trainingId: string;
+  seed: number;
+  generatorVersion: number;
+  rounds: number;
+};
+
+export type TrainingCompletion = {
+  result: TrainingResult;
+  reward: RewardReceipt;
+  progress: TrainingProgress;
+  progression: PlayerProgression;
+  achievements: string[];
+  isPersonalBest: boolean;
 };
 
 export type SeededRandom = () => number;

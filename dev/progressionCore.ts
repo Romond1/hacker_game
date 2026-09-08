@@ -1,23 +1,40 @@
-import { ECONOMY, rankFor, rewardAmounts, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
+import { ECONOMY, rankFor, rewardAmounts, type PlayerProgression, type RewardLimits, type RewardPolicy, type RewardReceipt } from '../src/domain/progression.ts';
 
 export class ProgressionError extends Error {
   constructor(public code: string, message: string) { super(message); }
 }
 
-export function awardMission(state: PlayerProgression, missionId: string, eventId: string, score: number): RewardReceipt {
-  const policy = ECONOMY.missions[missionId as keyof typeof ECONOMY.missions];
-  if (!policy || !Number.isInteger(score) || score < 0 || score > policy.xpMax) throw new ProgressionError('validation_failed', 'Invalid mission result.');
-  const previous = state.missionAttempts[missionId] ?? 0;
-  const number = Number(missionId.replace('mission-', ''));
-  if (!state.completedMissions.includes(number)) state.completedMissions.push(number);
-  state.completedMissions.sort((a, b) => a - b);
+export function awardReward(
+  state: PlayerProgression,
+  source: string,
+  eventId: string,
+  score: number,
+  policy: RewardPolicy,
+  limits: Pick<RewardLimits, 'attempts'> & Partial<RewardLimits>,
+): RewardReceipt {
+  if (!Number.isInteger(score) || score < 0 || score > policy.xpMax) throw new ProgressionError('validation_failed', 'Invalid reward result.');
   const rank = rankFor(state.completedMissions);
-  const { xp, credits, creditLimitReached } = rewardAmounts(policy, score, { attempts: previous, earned: state.lifetimeCreditsEarned, rankCap: rank.earningCap });
-  state.missionAttempts[missionId] = previous + 1;
+  const { xp, credits, creditLimitReached } = rewardAmounts(policy, score, {
+    ...limits,
+    earned: state.lifetimeCreditsEarned,
+    rankCap: rank.earningCap,
+  });
   state.lifetimeXP += xp;
   state.currentCredits += credits;
   state.lifetimeCreditsEarned += credits;
   state.playerRank = rank.id;
+  return { source, eventId, xp, credits, totalXP: state.lifetimeXP, currentCredits: state.currentCredits, creditLimitReached };
+}
+
+export function awardMission(state: PlayerProgression, missionId: string, eventId: string, score: number): RewardReceipt {
+  const policy = ECONOMY.missions[missionId as keyof typeof ECONOMY.missions];
+  if (!policy) throw new ProgressionError('validation_failed', 'Invalid mission result.');
+  const previous = state.missionAttempts[missionId] ?? 0;
+  const number = Number(missionId.replace('mission-', ''));
+  if (!state.completedMissions.includes(number)) state.completedMissions.push(number);
+  state.completedMissions.sort((a, b) => a - b);
+  const receipt = awardReward(state, missionId, eventId, score, policy, { attempts: previous });
+  state.missionAttempts[missionId] = previous + 1;
   state.storyFlags.rookieTrainingStarted = true;
   if (number === 1 && !state.achievements.includes('first-access')) state.achievements.push('first-access');
   if ([1,2,3].every(id => state.completedMissions.includes(id))) {
@@ -29,7 +46,7 @@ export function awardMission(state: PlayerProgression, missionId: string, eventI
     if (!state.unlockedNodes.includes('classified')) state.unlockedNodes.push('classified');
     if (!state.achievements.includes('rookie-no-more')) state.achievements.push('rookie-no-more');
   }
-  return { source: missionId, eventId, xp, credits, totalXP: state.lifetimeXP, currentCredits: state.currentCredits, creditLimitReached };
+  return receipt;
 }
 
 export function createIdentity(state: PlayerProgression, value: string) {

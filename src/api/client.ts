@@ -1,5 +1,7 @@
 import type { SupportLanguage } from '../domain/mission';
 import type { PlayerProgression } from '../domain/progression';
+import type { TrainingProgress } from '../domain/training';
+export type { TrainingAttemptStart, TrainingCompletion, TrainingProgress } from '../domain/training';
 
 export type Role = 'student' | 'teacher';
 
@@ -49,6 +51,7 @@ export type StudentDashboard = {
   bestScore: number | null;
   bestTimeSeconds: number | null;
   attempts: AttemptSummary[];
+  training?: TrainingProgress[];
 };
 
 export type TeacherStudent = {
@@ -79,7 +82,7 @@ export type TeacherAttempt = {
   incorrectActions: number;
 };
 
-export type TeacherStudentDetail = { student: TeacherStudent; attempts: TeacherAttempt[]; progression?: PlayerProgression };
+export type TeacherStudentDetail = { student: TeacherStudent; attempts: TeacherAttempt[]; progression?: PlayerProgression; training?: TrainingProgress[] };
 
 type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: { code: string; message: string } };
 
