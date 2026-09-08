@@ -57,6 +57,8 @@ describe('MissionTemplate', () => {
     const { request } = setup();
     fireEvent.click(screen.getByRole('button', { name: /Open briefing/ }));
     expect(screen.getByText('MISSION 01 / BRIEFING')).toBeInTheDocument();
+    expect(screen.getByText('MISSION STEPS')).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(missionOne.objectives.length);
     fireEvent.click(screen.getByRole('button', { name: /Start tutorial/ }));
     expect(screen.getByText('Welcome, Agent')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Folders and files' })).toBeInTheDocument();

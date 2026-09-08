@@ -42,4 +42,14 @@ describe('game feel primitives', () => {
     fireEvent.click(screen.getByRole('button', { name: /skip/i }));
     expect(complete).toHaveBeenCalledOnce();
   });
+  it('collapses story timing and completes under reduced motion', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }));
+    vi.useFakeTimers();
+    const complete = vi.fn();
+    render(<StoryBeatSequence ariaLabel="Reduced signal" supportLanguage="ja" steps={[{ text: 'FIRST' }, { text: 'FINAL', supportText: '最終' }]} onComplete={complete} />);
+    expect(screen.getByText('FINAL')).toBeInTheDocument();
+    expect(screen.getByText('最終')).toHaveAttribute('lang', 'ja');
+    act(() => vi.runAllTimers());
+    expect(complete).toHaveBeenCalledOnce();
+  });
 });

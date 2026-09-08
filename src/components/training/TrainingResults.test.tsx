@@ -52,6 +52,7 @@ describe('TrainingResults', () => {
     setReducedMotion(false);
     vi.useFakeTimers();
     render(<TrainingResults language="it" completion={completion()} onReplay={vi.fn()} onReturn={vi.fn()} />);
+    expect(screen.getByText('ANALYZING PERFORMANCE…')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Train again/i })).toBeDisabled();
     act(() => vi.advanceTimersByTime(3000));
     expect(screen.getByRole('button', { name: /Train again/i })).toBeEnabled();

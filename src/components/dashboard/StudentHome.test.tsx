@@ -17,6 +17,8 @@ describe('StudentHome', () => {
   it('shows one available mission and three locked missions for a new student', () => {
     render(<StudentHome user={mirko} dashboard={dashboard([mission(1), mission(2), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} />);
     expect(screen.getAllByRole('article')).toHaveLength(4);
+    expect(screen.getByText('NEW SIGNAL')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: /Campaign progress/i })).toHaveAttribute('aria-valuenow', '0');
     expect(screen.getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
     expect(screen.getAllByText('Locked')).toHaveLength(3);
     expect(screen.queryByRole('button', { name: /Replay/i })).not.toBeInTheDocument();
@@ -58,6 +60,7 @@ describe('StudentHome', () => {
     expect(screen.getByText('Mantieni efficienti i tuoi sistemi.')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('Apri il Centro di addestramento')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('7 / 20 Credits')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: /Training Credits/i })).toHaveAttribute('aria-valuenow', '7');
     fireEvent.click(screen.getByRole('button', { name: /Open Training Center/i }));
     expect(onTraining).toHaveBeenCalledOnce();
   });

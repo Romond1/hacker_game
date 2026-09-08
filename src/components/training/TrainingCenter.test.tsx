@@ -26,7 +26,7 @@ describe('TrainingCenter', () => {
     expect(within(module).getByText('4 runs')).toBeInTheDocument();
     expect(within(module).getByText('4,700')).toBeInTheDocument();
     expect(within(module).getByText('92%')).toBeInTheDocument();
-    expect(within(module).getByRole('meter')).toHaveAttribute('aria-valuenow', '7');
+    expect(within(module).getByRole('progressbar', { name: /Credit progress/i })).toHaveAttribute('aria-valuenow', '7');
     fireEvent.click(within(module).getByRole('button', { name: /Begin Systems Calibration/i }));
     expect(onStart).toHaveBeenCalledWith('systems-calibration');
   });

@@ -45,6 +45,7 @@ const messages = {
   selectMatchingCode: { en: 'Select the matching code from the live verification stream.', it: 'Seleziona il codice corrispondente dal flusso di verifica attivo.', ja: '確認ストリームから一致するコードを選んでください。' },
   systemsVerified: { en: 'Systems Calibration / Verified', it: 'Calibrazione dei sistemi / Verificata', ja: 'システム調整 / 確認完了' },
   trainingComplete: { en: 'Training complete.', it: 'Addestramento completato.', ja: 'トレーニング完了。' },
+  analyzingPerformance: { en: 'ANALYZING PERFORMANCE…', it: 'ANALISI DELLE PRESTAZIONI…', ja: 'パフォーマンスを分析中…' },
   newPersonalBest: { en: 'New personal best recorded.', it: 'Nuovo record personale registrato.', ja: '自己ベストを更新しました。' },
   bestsRemain: { en: 'Run complete. Your best records remain secure.', it: 'Sessione completata. I tuoi record migliori restano al sicuro.', ja: '実行完了。ベスト記録は保持されています。' },
   finalScore: { en: 'FINAL SCORE', it: 'Punteggio finale', ja: '最終スコア' },
