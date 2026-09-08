@@ -76,4 +76,10 @@ describe('mission domain', () => {
     expect(matchesConfirmationCode(' orbit ', 'ORBIT')).toBe(true);
     expect(matchesConfirmationCode('orbital', 'ORBIT')).toBe(false);
   });
+
+  it('matches ordered copy and paste objectives', () => {
+    const objective: Objective = { id: 'copy', text: missionOne.story, trigger: 'copy_used', targetId: 'VX-4821-OMEGA', requires: ['select'] };
+    expect(matchesObjective(objective, 'copy_used', 'VX-4821-OMEGA', new Set())).toBe(false);
+    expect(matchesObjective(objective, 'copy_used', 'VX-4821-OMEGA', new Set(['select']))).toBe(true);
+  });
 });

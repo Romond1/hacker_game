@@ -1,8 +1,9 @@
 import { missionOne } from './mission-one';
 import { missionTwo } from './mission-two';
 import { missionThree } from './mission-three';
+import { missionFour } from './mission-four';
 
-export const MISSIONS = [missionOne, missionTwo, missionThree] as const;
+export const MISSIONS = [missionOne, missionTwo, missionThree, missionFour] as const;
 
 export function getMission(id: string) {
   return MISSIONS.find((mission) => mission.id === id);

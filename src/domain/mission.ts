@@ -18,7 +18,7 @@ export type FileNode = {
 export type Objective = {
   id: string;
   text: LocalizedText;
-  trigger: 'folder_opened' | 'file_opened' | 'back_used';
+  trigger: 'folder_opened' | 'file_opened' | 'back_used' | 'text_selected' | 'copy_used' | 'paste_used' | 'code_submitted';
   targetId?: string;
   requires?: string[];
 };
@@ -77,11 +77,13 @@ export type MissionDefinition = {
   scoring: ScoringRules;
   reward: LocalizedText;
   completion: MissionCompletion;
+  transferChallenge?: { sourceFileId: string; expectedText: string; destinationLabel: string };
 };
 
 export type MissionCompletion =
   | { type: 'open_file'; targetObjectiveId: string }
-  | { type: 'confirm_code'; targetObjectiveId: string; code: string };
+  | { type: 'confirm_code'; targetObjectiveId: string; code: string }
+  | { type: 'confirm_transfer'; targetObjectiveId: string; code: string };
 
 export type MissionStats = {
   completed: boolean;
