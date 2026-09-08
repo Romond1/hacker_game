@@ -64,3 +64,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Tasks 7–10 complete: connected the production training routes and shared reward locks, then added the Training Center, generic session runner, Systems Calibration task adapter, and canonical server-backed results sequence.
 - Task 11 complete: Home Base now reveals aggregate training status only after a module unlocks; the app routes Missions 1–3 through MissionTemplate and supports the complete start/finish/replay training journey. Mission completion refreshes canonical dashboard data before reward/results presentation.
 - Verification: 24 focused app, dashboard, mission-template, and mission-runner tests passed; the production TypeScript/Vite build and deploy packaging passed.
+- Task 12 complete: teacher student records now show module skill, completed runs, capped Credits, best accuracy, and rank as a compact aggregate summary while keeping individual training answers private.
+- Verification: teacher record and development reset-route tests passed; TypeScript checks passed.

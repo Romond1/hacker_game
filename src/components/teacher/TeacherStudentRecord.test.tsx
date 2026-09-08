@@ -39,4 +39,14 @@ describe('TeacherStudentRecord', () => {
     expect(screen.getByText('802')).toBeInTheDocument();
     expect(screen.getAllByText('1')).not.toHaveLength(0);
   });
+
+  it('shows compact aggregate skill training without round evidence', () => {
+    render(<TeacherStudentRecord detail={{ ...detail, training: [{ trainingId: 'systems-calibration', unlocked: true, completedRuns: 12, rewardedRuns: 12, creditsEarned: 12, creditCap: 20, bestScore: 5000, bestTimeSeconds: 20, bestAccuracy: 100, longestStreak: 5, highestRank: 'S', lastCompletedAt: '2026-09-08T10:00:00Z' }] }} onBack={() => undefined} />);
+    expect(screen.getByRole('heading', { name: /skill training/i })).toBeInTheDocument();
+    expect(screen.getByText('Visual matching')).toBeInTheDocument();
+    expect(screen.getByText('12 completed')).toBeInTheDocument();
+    expect(screen.getByText('12 / 20 Credits')).toBeInTheDocument();
+    expect(screen.getByText('100% best accuracy')).toBeInTheDocument();
+    expect(screen.queryByText(/selectedCode/i)).not.toBeInTheDocument();
+  });
 });
