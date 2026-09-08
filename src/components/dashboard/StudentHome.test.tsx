@@ -49,6 +49,9 @@ describe('StudentHome', () => {
     expect(screen.queryByRole('button', { name: /Open Training Center/i })).not.toBeInTheDocument();
     view.rerender(<StudentHome user={mirko} dashboard={{ ...locked, completedMissions: [1,2,3], training: [training({ unlocked: true, creditsEarned: 7 })] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
     expect(screen.getByText('1 module available')).toBeInTheDocument();
+    expect(screen.getByText('1 modulo disponibile')).toHaveAttribute('lang', 'it');
+    expect(screen.getByText('Mantieni efficienti i tuoi sistemi.')).toHaveAttribute('lang', 'it');
+    expect(screen.getByText('Apri il Centro di addestramento')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('7 / 20 Credits')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Open Training Center/i }));
     expect(onTraining).toHaveBeenCalledOnce();

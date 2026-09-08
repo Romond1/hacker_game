@@ -75,3 +75,4 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 ## Training bilingual support — 2026-09-09
 - Approved boundary: student-facing training is English-first with always-visible Italian/Japanese support and no penalty; mission Translate controls, event logging, and score penalties remain unchanged.
 - Added a typed training-only copy catalog, dynamic instruction formatters, a reusable bilingual renderer, and localized Systems Calibration metadata. Catalog, module, and TypeScript checks pass.
+- Home Base and Training Center now render English plus profile-driven Italian/Japanese for training headings, module metadata, explanations, statuses, metrics, warnings, and actions. Technical values remain unchanged; focused UI/App tests and TypeScript checks pass.

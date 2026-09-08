@@ -1,3 +1,6 @@
+.training-copy { display: inline-flex; flex-direction: column; align-items: inherit; min-width: 0; }
+.training-copy > small { display: block; margin-top: .22em; color: var(--muted); font: 600 .72em/1.35 system-ui,sans-serif; letter-spacing: normal; text-transform: none; overflow-wrap: anywhere; }
+button .training-copy { text-align: left; }.training-policy .training-copy { padding: 7px 10px; }.training-policy .training-copy > small { font-size: .72rem; }
 .training-home-entry { margin: 28px 0; padding: clamp(24px,4vw,42px); border: 1px solid #2b5043; border-radius: 18px; background: linear-gradient(110deg,color-mix(in srgb,var(--accent),transparent 91%),rgba(8,24,18,.88)); display: flex; justify-content: space-between; align-items: end; gap: 32px; box-shadow: inset 0 0 55px rgba(0,0,0,.18); }
 .training-home-entry h2 { margin: 5px 0 10px; font-size: clamp(1.7rem,3vw,2.7rem); }.training-home-entry p:not(.eyebrow) { color: #b6c9c2; margin: 0; }
 .training-home-readout { min-width: 260px; display: grid; justify-items: end; gap: 7px; }.training-home-readout > span { color: var(--muted); font: 700 .62rem "Cascadia Mono",monospace; letter-spacing: .12em; }.training-home-readout > strong { color: var(--accent); font: 850 1.3rem "Cascadia Mono",monospace; }.training-home-readout .primary-button { margin-top: 9px; }
@@ -17,7 +20,7 @@
 .training-module-copy h2 { font-size: clamp(1.7rem, 3vw, 2.8rem); margin: 4px 0 12px; }
 .training-module-copy > p:not(.eyebrow) { color: #b6c9c2; max-width: 580px; }
 .training-policy { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.training-policy span { border: 1px solid #2a4a40; padding: 7px 10px; border-radius: 999px; color: #b9d0c7; font-size: .73rem; }
+.training-policy > .training-copy { border: 1px solid #2a4a40; border-radius: 12px; color: #b9d0c7; font-size: .73rem; }
 .training-lock-note,.training-complete-note { margin-top: 22px; padding-left: 13px; border-left: 2px solid var(--accent); font-weight: 750; }
 .training-complete-note { color: var(--accent) !important; }
 .training-module-data { padding: 22px; background: color-mix(in srgb, var(--surface-2), transparent 18%); border-radius: 16px; }

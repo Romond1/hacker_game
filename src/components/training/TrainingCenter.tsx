@@ -1,5 +1,8 @@
 import type { TrainingProgress } from '../../domain/training';
 import type { TrainingModule } from '../../training/catalog';
+import type { SupportLanguage } from '../../domain/mission';
+import { localizedTrainingCopy, trainingBeginModule, trainingCopy, trainingCreditPerRun, trainingRoundCount, trainingRunCount, trainingXpMaximum } from '../../i18n/training';
+import { TrainingCopy } from './TrainingCopy';
 
 function formatTime(seconds: number | null): string {
   if (seconds === null) return '—';
@@ -15,19 +18,20 @@ function emptyProgress(module: TrainingModule): TrainingProgress {
   };
 }
 
-export function TrainingCenter({ modules, progress, onStart, onBack }: {
+export function TrainingCenter({ language, modules, progress, onStart, onBack }: {
+  language: SupportLanguage;
   modules: readonly TrainingModule[];
   progress: TrainingProgress[];
   onStart: (trainingId: string) => void;
   onBack: () => void;
 }) {
   return <main className="page training-center">
-    <button className="back-link" onClick={onBack}>← Home Base</button>
+    <button aria-label="Home Base" className="back-link" onClick={onBack}>← <TrainingCopy copy={trainingCopy('backHomeBase', language)} /></button>
     <header className="training-center-heading">
       <div>
-        <p className="eyebrow">HOME BASE / TRAINING CENTER</p>
-        <h1>Sharpen your systems.</h1>
-        <p>Short drills build speed and accuracy without changing your mission record.</p>
+        <p className="eyebrow"><TrainingCopy copy={trainingCopy('homeBaseTrainingCenter', language)} /></p>
+        <h1><TrainingCopy copy={trainingCopy('sharpenSystems', language)} /></h1>
+        <p><TrainingCopy copy={trainingCopy('shortDrills', language)} /></p>
       </div>
       <div className="training-signal" aria-hidden="true"><span>SYS</span><i /><i /><i /></div>
     </header>
@@ -36,26 +40,26 @@ export function TrainingCenter({ modules, progress, onStart, onBack }: {
         const state = progress.find(item => item.trainingId === module.id) ?? emptyProgress(module);
         const rewardComplete = state.creditsEarned >= state.creditCap;
         return <article key={module.id} className={`training-module ${state.unlocked ? 'available' : 'locked'}`} aria-label={module.title}>
-          <div className="training-module-index"><span>MODULE</span><strong>01</strong><small>{module.difficulty.toUpperCase()}</small></div>
+          <div className="training-module-index"><TrainingCopy copy={trainingCopy('module', language)} /><strong>01</strong><TrainingCopy copy={trainingCopy('beginner', language)} /></div>
           <div className="training-module-copy">
-            <p className="eyebrow">{module.skill}</p>
-            <h2>{module.title}</h2>
-            <p>{module.description}</p>
-            <div className="training-policy"><span>{module.rounds} rounds</span><span>Up to {module.reward.xpMax} XP</span><span>+{module.reward.creditsPerRun} Credit / run</span></div>
-            {!state.unlocked && <p className="training-lock-note">Complete Mission 3 to unlock this module.</p>}
-            {rewardComplete && <p className="training-complete-note">Training reward complete · Replay for XP and personal bests.</p>}
+            <p className="eyebrow"><TrainingCopy copy={localizedTrainingCopy(module.localized.skill, language)} /></p>
+            <h2><TrainingCopy copy={localizedTrainingCopy(module.localized.title, language)} /></h2>
+            <p><TrainingCopy copy={localizedTrainingCopy(module.localized.description, language)} /></p>
+            <div className="training-policy"><TrainingCopy copy={trainingRoundCount(language, module.rounds)} /><TrainingCopy copy={trainingXpMaximum(language, module.reward.xpMax)} /><TrainingCopy copy={trainingCreditPerRun(language, module.reward.creditsPerRun)} /></div>
+            {!state.unlocked && <p className="training-lock-note"><TrainingCopy copy={trainingCopy('completeMissionThree', language)} /></p>}
+            {rewardComplete && <p className="training-complete-note"><TrainingCopy copy={trainingCopy('rewardComplete', language)} /></p>}
           </div>
           <div className="training-module-data">
-            <div className="training-credit-readout"><span>MODULE CREDITS</span><strong>{state.creditsEarned} / {state.creditCap}</strong></div>
+            <div className="training-credit-readout"><TrainingCopy copy={trainingCopy('moduleCredits', language)} /><strong>{state.creditsEarned} / {state.creditCap}</strong></div>
             <meter min={0} max={state.creditCap} value={state.creditsEarned} aria-label={`${module.title} Credit progress`} aria-valuemin={0} aria-valuemax={state.creditCap} aria-valuenow={state.creditsEarned} />
             <dl>
-              <div><dt>RUNS</dt><dd>{state.completedRuns} runs</dd></div>
-              <div><dt>BEST SCORE</dt><dd>{state.bestScore?.toLocaleString() ?? '—'}</dd></div>
-              <div><dt>ACCURACY</dt><dd>{state.bestAccuracy === null ? '—' : `${state.bestAccuracy}%`}</dd></div>
-              <div><dt>BEST TIME</dt><dd>{formatTime(state.bestTimeSeconds)}</dd></div>
-              <div><dt>RANK</dt><dd>{state.highestRank ?? '—'}</dd></div>
+              <div><dt><TrainingCopy copy={trainingCopy('runs', language)} /></dt><dd><TrainingCopy copy={trainingRunCount(language, state.completedRuns)} /></dd></div>
+              <div><dt><TrainingCopy copy={trainingCopy('bestScore', language)} /></dt><dd>{state.bestScore?.toLocaleString() ?? '—'}</dd></div>
+              <div><dt><TrainingCopy copy={trainingCopy('accuracy', language)} /></dt><dd>{state.bestAccuracy === null ? '—' : `${state.bestAccuracy}%`}</dd></div>
+              <div><dt><TrainingCopy copy={trainingCopy('bestTime', language)} /></dt><dd>{formatTime(state.bestTimeSeconds)}</dd></div>
+              <div><dt><TrainingCopy copy={trainingCopy('rank', language)} /></dt><dd>{state.highestRank ?? '—'}</dd></div>
             </dl>
-            {state.unlocked && <button className="primary-button" onClick={() => onStart(module.id)}>{rewardComplete ? `Replay ${module.title}` : `Begin ${module.title}`} <span>→</span></button>}
+            {state.unlocked && <button aria-label={rewardComplete ? `Replay ${module.title}` : `Begin ${module.title}`} className="primary-button" onClick={() => onStart(module.id)}><TrainingCopy copy={trainingBeginModule(language, module.title, module.localized.title[language], rewardComplete)} /><span>→</span></button>}
           </div>
         </article>;
       })}

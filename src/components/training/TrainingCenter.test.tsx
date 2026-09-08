@@ -16,10 +16,13 @@ function progress(overrides: Partial<TrainingProgress> = {}): TrainingProgress {
 describe('TrainingCenter', () => {
   it('renders catalog data, performance, and starts the selected module', () => {
     const onStart = vi.fn();
-    render(<TrainingCenter modules={TRAINING_MODULES} progress={[progress()]} onStart={onStart} onBack={vi.fn()} />);
+    render(<TrainingCenter language="ja" modules={TRAINING_MODULES} progress={[progress()]} onStart={onStart} onBack={vi.fn()} />);
     const module = screen.getByRole('article', { name: /Systems Calibration/i });
     expect(within(module).getByText('7 / 20')).toBeInTheDocument();
     expect(within(module).getByText('Visual matching')).toBeInTheDocument();
+    expect(within(module).getByText('視覚照合')).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText('システムを磨きましょう。')).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText('システム調整')).toHaveAttribute('lang', 'ja');
     expect(within(module).getByText('4 runs')).toBeInTheDocument();
     expect(within(module).getByText('4,700')).toBeInTheDocument();
     expect(within(module).getByText('92%')).toBeInTheDocument();
@@ -29,14 +32,16 @@ describe('TrainingCenter', () => {
   });
 
   it('keeps reward-complete modules playable', () => {
-    render(<TrainingCenter modules={TRAINING_MODULES} progress={[progress({ creditsEarned: 20, rewardedRuns: 20 })]} onStart={vi.fn()} onBack={vi.fn()} />);
+    render(<TrainingCenter language="it" modules={TRAINING_MODULES} progress={[progress({ creditsEarned: 20, rewardedRuns: 20 })]} onStart={vi.fn()} onBack={vi.fn()} />);
     expect(screen.getByText(/Training reward complete/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ricompensa dell'addestramento completata/i)).toHaveAttribute('lang', 'it');
     expect(screen.getByRole('button', { name: /Replay Systems Calibration/i })).toBeEnabled();
   });
 
   it('explains locked modules without a start control', () => {
-    render(<TrainingCenter modules={TRAINING_MODULES} progress={[progress({ unlocked: false, creditsEarned: 0, completedRuns: 0 })]} onStart={vi.fn()} onBack={vi.fn()} />);
+    render(<TrainingCenter language="ja" modules={TRAINING_MODULES} progress={[progress({ unlocked: false, creditsEarned: 0, completedRuns: 0 })]} onStart={vi.fn()} onBack={vi.fn()} />);
     expect(screen.getByText(/Complete Mission 3/i)).toBeInTheDocument();
+    expect(screen.getByText(/ミッション3を完了/i)).toHaveAttribute('lang', 'ja');
     expect(screen.queryByRole('button', { name: /Systems Calibration/i })).not.toBeInTheDocument();
   });
 });

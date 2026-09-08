@@ -1,4 +1,5 @@
 import type { SupportLanguage } from '../domain/mission';
+import type { LocalizedTrainingText } from '../domain/training';
 
 export type TrainingCopyValue = { en: string; support: string; lang: SupportLanguage };
 
@@ -58,6 +59,10 @@ export function trainingCopy(key: TrainingCopyKey, language: SupportLanguage): T
   return { en: value.en, support: value[language], lang: language };
 }
 
+export function localizedTrainingCopy(value: LocalizedTrainingText, language: SupportLanguage): TrainingCopyValue {
+  return { en: value.en, support: value[language], lang: language };
+}
+
 function dynamic(language: SupportLanguage, en: string, it: string, ja: string): TrainingCopyValue {
   return { en, support: language === 'it' ? it : ja, lang: language };
 }
@@ -79,6 +84,18 @@ export function trainingAvailableModules(language: SupportLanguage, count: numbe
 
 export function trainingRunCount(language: SupportLanguage, count: number): TrainingCopyValue {
   return dynamic(language, `${count} ${count === 1 ? 'run' : 'runs'}`, `${count} ${count === 1 ? 'sessione' : 'sessioni'}`, `${count}回`);
+}
+
+export function trainingRoundCount(language: SupportLanguage, count: number): TrainingCopyValue {
+  return dynamic(language, `${count} rounds`, `${count} round`, `${count}ラウンド`);
+}
+
+export function trainingXpMaximum(language: SupportLanguage, xp: number): TrainingCopyValue {
+  return dynamic(language, `Up to ${xp} XP`, `Fino a ${xp} XP`, `最大${xp} XP`);
+}
+
+export function trainingCreditPerRun(language: SupportLanguage, credits: number): TrainingCopyValue {
+  return dynamic(language, `+${credits} Credit / run`, `+${credits} Credito / sessione`, `1回につき+${credits} Credit`);
 }
 
 export function trainingBeginModule(language: SupportLanguage, title: string, localizedTitle: string, replay: boolean): TrainingCopyValue {
