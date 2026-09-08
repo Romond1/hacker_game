@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { scryptSync } from 'node:crypto';
 import { createServer, type ViteDevServer } from 'vite';
 import { devAuthPlugin } from './devAuthPlugin';
+import { getTrainingModule } from '../src/training/catalog';
 
 let server: ViteDevServer;
 let directory: string;
@@ -62,4 +63,30 @@ it('protects economy endpoints and serializes concurrent purchase/reward request
   const { data } = await (await request({ action: 'student.dashboard' }, student.cookie, student.token)).json();
   expect(data.progression).toMatchObject({ lifetimeXP: 2400, currentCredits: 30, lifetimeCreditsSpent: 40, inventory: ['rookie-badge'] });
   expect((await request({ action: 'student.purchase', itemId: 'mini-drone' }, student.cookie, student.token)).status).toBe(422);
+});
+
+it('protects training routes and persists an idempotent completion', async () => {
+  const teacher = await login('be_a_hacker');
+  const lockedStudent = await login('himari.hacker');
+  expect((await request({ action: 'training.start', trainingId: 'systems-calibration' }, teacher.cookie, teacher.token)).status).toBe(403);
+  expect((await request({ action: 'training.start', trainingId: 'systems-calibration' }, lockedStudent.cookie, lockedStudent.token)).status).toBe(403);
+
+  const student = await login('cloe.hacker');
+  for (const missionId of ['mission-1', 'mission-2', 'mission-3']) {
+    const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
+    await request({ action: 'attempt.finish', attemptId: started.attemptId, score: 800, durationSeconds: 60, stats: {} }, student.cookie, student.token);
+  }
+  const startResponse = await request({ action: 'training.start', trainingId: 'systems-calibration' }, student.cookie, student.token);
+  expect(startResponse.status).toBe(201);
+  const { data: started } = await startResponse.json();
+  const module = getTrainingModule('systems-calibration')!;
+  const evidence = Array.from({ length: started.rounds }, (_, round) => ({ selectedCode: module.generateTask(started.seed, round).correctCode }));
+  const body = { action: 'training.finish', attemptId: started.attemptId, evidence, durationSeconds: 18 };
+  const first = await request(body, student.cookie, student.token);
+  const retry = await request({ ...body, evidence: [], durationSeconds: 999 }, student.cookie, student.token);
+  expect(first.status).toBe(200);
+  expect(await retry.json()).toEqual(await first.json());
+
+  const { data: dashboard } = await (await request({ action: 'student.dashboard' }, student.cookie, student.token)).json();
+  expect(dashboard.training[0]).toMatchObject({ completedRuns: 1, creditsEarned: 1, bestAccuracy: 100 });
 });

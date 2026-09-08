@@ -1,6 +1,7 @@
 import { randomBytes, scryptSync } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { createDevAuthService, STANDARD_DEV_PROFILES, type DevCredentialFile } from './authCore';
+import { getTrainingModule } from '../src/training/catalog';
 
 function credential(secret: string) {
   const salt = randomBytes(16).toString('hex');
@@ -15,6 +16,18 @@ function fixture(): DevCredentialFile {
       teacher: credential('teacher-test-secret'),
     },
   };
+}
+
+function completeRookieTraining(service: ReturnType<typeof createDevAuthService>, userId: string) {
+  for (const missionId of ['mission-1', 'mission-2', 'mission-3']) {
+    const attempt = service.startAttempt(userId, missionId);
+    service.finishAttempt(userId, attempt.attemptId, 800, 60, {});
+  }
+}
+
+function perfectTrainingEvidence(start: { seed: number; rounds: number }) {
+  const module = getTrainingModule('systems-calibration')!;
+  return Array.from({ length: start.rounds }, (_, round) => ({ selectedCode: module.generateTask(start.seed, round).correctCode }));
 }
 
 describe('local development authentication', () => {
@@ -131,5 +144,33 @@ describe('local development authentication', () => {
 
     expect(service.dashboard(himari.user.id).missions[2].unlocked).toBe(true);
     expect(service.teacherStudent(himari.user.id)?.attempts.map((attempt) => attempt.missionId)).toEqual(['mission-2', 'mission-1']);
+  });
+
+  it('restores training progress and receipts from a saved snapshot', () => {
+    const service = createDevAuthService(fixture());
+    completeRookieTraining(service, 'dev-test');
+    const start = service.startTraining('dev-test', 'systems-calibration', 42);
+    const completion = service.finishTraining('dev-test', start.attemptId, perfectTrainingEvidence(start), 18);
+    const restored = createDevAuthService(fixture(), service.snapshot());
+
+    expect(restored.dashboard('dev-test').training[0]).toMatchObject({
+      completedRuns: 1,
+      rewardedRuns: 1,
+      creditsEarned: 1,
+      bestAccuracy: 100,
+    });
+    expect(restored.teacherStudent('dev-test')?.training[0]).toEqual(restored.dashboard('dev-test').training[0]);
+    expect(restored.finishTraining('dev-test', start.attemptId, [], 999)).toEqual(completion);
+  });
+
+  it('loads older snapshots with empty training state', () => {
+    const service = createDevAuthService(fixture());
+    const { training: _training, ...legacy } = service.snapshot();
+    const restored = createDevAuthService(fixture(), { ...legacy, version: 1 });
+    expect(restored.dashboard('dev-test').training[0]).toMatchObject({
+      trainingId: 'systems-calibration',
+      unlocked: false,
+      completedRuns: 0,
+    });
   });
 });

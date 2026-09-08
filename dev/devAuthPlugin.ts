@@ -94,6 +94,19 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
             const finished = service.finishAttempt(user.id, String(body.attemptId ?? ''), Number(body.score), Number(body.durationSeconds), (body.stats ?? {}) as Record<string, unknown>);
             return finished ? savedResponse(res, { score: Number(body.score), reward: service.rewardReceipt(user.id, String(body.attemptId)) }) : failure(res, 'attempt_not_found', 'Attempt not found.', 404);
           }
+          if (action === 'training.start') {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            return savedResponse(res, service.startTraining(user.id, String(body.trainingId ?? '')), 201);
+          }
+          if (action === 'training.finish') {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            return savedResponse(res, service.finishTraining(
+              user.id,
+              String(body.attemptId ?? ''),
+              Array.isArray(body.evidence) ? body.evidence as { selectedCode: string }[] : [],
+              Number(body.durationSeconds),
+            ));
+          }
           if (action === 'teacher.students') return user.role === 'teacher' ? response(res, { students: service.teacherStudents() }) : failure(res, 'forbidden', 'Teacher access required.', 403);
           if (action === 'teacher.resetMission') {
             if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);
@@ -106,7 +119,10 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
           }
           return failure(res, 'action_not_found', 'Unknown API action.', 404);
         } catch (error) {
-          if (error instanceof ProgressionError) return failure(res, error.code, error.message, 422);
+          if (error instanceof ProgressionError) {
+            const status = error.code === 'training_locked' ? 403 : error.code === 'training_attempt_not_found' ? 404 : 422;
+            return failure(res, error.code, error.message, status);
+          }
           if (error instanceof DevApiError) {
             const status = ['mission_locked', 'forbidden'].includes(error.code) ? 403 : 404;
             const message = { mission_locked: 'Complete the previous mission first.', forbidden: 'Teacher access required.', student_not_found: 'Student not found.', mission_not_found: 'Mission not found.' }[error.code];

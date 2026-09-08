@@ -1,6 +1,10 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { emptyProgression, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
 import { awardMission, createIdentity, purchaseItem, equipItem, ProgressionError } from './progressionCore.ts';
+import { emptyTrainingStore, finishTraining as finishTrainingAttempt, startTraining as startTrainingAttempt, type DevTrainingStore } from './trainingCore.ts';
+import { TRAINING_MODULES } from '../src/training/catalog.ts';
+import type { CalibrationEvidence } from '../src/training/systems-calibration.ts';
+import type { TrainingProgress } from '../src/domain/training.ts';
 
 type SupportLanguage = 'it' | 'ja';
 type Role = 'student' | 'teacher';
@@ -73,7 +77,15 @@ function verifySecret(secret: string, credential: { salt: string; hash: string }
   return expected.length > 0 && timingSafeEqual(actual, expected);
 }
 
-export type DevSnapshot = { version: 1; attempts: [string, Attempt][]; themes: [string, ThemeName][]; progress: [string, MissionProgressState[]][]; progression: [string, PlayerProgression][]; receipts: [string, RewardReceipt][] };
+export type DevSnapshot = {
+  version: 1 | 2;
+  attempts: [string, Attempt][];
+  themes: [string, ThemeName][];
+  progress: [string, MissionProgressState[]][];
+  progression: [string, PlayerProgression][];
+  receipts: [string, RewardReceipt][];
+  training?: [string, DevTrainingStore][];
+};
 
 export function createDevAuthService(credentials: DevCredentialFile, saved?: DevSnapshot) {
   const sessions = new Map<string, { userId: string; csrfToken: string }>();
@@ -82,6 +94,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
   const progressByUser = new Map<string, MissionProgressState[]>(saved?.progress);
   const progressionByUser = new Map<string, PlayerProgression>(saved?.progression);
   const receipts = new Map<string, RewardReceipt>(saved?.receipts);
+  const trainingByUser = new Map<string, DevTrainingStore>(saved?.training);
   function progressionFor(userId: string) {
     if (!progressionByUser.has(userId)) progressionByUser.set(userId, emptyProgression());
     return progressionByUser.get(userId)!;
@@ -99,6 +112,36 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     return progress;
   }
 
+  function trainingStoreFor(userId: string) {
+    if (!trainingByUser.has(userId)) trainingByUser.set(userId, emptyTrainingStore());
+    return trainingByUser.get(userId)!;
+  }
+
+  function trainingFor(userId: string): TrainingProgress[] {
+    const state = progressionFor(userId);
+    const store = trainingStoreFor(userId);
+    return TRAINING_MODULES.map(module => {
+      const progress = structuredClone(store.progress[module.id] ?? {
+        trainingId: module.id,
+        unlocked: false,
+        completedRuns: 0,
+        rewardedRuns: 0,
+        creditsEarned: 0,
+        creditCap: module.reward.creditCap,
+        bestScore: null,
+        bestTimeSeconds: null,
+        bestAccuracy: null,
+        longestStreak: 0,
+        highestRank: null,
+        lastCompletedAt: null,
+      });
+      return {
+        ...progress,
+        unlocked: module.requiredCompletedMissions.every(id => state.completedMissions.includes(id)),
+      };
+    });
+  }
+
   function dashboard(userId: string) {
     const all = attemptsFor(userId);
     const missions = progressFor(userId);
@@ -112,6 +155,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       completedMissions: completed.map((mission) => mission.missionNumber), missions: missions.map((mission) => ({ ...mission })), bestScore: scores.length ? Math.max(...scores) : null,
       bestTimeSeconds: times.length ? Math.min(...times) : null,
       attempts: all.map(({ userId: _userId, completedAt: _completedAt, ...attempt }) => ({ ...attempt, score: attempt.score ?? 0, durationSeconds: attempt.durationSeconds ?? 0 })),
+      training: trainingFor(userId),
     };
   }
 
@@ -127,7 +171,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
   }
 
   return {
-    snapshot(): DevSnapshot { return structuredClone({ version: 1, attempts: [...attempts], themes: [...profileThemes], progress: [...progressByUser], progression: [...progressionByUser], receipts: [...receipts] }); },
+    snapshot(): DevSnapshot { return structuredClone({ version: 2, attempts: [...attempts], themes: [...profileThemes], progress: [...progressByUser], progression: [...progressionByUser], receipts: [...receipts], training: [...trainingByUser] }); },
     rewardReceipt(userId: string, attemptId: string) { return attempts.get(attemptId)?.userId === userId ? receipts.get(`${userId}:${attemptId}`) : undefined; },
     identity(userId: string, codename: string) { createIdentity(progressionFor(userId), codename); return { progression: structuredClone(progressionFor(userId)) }; },
     purchase(userId: string, itemId: string) { purchaseItem(progressionFor(userId), itemId); return { progression: structuredClone(progressionFor(userId)) }; },
@@ -174,6 +218,14 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       attempts.set(attempt.id, attempt);
       return { attemptId: attempt.id };
     },
+    startTraining(userId: string, trainingId: string, seed?: number) {
+      if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');
+      return startTrainingAttempt(progressionFor(userId), trainingStoreFor(userId), trainingId, seed);
+    },
+    finishTraining(userId: string, attemptId: string, evidence: CalibrationEvidence[], durationSeconds: number) {
+      if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');
+      return finishTrainingAttempt(progressionFor(userId), trainingStoreFor(userId), attemptId, evidence, durationSeconds);
+    },
     ownsAttempt(userId: string, attemptId: string) { return attempts.get(attemptId)?.userId === userId; },
     finishAttempt(userId: string, attemptId: string, score: number, durationSeconds: number, stats: Record<string, unknown>) {
       const attempt = attempts.get(attemptId);
@@ -198,7 +250,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     teacherStudent(studentId: string) {
       const profile = profileById(studentId);
       if (!profile || profile.role !== 'student') return null;
-      return { student: teacherStudent(profile), progression: structuredClone(progressionFor(profile.id)), attempts: attemptsFor(profile.id).map(({ userId: _userId, ...attempt }) => attempt) };
+      return { student: teacherStudent(profile), progression: structuredClone(progressionFor(profile.id)), attempts: attemptsFor(profile.id).map(({ userId: _userId, ...attempt }) => attempt), training: trainingFor(profile.id) };
     },
   };
 }
