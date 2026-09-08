@@ -1,4 +1,4 @@
-import { createSeededRandom, type TrainingModuleDefinition } from '../domain/training';
+import { createSeededRandom, type TrainingModuleDefinition } from '../domain/training.ts';
 
 export type CalibrationTask = {
   prompt: string;

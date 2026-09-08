@@ -1,4 +1,4 @@
-import type { PlayerProgression, RewardReceipt } from './progression';
+import type { PlayerProgression, RewardReceipt } from './progression.ts';
 
 export type TrainingRank = 'C' | 'B' | 'A' | 'S';
 

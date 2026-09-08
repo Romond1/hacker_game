@@ -1,4 +1,4 @@
-import { systemsCalibration } from './systems-calibration';
+import { systemsCalibration } from './systems-calibration.ts';
 
 export const TRAINING_MODULES = [systemsCalibration];
 
