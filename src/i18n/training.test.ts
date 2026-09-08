@@ -18,7 +18,7 @@ describe('training copy', () => {
       support: "Agente NOVA, abbina 5 codici di accesso. Gli errori riducono la precisione, ma puoi continuare.",
       lang: 'it',
     });
-    expect(trainingRoundProgress('ja', 2, 5)).toEqual({ en: 'Round 2 / 5', support: 'ラウンド 2 / 5', lang: 'ja' });
+    expect(trainingRoundProgress('ja', 2, 5)).toEqual({ en: 'ROUND 2 / 5', support: 'ラウンド 2 / 5', lang: 'ja' });
   });
 
   it('provides localized module presentation metadata', () => {

@@ -29,8 +29,10 @@ describe('TrainingResults', () => {
     setReducedMotion(true);
     const replay = vi.fn();
     const back = vi.fn();
-    render(<TrainingResults completion={completion()} onReplay={replay} onReturn={back} />);
+    render(<TrainingResults language="ja" completion={completion()} onReplay={replay} onReturn={back} />);
     expect(screen.getByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
+    expect(screen.getByText('トレーニング完了。')).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText('トレーニングセンターに戻る')).toHaveAttribute('lang', 'ja');
     expect(screen.getByText('5,000')).toBeInTheDocument();
     expect(screen.getByText('100%')).toBeInTheDocument();
     expect(screen.getByText('+150 XP')).toBeInTheDocument();
@@ -46,7 +48,7 @@ describe('TrainingResults', () => {
   it('holds actions during the standard result animation', () => {
     setReducedMotion(false);
     vi.useFakeTimers();
-    render(<TrainingResults completion={completion()} onReplay={vi.fn()} onReturn={vi.fn()} />);
+    render(<TrainingResults language="it" completion={completion()} onReplay={vi.fn()} onReturn={vi.fn()} />);
     expect(screen.getByRole('button', { name: /Train again/i })).toBeDisabled();
     act(() => vi.advanceTimersByTime(3000));
     expect(screen.getByRole('button', { name: /Train again/i })).toBeEnabled();
@@ -55,8 +57,9 @@ describe('TrainingResults', () => {
 
   it('keeps post-cap replay enabled and explains the completed reward', () => {
     setReducedMotion(true);
-    render(<TrainingResults completion={completion({ creditsEarned: 20, creditCap: 20, credits: 0 })} onReplay={vi.fn()} onReturn={vi.fn()} />);
+    render(<TrainingResults language="it" completion={completion({ creditsEarned: 20, creditCap: 20, credits: 0 })} onReplay={vi.fn()} onReturn={vi.fn()} />);
     expect(screen.getByText(/Training reward complete/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ricompensa dell'addestramento completata/)).toHaveAttribute('lang', 'it');
     expect(screen.getByText('+0 Credits')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Train again/i })).toBeEnabled();
   });

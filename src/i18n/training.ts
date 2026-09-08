@@ -14,18 +14,18 @@ const messages = {
   trainingModules: { en: 'Training modules', it: 'Moduli di addestramento', ja: 'トレーニングモジュール' },
   module: { en: 'Module', it: 'Modulo', ja: 'モジュール' },
   beginner: { en: 'Beginner', it: 'Principiante', ja: '初級' },
-  rounds: { en: 'Rounds', it: 'Round', ja: 'ラウンド' },
-  skill: { en: 'Skill', it: 'Abilità', ja: 'スキル' },
-  reward: { en: 'Reward', it: 'Ricompensa', ja: '報酬' },
-  moduleCredits: { en: 'Module Credits', it: 'Crediti del modulo', ja: 'モジュールクレジット' },
-  runs: { en: 'Runs', it: 'Sessioni', ja: '実行回数' },
-  bestScore: { en: 'Best score', it: 'Miglior punteggio', ja: 'ベストスコア' },
-  accuracy: { en: 'Accuracy', it: 'Precisione', ja: '正確さ' },
-  bestTime: { en: 'Best time', it: 'Miglior tempo', ja: 'ベストタイム' },
-  rank: { en: 'Rank', it: 'Grado', ja: 'ランク' },
-  bestRank: { en: 'Best rank', it: 'Miglior grado', ja: 'ベストランク' },
-  errors: { en: 'Errors', it: 'Errori', ja: 'エラー' },
-  streak: { en: 'Streak', it: 'Serie', ja: '連続成功' },
+  rounds: { en: 'ROUNDS', it: 'Round', ja: 'ラウンド' },
+  skill: { en: 'SKILL', it: 'Abilità', ja: 'スキル' },
+  reward: { en: 'REWARD', it: 'Ricompensa', ja: '報酬' },
+  moduleCredits: { en: 'MODULE CREDITS', it: 'Crediti del modulo', ja: 'モジュールクレジット' },
+  runs: { en: 'RUNS', it: 'Sessioni', ja: '実行回数' },
+  bestScore: { en: 'BEST SCORE', it: 'Miglior punteggio', ja: 'ベストスコア' },
+  accuracy: { en: 'ACCURACY', it: 'Precisione', ja: '正確さ' },
+  bestTime: { en: 'BEST TIME', it: 'Miglior tempo', ja: 'ベストタイム' },
+  rank: { en: 'RANK', it: 'Grado', ja: 'ランク' },
+  bestRank: { en: 'BEST RANK', it: 'Miglior grado', ja: 'ベストランク' },
+  errors: { en: 'ERRORS', it: 'Errori', ja: 'エラー' },
+  streak: { en: 'STREAK', it: 'Serie', ja: '連続成功' },
   completeMissionThree: { en: 'Complete Mission 3 to unlock this module.', it: 'Completa la Missione 3 per sbloccare questo modulo.', ja: 'ミッション3を完了すると、このモジュールがアンロックされます。' },
   rewardComplete: { en: 'Training reward complete · Replay for XP and personal bests.', it: "Ricompensa dell'addestramento completata · Rigioca per ottenere XP e record personali.", ja: 'トレーニング報酬完了 · XPと自己ベストのために再挑戦できます。' },
   returnTrainingCenter: { en: 'Return to Training Center', it: 'Torna al Centro di addestramento', ja: 'トレーニングセンターに戻る' },
@@ -46,8 +46,8 @@ const messages = {
   trainingComplete: { en: 'Training complete.', it: 'Addestramento completato.', ja: 'トレーニング完了。' },
   newPersonalBest: { en: 'New personal best recorded.', it: 'Nuovo record personale registrato.', ja: '自己ベストを更新しました。' },
   bestsRemain: { en: 'Run complete. Your best records remain secure.', it: 'Sessione completata. I tuoi record migliori restano al sicuro.', ja: '実行完了。ベスト記録は保持されています。' },
-  finalScore: { en: 'Final score', it: 'Punteggio finale', ja: '最終スコア' },
-  canonicalResult: { en: 'Canonical server result', it: 'Risultato verificato dal server', ja: 'サーバー確認済み結果' },
+  finalScore: { en: 'FINAL SCORE', it: 'Punteggio finale', ja: '最終スコア' },
+  canonicalResult: { en: 'CANONICAL SERVER RESULT', it: 'Risultato verificato dal server', ja: 'サーバー確認済み結果' },
   rewardCapComplete: { en: 'Training reward complete · Continue replaying for XP and personal bests.', it: "Ricompensa dell'addestramento completata · Continua a rigiocare per XP e record personali.", ja: 'トレーニング報酬完了 · XPと自己ベストのために引き続き再挑戦できます。' },
   trainAgain: { en: 'Train again', it: 'Allenati di nuovo', ja: 'もう一度トレーニング' },
 } as const;
@@ -75,7 +75,7 @@ export function trainingAgentInstruction(language: SupportLanguage, name: string
 }
 
 export function trainingRoundProgress(language: SupportLanguage, current: number, total: number): TrainingCopyValue {
-  return dynamic(language, `Round ${current} / ${total}`, `Round ${current} / ${total}`, `ラウンド ${current} / ${total}`);
+  return dynamic(language, `ROUND ${current} / ${total}`, `Round ${current} / ${total}`, `ラウンド ${current} / ${total}`);
 }
 
 export function trainingAvailableModules(language: SupportLanguage, count: number): TrainingCopyValue {

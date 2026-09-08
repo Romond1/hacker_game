@@ -4,6 +4,8 @@ import type { TrainingAggregate, TrainingAttemptStart, TrainingCompletion, Train
 import type { CalibrationEvidence, CalibrationTask } from '../../training/systems-calibration';
 import { SystemsCalibrationTask } from './SystemsCalibrationTask';
 import { TrainingResults } from './TrainingResults';
+import { localizedTrainingCopy, trainingAgentInstruction, trainingCopy, trainingRoundCompletion, trainingRoundProgress, trainingXpMaximum } from '../../i18n/training';
+import { TrainingCopy } from './TrainingCopy';
 
 type RoundState = {
   phase: 'round'; roundIndex: number; evidence: CalibrationEvidence[];
@@ -64,28 +66,28 @@ export function TrainingSession({ module, attempt, user, finish, onExit, onRepla
   }
 
   if (state.phase === 'intro') return <main className="page training-session training-intro">
-    <button className="back-link" onClick={onExit}>← Return to Training Center</button>
-    <p className="eyebrow">SYSTEMS CALIBRATION / READY</p>
-    <h1>Verify the signal.</h1>
-    <p>Agent {user.displayName}, match {attempt.rounds} access codes. Mistakes reduce accuracy, but you can keep going.</p>
-    <dl><div><dt>ROUNDS</dt><dd>{attempt.rounds}</dd></div><div><dt>SKILL</dt><dd>{module.skill}</dd></div><div><dt>REWARD</dt><dd>Up to {module.reward.xpMax} XP</dd></div></dl>
-    <button className="primary-button" onClick={() => { startedAt.current = performance.now(); setState({ phase: 'round', roundIndex: 0, evidence: [], successes: 0, errors: 0, streak: 0, longestStreak: 0 }); }}>Start training <span>→</span></button>
+    <button aria-label="Return to Training Center" className="back-link" onClick={onExit}>← <TrainingCopy copy={trainingCopy('returnTrainingCenter', user.supportLanguage)} /></button>
+    <p className="eyebrow"><TrainingCopy copy={trainingCopy('systemsReady', user.supportLanguage)} /></p>
+    <h1 aria-label="Verify the signal."><TrainingCopy copy={trainingCopy('verifySignal', user.supportLanguage)} /></h1>
+    <p><TrainingCopy copy={trainingAgentInstruction(user.supportLanguage, user.displayName, attempt.rounds)} /></p>
+    <dl><div><dt><TrainingCopy copy={trainingCopy('rounds', user.supportLanguage)} /></dt><dd>{attempt.rounds}</dd></div><div><dt><TrainingCopy copy={trainingCopy('skill', user.supportLanguage)} /></dt><dd><TrainingCopy copy={localizedTrainingCopy(module.localized.skill, user.supportLanguage)} /></dd></div><div><dt><TrainingCopy copy={trainingCopy('reward', user.supportLanguage)} /></dt><dd><TrainingCopy copy={trainingXpMaximum(user.supportLanguage, module.reward.xpMax)} /></dd></div></dl>
+    <button aria-label="Start training" className="primary-button" onClick={() => { startedAt.current = performance.now(); setState({ phase: 'round', roundIndex: 0, evidence: [], successes: 0, errors: 0, streak: 0, longestStreak: 0 }); }}><TrainingCopy copy={trainingCopy('startTraining', user.supportLanguage)} /> <span>→</span></button>
   </main>;
 
-  if (state.phase === 'saving') return <main className="page training-session training-saving" aria-busy="true"><div className="training-spinner" /><p className="eyebrow">VERIFYING EVIDENCE</p><h1>Saving training…</h1></main>;
-  if (state.phase === 'save-error') return <main className="page training-session training-save-error"><p className="eyebrow">CONNECTION INTERRUPTED</p><h1>Evidence retained.</h1><p role="alert">{state.message}</p><div className="training-actions"><button className="quiet-button" onClick={onExit}>Return to Training Center</button><button className="primary-button" onClick={() => void save(state.evidence, state.aggregate)}>Retry save <span>↻</span></button></div></main>;
-  if (state.phase === 'complete') return <TrainingResults completion={state.completion} onReplay={onReplay ?? onExit} onReturn={onExit} />;
+  if (state.phase === 'saving') return <main className="page training-session training-saving" aria-busy="true"><div className="training-spinner" /><p className="eyebrow"><TrainingCopy copy={trainingCopy('verifyingEvidence', user.supportLanguage)} /></p><h1 aria-label="Saving training"><TrainingCopy copy={trainingCopy('savingTraining', user.supportLanguage)} /></h1></main>;
+  if (state.phase === 'save-error') return <main className="page training-session training-save-error"><p className="eyebrow"><TrainingCopy copy={trainingCopy('connectionInterrupted', user.supportLanguage)} /></p><h1 aria-label="Evidence retained"><TrainingCopy copy={trainingCopy('evidenceRetained', user.supportLanguage)} /></h1><p role="alert"><TrainingCopy copy={trainingCopy('saveError', user.supportLanguage)} /></p><div className="training-actions"><button aria-label="Return to Training Center" className="quiet-button" onClick={onExit}><TrainingCopy copy={trainingCopy('returnTrainingCenter', user.supportLanguage)} /></button><button aria-label="Retry save" className="primary-button" onClick={() => void save(state.evidence, state.aggregate)}><TrainingCopy copy={trainingCopy('retrySave', user.supportLanguage)} /> <span>↻</span></button></div></main>;
+  if (state.phase === 'complete') return <TrainingResults language={user.supportLanguage} completion={state.completion} onReplay={onReplay ?? onExit} onReturn={onExit} />;
   if (state.phase !== 'round') return null;
 
   const task = module.generateTask(attempt.seed, state.roundIndex);
   const answerCount = state.successes + state.errors;
   const accuracy = answerCount === 0 ? 100 : Math.round(state.successes / answerCount * 100);
   return <main className="page training-session active-training">
-    <header><div><p className="eyebrow">SYSTEMS CALIBRATION / LIVE</p><h1>ROUND {state.roundIndex + 1} / {attempt.rounds}</h1></div><div className="training-live"><i /> LIVE</div></header>
-    <div className="training-round-progress" aria-label={`${state.successes} of ${attempt.rounds} rounds complete`}>{Array.from({ length: attempt.rounds }, (_, index) => <span key={index} className={index < state.successes ? 'complete' : index === state.roundIndex ? 'current' : ''} />)}</div>
+    <header><div><p className="eyebrow"><TrainingCopy copy={trainingCopy('systemsLive', user.supportLanguage)} /></p><h1><TrainingCopy copy={trainingRoundProgress(user.supportLanguage, state.roundIndex + 1, attempt.rounds)} /></h1></div><div className="training-live"><i /> <TrainingCopy copy={trainingCopy('live', user.supportLanguage)} /></div></header>
+    <div className="training-round-progress" aria-label={trainingRoundCompletion(user.supportLanguage, state.successes, attempt.rounds).en}>{Array.from({ length: attempt.rounds }, (_, index) => <span key={index} className={index < state.successes ? 'complete' : index === state.roundIndex ? 'current' : ''} />)}</div>
     <div className="training-workspace">
-      <aside className="training-metrics"><div><span>ACCURACY</span><strong>{accuracy}%</strong></div><div><span>ERRORS</span><strong>{state.errors}</strong></div><div><span>STREAK</span><strong>{state.streak}</strong></div></aside>
-      <div className="training-terminal">{renderTask ? renderTask(task, answer) : <SystemsCalibrationTask task={task} onAnswer={answer} />}</div>
+      <aside className="training-metrics"><div><TrainingCopy copy={trainingCopy('accuracy', user.supportLanguage)} /><strong>{accuracy}%</strong></div><div><TrainingCopy copy={trainingCopy('errors', user.supportLanguage)} /><strong>{state.errors}</strong></div><div><TrainingCopy copy={trainingCopy('streak', user.supportLanguage)} /><strong>{state.streak}</strong></div></aside>
+      <div className="training-terminal">{renderTask ? renderTask(task, answer) : <SystemsCalibrationTask task={task} language={user.supportLanguage} onAnswer={answer} />}</div>
     </div>
   </main>;
 }

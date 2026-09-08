@@ -30,14 +30,17 @@ function chooseIncorrect() {
 }
 
 function metric(label: string) {
-  return screen.getByText(label).parentElement!;
+  return screen.getByText(label).closest('div')!;
 }
 
 describe('TrainingSession', () => {
   it('runs the attempt-configured number of rounds and submits evidence', async () => {
     const finish = vi.fn().mockResolvedValue(completion);
     render(<TrainingSession module={{ ...systemsCalibration, rounds: 3 }} attempt={attempt()} user={student} finish={finish} onExit={vi.fn()} />);
+    expect(screen.getByText('Verifica il segnale.')).toHaveAttribute('lang', 'it');
+    expect(screen.getByText(/Agente NOVA, abbina 3 codici/)).toHaveAttribute('lang', 'it');
     fireEvent.click(screen.getByRole('button', { name: /Start training/i }));
+    expect(screen.getByText('Seleziona il codice corrispondente dal flusso di verifica attivo.')).toHaveAttribute('lang', 'it');
     for (let round = 1; round <= 3; round += 1) {
       expect(screen.getByText(`ROUND ${round} / 3`)).toBeInTheDocument();
       chooseCorrect();
@@ -45,6 +48,7 @@ describe('TrainingSession', () => {
     await waitFor(() => expect(finish).toHaveBeenCalledTimes(1));
     expect(finish.mock.calls[0][0]).toMatchObject({ attemptId: 'attempt-1' });
     expect(finish.mock.calls[0][0].evidence).toHaveLength(3);
+    expect(Object.keys(finish.mock.calls[0][0]).sort()).toEqual(['attemptId', 'durationSeconds', 'evidence']);
     expect(screen.getByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
   });
 
@@ -53,11 +57,11 @@ describe('TrainingSession', () => {
     fireEvent.click(screen.getByRole('button', { name: /Start training/i }));
     chooseIncorrect();
     expect(screen.getByText('ROUND 1 / 3')).toBeInTheDocument();
-    expect(metric('ERRORS')).toHaveTextContent('ERRORS1');
+    expect(metric('ERRORS').querySelector('strong')).toHaveTextContent('1');
     chooseCorrect();
     expect(screen.getByText('ROUND 2 / 3')).toBeInTheDocument();
-    expect(metric('ACCURACY')).toHaveTextContent('ACCURACY50%');
-    expect(metric('STREAK')).toHaveTextContent('STREAK1');
+    expect(metric('ACCURACY').querySelector('strong')).toHaveTextContent('50%');
+    expect(metric('STREAK').querySelector('strong')).toHaveTextContent('1');
   });
 
   it('retains evidence and retries the same attempt after a save error', async () => {
@@ -66,6 +70,7 @@ describe('TrainingSession', () => {
     fireEvent.click(screen.getByRole('button', { name: /Start training/i }));
     chooseCorrect();
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i);
+    expect(screen.getByText(/Non è stato possibile salvare/)).toHaveAttribute('lang', 'it');
     fireEvent.click(screen.getByRole('button', { name: /Retry save/i }));
     await waitFor(() => expect(finish).toHaveBeenCalledTimes(2));
     expect(finish.mock.calls[1][0]).toEqual(finish.mock.calls[0][0]);
