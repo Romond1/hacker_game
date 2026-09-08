@@ -1,6 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { emptyProgression } from './domain/progression';
+import type { TrainingCompletion } from './domain/training';
 
 describe('application shell', () => {
   beforeEach(() => {
@@ -70,5 +72,36 @@ describe('application shell', () => {
     expect(screen.getByText(supportCurrent)).toBeInTheDocument();
     expect(screen.getByText(supportPoints)).toBeInTheDocument();
     expect(screen.queryByText(absent)).not.toBeInTheDocument();
+  });
+
+  it('opens Systems Calibration and submits the five issued rounds', async () => {
+    const user = { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' } as const;
+    const training = { trainingId: 'systems-calibration', unlocked: true, completedRuns: 0, rewardedRuns: 0, creditsEarned: 0, creditCap: 20, bestScore: null, bestTimeSeconds: null, bestAccuracy: null, longestStreak: 0, highestRank: null, lastCompletedAt: null } as const;
+    const progression = { ...emptyProgression(), completedMissions: [1,2,3], hackerCodename: 'NOVA', hackerIdentityUnlocked: true, storyFlags: { rookieTrainingCompleted: true, mission4TransmissionSeen: true } };
+    const dashboard = { totalPoints: 2400, rank: 'Rookie Agent', currentMission: 3, completedMissions: [1,2,3], bestScore: 800, bestTimeSeconds: 50, attempts: [], missions: [1,2,3].map(number => ({ missionId: `mission-${number}`, missionNumber: number, unlocked: true, completed: true, bestScore: 800, bestTimeSeconds: 50, totalPoints: 800, attemptCount: 1 })), progression, training: [training] };
+    const completedProgress = { ...training, completedRuns: 1, rewardedRuns: 1, creditsEarned: 1, bestScore: 5000, bestTimeSeconds: 20, bestAccuracy: 100, longestStreak: 5, highestRank: 'S' as const, lastCompletedAt: '2026-09-08' };
+    const completion: TrainingCompletion = { result: { score: 5000, accuracy: 100, longestStreak: 5, rank: 'S' }, reward: { source: 'training:systems-calibration', eventId: 'training-attempt-1', xp: 150, credits: 1, totalXP: 2550, currentCredits: 71, creditLimitReached: false }, progress: completedProgress, progression: { ...progression, lifetimeXP: 2550, currentCredits: 71 }, achievements: ['first-training'], isPersonalBest: true };
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body));
+      const data = body.action === 'auth.session' ? { user }
+        : body.action === 'student.dashboard' ? dashboard
+        : body.action === 'training.start' ? { attemptId: 'training-attempt-1', trainingId: 'systems-calibration', seed: 42, generatorVersion: 1, rounds: 5 }
+        : body.action === 'training.finish' ? completion : {};
+      return new Response(JSON.stringify({ ok: true, data }), { headers: { 'Content-Type': 'application/json' } });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: /Open Training Center/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Begin Systems Calibration/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /Start training/i }));
+    for (let round = 0; round < 5; round += 1) {
+      const target = screen.getByTestId('calibration-target').getAttribute('data-calibration-target');
+      fireEvent.click(document.querySelector(`[data-calibration-choice="${target}"]`) as HTMLElement);
+    }
+    expect(await screen.findByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ body: expect.stringContaining('"action":"training.finish"') })));
+    const finishBody = fetchMock.mock.calls.map(([, init]) => JSON.parse(String(init?.body))).find(body => body.action === 'training.finish');
+    expect(finishBody).toMatchObject({ attemptId: 'training-attempt-1' });
+    expect(finishBody.evidence).toHaveLength(5);
   });
 });

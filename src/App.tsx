@@ -5,20 +5,20 @@ import { missionOne } from './missions/mission-one';
 import { LOGIN_COPY, preferredLoginLanguages, type LoginMessage, type LoginSupportLanguage } from './i18n/login';
 import { getStudentHomeCopy } from './i18n/student';
 import { getMission } from './missions/catalog';
-import { Briefing as MissionBriefing } from './components/mission/Briefing';
-import { Tutorial as MissionTutorial } from './components/mission/Tutorial';
-import { MissionRunner, type MissionResultStats } from './components/mission/MissionRunner';
-import { Results as MissionResults } from './components/mission/Results';
+import { MissionTemplate } from './components/mission/MissionTemplate';
 import { StudentHome as MissionDashboard } from './components/dashboard/StudentHome';
 import { TeacherDashboard as MissionControl } from './components/teacher/TeacherDashboard';
 import { TeacherStudentRecord as StudentRecord } from './components/teacher/TeacherStudentRecord';
-import { emptyProgression, ECONOMY, type PlayerProgression, type RewardReceipt } from './domain/progression';
+import { emptyProgression, ECONOMY, type PlayerProgression } from './domain/progression';
 import { HackerShop } from './components/progression/HackerShop';
 import { IdentityProtocol, Transmission } from './components/progression/IdentityProtocol';
-import { RewardSequence } from './components/progression/RewardSequence';
+import { TrainingCenter } from './components/training/TrainingCenter';
+import { TrainingSession, type FinishTrainingInput } from './components/training/TrainingSession';
+import { TRAINING_MODULES, getTrainingModule } from './training/catalog';
+import type { TrainingAttemptStart, TrainingCompletion } from './domain/training';
 import './progression.css';
 
-type Screen = 'login' | 'home' | 'shop' | 'settings' | 'briefing' | 'tutorial' | 'mission' | 'results' | 'teacher' | 'teacher-student';
+type Screen = 'login' | 'home' | 'shop' | 'settings' | 'mission-template' | 'training-center' | 'training-session' | 'teacher' | 'teacher-student';
 type EventType = 'mission_started' | 'tutorial_completed' | 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed' | 'mission_completed';
 
 const THEMES: Record<ThemeName, { label: string; color: string }> = {
@@ -219,8 +219,8 @@ export default function App() {
   const [teacherDetail, setTeacherDetail] = useState<TeacherStudentDetail>();
   const [attemptId, setAttemptId] = useState<string>();
   const [selectedMissionId, setSelectedMissionId] = useState<string>(missionOne.id);
-  const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: MissionResultStats; previousBest: number | null; previousBestTime: number | null; reward?: RewardReceipt }>();
-  const [rewardVisible, setRewardVisible] = useState(false);
+  const [selectedTrainingId, setSelectedTrainingId] = useState<string>('systems-calibration');
+  const [trainingAttempt, setTrainingAttempt] = useState<TrainingAttemptStart>();
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -234,13 +234,16 @@ export default function App() {
       username: user?.username ?? null,
       role: user?.role ?? null,
       selectedMissionId,
+      selectedTrainingId,
       completedMissions: dashboard.completedMissions,
       progression: dashboard.progression,
-      rewardVisible,
+      training: dashboard.training,
+      activeMissionAttemptId: attemptId ?? null,
+      activeTrainingAttemptId: trainingAttempt?.attemptId ?? null,
     });
     window.advanceTime = (_milliseconds: number) => undefined;
     return () => { delete window.render_game_to_text; delete window.advanceTime; };
-  }, [dashboard, rewardVisible, screen, selectedMissionId, user]);
+  }, [attemptId, dashboard, screen, selectedMissionId, selectedTrainingId, trainingAttempt, user]);
 
   useEffect(() => {
     void api<{ user: SessionUser }>('auth.session').then(({ user: current }) => void authenticate(current)).catch(() => setScreen('login'));
@@ -257,23 +260,31 @@ export default function App() {
     const activeUser = user;
     if (activeUser) {
       try {
-        if (screen === 'mission') await api('attempt.event', { attemptId, type: 'mission_abandoned', data: {} }, activeUser.csrfToken);
+        if (attemptId) await api('attempt.event', { attemptId, type: 'mission_abandoned', data: {} }, activeUser.csrfToken);
         await api('auth.logout', {}, activeUser.csrfToken);
       } catch { /* local state still clears */ }
     }
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
-    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setTeacherDetail(undefined); setAttemptId(undefined); setResult(undefined); setSelectedMissionId(missionOne.id); setScreen('login');
+    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setTeacherDetail(undefined); setAttemptId(undefined); setTrainingAttempt(undefined); setSelectedMissionId(missionOne.id); setSelectedTrainingId('systems-calibration'); setScreen('login');
   }
   const selectedMission = getMission(selectedMissionId) ?? missionOne;
-  async function beginMission() { if (!user) return; const nextId = (await api<{ attemptId: string }>('attempt.start', { missionId: selectedMission.id }, user.csrfToken)).attemptId; await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: `${selectedMission.id}-intro` } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
-  async function completeMission(score: ScoreResult, duration: number, stats: MissionResultStats, reward?: RewardReceipt) {
+  const selectedTraining = getTrainingModule(selectedTrainingId);
+  async function startTraining(trainingId: string) {
     if (!user) return;
-    const previous = dashboard.missions.find((mission) => mission.missionId === selectedMission.id);
-    const refreshed = await api<StudentDashboard>('student.dashboard', {}, user.csrfToken);
-    setDashboard(refreshed);
-    setResult({ score, duration, stats, previousBest: previous?.bestScore ?? null, previousBestTime: previous?.bestTimeSeconds ?? null, reward });
-    setRewardVisible(Boolean(reward));
-    setScreen('results');
+    const started = await api<TrainingAttemptStart>('training.start', { trainingId }, user.csrfToken);
+    setSelectedTrainingId(trainingId);
+    setTrainingAttempt(started);
+    setScreen('training-session');
+  }
+  async function finishTraining(input: FinishTrainingInput): Promise<TrainingCompletion> {
+    if (!user) throw new Error('Training session expired.');
+    const completion = await api<TrainingCompletion>('training.finish', input, user.csrfToken);
+    setDashboard(current => ({
+      ...current,
+      progression: completion.progression,
+      training: [...(current.training ?? []).filter(item => item.trainingId !== completion.progress.trainingId), completion.progress],
+    }));
+    return completion;
   }
 
   if (!user || screen === 'login') return <LoginScreen onAuthenticated={(next) => void authenticate(next)} />;
@@ -285,19 +296,20 @@ export default function App() {
   const content = (() => {
     if (screen === 'home' && progression && pendingIdentity) return <IdentityProtocol user={user} progression={progression} onUpdate={updateProgression} />;
     if (screen === 'home' && progression && pendingTransmission) return <Transmission user={user} progression={progression} onUpdate={updateProgression} />;
-    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('briefing'); }} onSettings={() => setScreen('settings')} onShop={() => setScreen('shop')} onProgression={updateProgression} />;
+    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('mission-template'); }} onSettings={() => setScreen('settings')} onShop={() => setScreen('shop')} onProgression={updateProgression} onTraining={() => setScreen('training-center')} />;
     if (screen === 'shop') return <HackerShop user={user} progression={progression ?? emptyProgression()} onUpdate={updateProgression} onBack={() => setScreen('home')} />;
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
-    if (screen === 'briefing') return <MissionBriefing mission={selectedMission} user={user} onBack={() => setScreen('home')} onStart={() => setScreen('tutorial')} />;
-    if (screen === 'tutorial') return <MissionTutorial mission={selectedMission} user={user} onComplete={() => void beginMission()} />;
-    if (screen === 'mission' && attemptId) return <MissionRunner mission={selectedMission} user={user} attemptId={attemptId} onComplete={completeMission} />;
-    if (screen === 'results' && result && rewardVisible && result.reward) return <RewardSequence user={user} reward={result.reward} progression={progression ?? emptyProgression()} missionNumber={selectedMission.number} onContinue={() => { setRewardVisible(false); if (pendingIdentity || pendingTransmission) setScreen('home'); }} />;
-    if (screen === 'results' && result) return <MissionResults user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} mission={selectedMission} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
+    if (screen === 'mission-template') {
+      const progress = dashboard.missions.find(item => item.missionId === selectedMission.id);
+      return progress ? <MissionTemplate mission={selectedMission} user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} progress={progress} progression={progression} onHome={() => { setAttemptId(undefined); setScreen('home'); }} onAttemptChange={setAttemptId} onComplete={async () => setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken))} /> : null;
+    }
+    if (screen === 'training-center') return <TrainingCenter modules={TRAINING_MODULES} progress={dashboard.training ?? []} onStart={(trainingId) => void startTraining(trainingId)} onBack={() => setScreen('home')} />;
+    if (screen === 'training-session' && selectedTraining && trainingAttempt) return <TrainingSession key={trainingAttempt.attemptId} module={selectedTraining} attempt={trainingAttempt} user={user} finish={finishTraining} onExit={() => setScreen('training-center')} onReplay={() => void startTraining(selectedTrainingId)} />;
     if (user.role === 'teacher' && screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} onReset={async (missionId) => { await api('teacher.resetMission', { studentId: teacherDetail.student.id, missionId }, user.csrfToken); const [detail, list] = await Promise.all([api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken), api<{ students: TeacherStudent[] }>('teacher.students', {}, user.csrfToken)]); setTeacherDetail(detail); setStudents(list.students); }} />;
     if (screen === 'teacher') return <MissionControl students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
     return null;
   })();
 
   const equipmentClasses = Object.values(progression?.equippedItems ?? {}).map(id => ECONOMY.items.find(item => item.itemId === id)?.asset.className ?? '').join(' ');
-  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><div inert={rewardVisible && screen === 'results' ? true : undefined}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} /></div>{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
+  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
 }

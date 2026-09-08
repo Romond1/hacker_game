@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import type { MissionProgress, SessionUser, StudentDashboard } from '../../api/client';
+import type { MissionProgress, SessionUser, StudentDashboard, TrainingProgress } from '../../api/client';
 import { StudentHome } from './StudentHome';
 
 const mirko: SessionUser = { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' };
@@ -41,4 +41,20 @@ describe('StudentHome', () => {
     expect(screen.getByText('More training missions are coming soon.')).toBeInTheDocument();
     expect(screen.getByText('Nuove missioni di addestramento arriveranno presto.')).toHaveAttribute('lang', 'it');
   });
+
+  it('shows aggregate Training Center status only after a module unlocks', () => {
+    const locked = dashboard([mission(1), mission(2), mission(3)]);
+    const onTraining = vi.fn();
+    const view = render(<StudentHome user={mirko} dashboard={{ ...locked, training: [training({ unlocked: false })] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
+    expect(screen.queryByRole('button', { name: /Open Training Center/i })).not.toBeInTheDocument();
+    view.rerender(<StudentHome user={mirko} dashboard={{ ...locked, completedMissions: [1,2,3], training: [training({ unlocked: true, creditsEarned: 7 })] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
+    expect(screen.getByText('1 module available')).toBeInTheDocument();
+    expect(screen.getByText('7 / 20 Credits')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Open Training Center/i }));
+    expect(onTraining).toHaveBeenCalledOnce();
+  });
 });
+
+function training(overrides: Partial<TrainingProgress> = {}): TrainingProgress {
+  return { trainingId: 'systems-calibration', unlocked: true, completedRuns: 0, rewardedRuns: 0, creditsEarned: 0, creditCap: 20, bestScore: null, bestTimeSeconds: null, bestAccuracy: null, longestStreak: 0, highestRank: null, lastCompletedAt: null, ...overrides };
+}

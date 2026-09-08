@@ -24,7 +24,8 @@ type MissionTemplateProps = {
   progression?: PlayerProgression;
   onHome: () => void;
   /** Completion notification; the host owns dashboard refresh and follow-up story flows. */
-  onComplete?: (result: MissionTemplateResult) => void;
+  onComplete?: (result: MissionTemplateResult) => void | Promise<void>;
+  onAttemptChange?: (attemptId: string | undefined) => void;
   request?: typeof api;
 };
 
@@ -32,7 +33,7 @@ export function MissionTemplate(props: MissionTemplateProps) {
   return <MissionLifecycle key={`${props.user.id}:${props.mission.id}:${props.progress.unlocked}`} {...props} />;
 }
 
-function MissionLifecycle({ mission, user, progress, progression, onHome, onComplete, request = api }: MissionTemplateProps) {
+function MissionLifecycle({ mission, user, progress, progression, onHome, onComplete, onAttemptChange, request = api }: MissionTemplateProps) {
   const [screen, setScreen] = useState<MissionLifecycleScreen>(progress.unlocked ? 'available' : 'locked');
   const [attemptId, setAttemptId] = useState<string>();
   const pendingAttemptId = useRef<string | undefined>(undefined);
@@ -55,6 +56,7 @@ function MissionLifecycle({ mission, user, progress, progression, onHome, onComp
         data: { tutorialId: `${mission.id}-intro` },
       }, user.csrfToken);
       setAttemptId(pendingAttemptId.current);
+      onAttemptChange?.(pendingAttemptId.current);
       setScreen('active');
     } catch {
       setError('Unable to start the mission. Please try again.');
@@ -66,14 +68,20 @@ function MissionLifecycle({ mission, user, progress, progression, onHome, onComp
 
   function completeMission(score: ScoreResult, duration: number, stats: MissionResultStats, reward?: RewardReceipt) {
     const completed = { score, duration, stats, reward };
-    setResult({ ...completed, previousBest: progress.bestScore, previousBestTime: progress.bestTimeSeconds });
-    setScreen(reward ? 'completion' : 'results');
-    onComplete?.(completed);
+    const showCompletion = () => {
+      onAttemptChange?.(undefined);
+      setResult({ ...completed, previousBest: progress.bestScore, previousBestTime: progress.bestTimeSeconds });
+      setScreen(reward ? 'completion' : 'results');
+    };
+    const notification = onComplete?.(completed);
+    if (notification && typeof notification.then === 'function') void notification.then(showCompletion);
+    else showCompletion();
   }
 
   function replay() {
     pendingAttemptId.current = undefined;
     setAttemptId(undefined);
+    onAttemptChange?.(undefined);
     setResult(undefined);
     setError('');
     setScreen('briefing');

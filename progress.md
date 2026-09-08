@@ -61,3 +61,6 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Verification: 25 development tests and TypeScript passed after tracing and fixing the shared-contract/browser import boundary.
 - Task 6 complete: added migration 004 plus the authoritative PHP training service. TypeScript/PHP generator v1 parity is pinned for seed 42; duplicate response map shapes are stable.
 - Verification: PHP syntax/policy checks passed and a disposable MariaDB run passed locks, tamper rejection, 21-run cap/replay, idempotency, bests, and achievements. Migration 004 reran cleanly.
+- Tasks 7–10 complete: connected the production training routes and shared reward locks, then added the Training Center, generic session runner, Systems Calibration task adapter, and canonical server-backed results sequence.
+- Task 11 complete: Home Base now reveals aggregate training status only after a module unlocks; the app routes Missions 1–3 through MissionTemplate and supports the complete start/finish/replay training journey. Mission completion refreshes canonical dashboard data before reward/results presentation.
+- Verification: 24 focused app, dashboard, mission-template, and mission-runner tests passed; the production TypeScript/Vite build and deploy packaging passed.

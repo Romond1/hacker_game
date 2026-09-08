@@ -17,11 +17,18 @@ const labels = {
   coming: { it: 'Nuove missioni di addestramento arriveranno presto.', ja: '新しいトレーニングミッションは近日公開です。' },
 } as const;
 
-export function StudentHome({ user, dashboard, onMission, onSettings, onShop, onProgression }: { user: SessionUser; dashboard: StudentDashboard; onMission: (missionId: string) => void; onSettings: () => void; onShop?: () => void; onProgression?: (state: PlayerProgression) => void }) {
+export function StudentHome({ user, dashboard, onMission, onSettings, onShop, onProgression, onTraining }: { user: SessionUser; dashboard: StudentDashboard; onMission: (missionId: string) => void; onSettings: () => void; onShop?: () => void; onProgression?: (state: PlayerProgression) => void; onTraining?: () => void }) {
   const copy = getStudentHomeCopy(user.supportLanguage, dashboard.progression ? (dashboard.progression.hackerCodename ?? 'Rookie') : user.displayName);
   const allComplete = dashboard.completedMissions.length === MISSIONS.length;
+  const unlockedTraining = (dashboard.training ?? []).filter(item => item.unlocked);
+  const trainingCredits = unlockedTraining.reduce((sum, item) => sum + item.creditsEarned, 0);
+  const trainingCreditCap = unlockedTraining.reduce((sum, item) => sum + item.creditCap, 0);
   return <main className="page home-page"><section className="welcome-strip"><div><p className="eyebrow">{dashboard.progression ? (dashboard.progression.storyFlags.rookieTrainingCompleted ? 'HOME BASE / MISSION' : 'ROOKIE TRAINING / MISSION') : 'AGENT HOME / LEVEL'} {String(dashboard.currentMission).padStart(2, '0')}</p><h1>{copy.welcome.en}</h1><small className="home-support-heading" lang={copy.welcome.lang}>{copy.welcome.support}</small><div className="bilingual"><div>{copy.nextSkill.en}</div><small lang={copy.nextSkill.lang}>{copy.nextSkill.support}</small></div></div><div className="rank-badge"><span>{copy.currentMission.en}</span><small lang={copy.currentMission.lang}>{copy.currentMission.support}</small><strong>Mission {dashboard.currentMission}</strong><span>{dashboard.progression ? 'Lifetime XP' : copy.totalPoints.en}</span><small lang={copy.totalPoints.lang}>{copy.totalPoints.support}</small><strong>{dashboard.progression?.lifetimeXP ?? dashboard.totalPoints}</strong></div></section>
     {dashboard.progression && <><HackerProfile user={user} progression={dashboard.progression} onShop={onShop ?? (() => undefined)} onUpdate={onProgression ?? (() => undefined)} />{!dashboard.progression.storyFlags.rookieTrainingCompleted && <section className="rookie-introduction"><h2><Copy id="training" language={user.supportLanguage} /></h2><p><Copy id="introduction" language={user.supportLanguage} /></p></section>}</>}
+    {unlockedTraining.length > 0 && <section className="training-home-entry" aria-label="Training Center status">
+      <div><p className="eyebrow">HOME BASE / TRAINING CENTER</p><h2>Keep your systems sharp.</h2><p>{unlockedTraining.length} {unlockedTraining.length === 1 ? 'module' : 'modules'} available</p></div>
+      <div className="training-home-readout"><span>TRAINING CREDITS</span><strong>{trainingCredits} / {trainingCreditCap} Credits</strong><button className="primary-button" onClick={onTraining}>Open Training Center <b>→</b></button></div>
+    </section>}
     <section className="mission-card-grid" aria-label="Training missions">{MISSIONS.map((mission) => {
       const progress = dashboard.missions.find((item) => item.missionId === mission.id) ?? { missionId: mission.id, missionNumber: mission.number, unlocked: mission.number === 1, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 };
       const state = progress.completed ? 'completed' : progress.unlocked ? 'available' : 'locked';
