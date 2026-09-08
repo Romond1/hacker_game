@@ -52,3 +52,5 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Task 1 complete: added the pure training score/rank/seed/personal-best domain through test-first development.
 - Verification: 15 training-domain tests and 11 mission/progression regression tests passed; TypeScript check passed.
 - Two-stage review: specification compliant and code-quality approved. Optional future test hardening: explicit penalty/clamp and exact time-bonus boundary cases.
+- Task 2 complete: registered the reusable training-module contract and deterministic Systems Calibration catalog entry, with trusted 150-XP/1-Credit/20-Credit-cap configuration and four achievements.
+- Verification: catalog/training/progression tests and TypeScript passed; specification and code-quality reviews approved. Pin a generator-version fixture during the cross-runtime PHP policy task.
