@@ -23,6 +23,7 @@ type MissionTemplateProps = {
   progress: MissionProgress;
   progression?: PlayerProgression;
   onHome: () => void;
+  onRewardContinue?: () => void;
   /** Completion notification; the host owns dashboard refresh and follow-up story flows. */
   onComplete?: (result: MissionTemplateResult) => void | Promise<void>;
   onAttemptChange?: (attemptId: string | undefined) => void;
@@ -33,7 +34,7 @@ export function MissionTemplate(props: MissionTemplateProps) {
   return <MissionLifecycle key={`${props.user.id}:${props.mission.id}:${props.progress.unlocked}`} {...props} />;
 }
 
-function MissionLifecycle({ mission, user, progress, progression, onHome, onComplete, onAttemptChange, request = api }: MissionTemplateProps) {
+function MissionLifecycle({ mission, user, progress, progression, onHome, onRewardContinue, onComplete, onAttemptChange, request = api }: MissionTemplateProps) {
   const [screen, setScreen] = useState<MissionLifecycleScreen>(progress.unlocked ? 'available' : 'locked');
   const [attemptId, setAttemptId] = useState<string>();
   const pendingAttemptId = useRef<string | undefined>(undefined);
@@ -103,7 +104,7 @@ function MissionLifecycle({ mission, user, progress, progression, onHome, onComp
     {error && <div><p role="alert">{error}</p><button className="primary-button" onClick={() => void beginMission()}>Retry starting mission</button></div>}
   </div>;
   if (screen === 'active' && attemptId) return <MissionRunner mission={mission} user={user} attemptId={attemptId} onComplete={completeMission} />;
-  if (screen === 'completion' && result?.reward) return <RewardSequence user={user} reward={result.reward} progression={progression ?? emptyProgression()} missionNumber={mission.number} onContinue={() => setScreen('results')} />;
+  if (screen === 'completion' && result?.reward) return <RewardSequence user={user} reward={result.reward} progression={progression ?? emptyProgression()} missionNumber={mission.number} onContinue={onRewardContinue ?? (() => setScreen('results'))} />;
   if (screen === 'results' && result) return <Results user={user} mission={mission} {...result} onHome={onHome} onReplay={replay} />;
   return null;
 }

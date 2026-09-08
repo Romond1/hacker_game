@@ -1,4 +1,4 @@
-import { cp, mkdir } from 'node:fs/promises';
+import { access, cp, mkdir } from 'node:fs/promises';
 
 await mkdir('dist/api', { recursive: true });
 await mkdir('dist/bin', { recursive: true });
@@ -16,6 +16,9 @@ await cp('server/.htaccess', 'dist/.htaccess');
 await mkdir('dist/shared', { recursive: true });
 await cp('shared/economy.json', 'dist/shared/economy.json');
 await cp('server/src/progression.php', 'dist/src/progression.php');
+await cp('server/src/training.php', 'dist/src/training.php');
 await cp('server/bin/check_economy.php', 'dist/bin/check_economy.php');
+
+await access('dist/src/training.php');
 
 console.log('Deployment package ready in dist/ (static frontend + PHP API).');

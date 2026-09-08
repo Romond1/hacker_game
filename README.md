@@ -10,6 +10,7 @@ The application is designed for `https://beahero.fun/hacker/`: Vite builds the R
 - Secure PHP sessions, CSRF protection, `password_hash`/`password_verify`, and prepared PDO queries
 - Private student dashboard, settings, personal bests, replay, and permanent Logout
 - Reusable data-driven mission engine with three mission definitions
+- Reusable mission lifecycle template and catalog-driven skill-training engine
 - English + Italian/Japanese briefings and tutorial
 - Translation-on-demand and scripted state-aware Cyber Guide during scored play
 - Immutable attempts, extensible event history, scoring, results, and read-only teacher Mission Control
@@ -29,7 +30,7 @@ Full local stack and XServer:
 - MySQL 8.0 or a compatible MariaDB release with JSON support
 - Apache with `.htaccess` and `mod_headers` enabled for the supplied security headers
 
-PHP and MySQL are not installed in the current Windows environment, so frontend tests/builds can run here but PHP syntax and integration checks must be run on a PHP-enabled machine before deployment.
+PHP/MySQL checks require the runtimes above and an isolated test database. Never point integration or concurrency fixtures at the live student database.
 
 ## Local profile testing (no PHP or MySQL required)
 
@@ -57,6 +58,7 @@ The document and application shell use `lang="en"`, `translate="no"`, the `notra
 mysql -u root -p beahero_hacker < server/migrations/001_initial.sql
 mysql -u root -p beahero_hacker < server/migrations/002_three_missions.sql
 mysql -u root -p beahero_hacker < server/migrations/003_progression_economy.sql
+mysql -u root -p beahero_hacker < server/migrations/004_training_framework.sql
 ```
 
 3. Copy `server/config.example.php` to `server/config.php` and fill in the local PDO DSN, database username, and database password. Set `production` to `false` so the session cookie works over local HTTP. `server/config.php` is gitignored.
@@ -121,6 +123,8 @@ dist/
   api/index.php
   bin/provision_standard_accounts.php
   src/bootstrap.php
+  src/progression.php
+  src/training.php
   config.example.php
   .htaccess
 ```
@@ -128,7 +132,7 @@ dist/
 ## Deploy to XServer at `/hacker/`
 
 1. In XServer's database panel, create a MySQL database and least-privilege database user.
-2. Import migrations 001, 002, then 003 with phpMyAdmin. For an existing database, apply only missing migrations in order.
+2. Import migrations 001, 002, 003, then 004 with phpMyAdmin. For an existing database, apply only missing migrations in order. Migration 004 is a separate pre-deploy database step; the deployment command does not apply it.
 3. Run `npm ci` and `npm run build` locally. Node.js is not needed on XServer.
 4. Upload the **contents** of `dist/` into the domain's `public_html/hacker/` directory.
 5. On the server, copy `config.example.php` to `config.php`, insert the XServer database details, leave `base_path` as `/hacker/`, and leave `production` as `true`.
@@ -147,7 +151,7 @@ Open a student record in Mission Control and choose **Reset Mission 1/2/3**. Con
 
 `test.hacker` is available locally with the shared local student password. After `npm run deploy`, run `npm run setup:test-student` once from this computer to create it on XServer. This copies the password hash from `himari.hacker`, whose password is the shared live student password, into a new independent student record. It never changes existing student accounts. If test.hacker already exists, it leaves its password and progress unchanged. The test account uses Italian support and an orange theme, and appears as **Test Student** in Mission Control. If students later have different passwords, choose a source explicitly over SSH with `php bin/create_test_student.php SOURCE_USERNAME`.
 
-The progression upgrade requires migration 003 before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
+The progression upgrade requires migration 003, and skill training requires migration 004, before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
 
 ### Publishing updates from this Windows computer
 
@@ -168,11 +172,11 @@ php bin/create_user.php yuki.hacker Yuki student ja
 
 Use `ja` for Japanese support or `it` for Italian. The script prompts privately for a password of at least 12 characters and creates one new account; existing usernames are not overwritten. The teacher dashboard lists database students automatically when refreshed. No XServer database/user settings or frontend rebuild are needed per student. Local development accounts are separate. Do not rerun `provision_standard_accounts.php` to add a student: that resets the standard profiles' passwords and settings.
 
-Migrations live in `server/migrations/` and are applied in filename order. Apply `001_initial.sql`, `002_three_missions.sql`, then `003_progression_economy.sql` to a new database. An existing three-mission database needs only 003; an existing Mission 1 database needs 002 then 003. Back up the database first and record applied filenames in deployment notes.
+Migrations live in `server/migrations/` and are applied in filename order. Apply `001_initial.sql`, `002_three_missions.sql`, `003_progression_economy.sql`, then `004_training_framework.sql` to a new database. An existing Phase 1 database needs 004. Back up the database first and record applied filenames in deployment notes.
 
 ## Mission definitions and future missions
 
-Mission content lives in `src/missions/`. The three definitions are registered in `src/missions/catalog.ts`; shared types and behavior live in `src/domain/mission.ts`.
+Mission content lives in `src/missions/`. The three definitions are registered in `src/missions/catalog.ts`; shared types and behavior live in `src/domain/mission.ts`. `MissionTemplate` owns the shared locked → briefing → tutorial → active → reward → results lifecycle, while each mission's mechanics remain in the existing runner.
 
 To add a mission:
 
@@ -183,6 +187,14 @@ To add a mission:
 5. Add tests for the definition's path, objectives, hint progression, translation identifiers, and scoring boundaries.
 
 Mission definitions are source-controlled. MySQL stores user-specific state only; there is no teacher content editor in version 1.
+
+## Skill training framework
+
+Systems Calibration is the first reusable training module. It unlocks after Mission 3 and runs five deterministic, server-verifiable rounds. A successful run awards up to 150 XP plus 1 Credit; activity Credits stop at 20, while replay XP and personal-best tracking continue. Training attempts, evidence validation, rewards, bests, and achievements are authoritative in the development service and PHP/MySQL service—the browser never submits reward amounts.
+
+Training definitions are registered in `src/training/catalog.ts`. Each definition supplies metadata, trusted reward policy, seeded task generation, and an evidence validator; `TrainingSession` supplies the generic intro/round/save/retry/results lifecycle. To add a future module, create its task adapter, register it in the catalog and shared economy policy, implement the same generator/version in the PHP service, and add cross-runtime fixture tests. Teacher records expose aggregate runs, Credits, best accuracy, and rank, never individual answers.
+
+Mission 4 is not implemented. When its real exercise is designed, register its mission definition and a real associated training module through these extension points rather than adding placeholder gameplay.
 
 ## Security notes
 
@@ -200,7 +212,7 @@ Mission definitions are source-controlled. MySQL stores user-specific state only
 
 Missions 1–3 are Rookie Training. Their existing calculated scores become permanent lifetime XP; Credits are separate and spendable. Successful completions award 20/20/30 Credits respectively, only on the first two completions of each mission. Later replays still add XP. Rookie and Operator cumulative earning/spending allowances are 140 Credits. Mission 10 and its prerequisites grant Infiltrator; the 600-Credit Mini Drone requires that rank. The configured Infiltrator allowance is 1,200, reserved for future campaign rewards.
 
-Edit `shared/economy.json` to change rewards, prices, rank prerequisites/budgets, suggested names, or node metadata. `src/domain/progression.ts` supplies public types, generic cap calculations, and map-node derivation; `server/src/progression.php` owns authoritative transactions. New reward sources must provide trusted server policy and a stable unique event ID. Never accept arbitrary reward amounts from the browser. Daily/activity/cooldown/attempt policies are supported; no minigames or Mission 4 exercises are implemented yet.
+Edit `shared/economy.json` to change rewards, prices, rank prerequisites/budgets, suggested names, training policies, or node metadata. `src/domain/progression.ts` supplies public types, generic cap calculations, and map-node derivation; `server/src/progression.php` owns authoritative transactions. New reward sources must provide trusted server policy and a stable unique event ID. Never accept arbitrary reward amounts from the browser. Daily/activity/cooldown/attempt policies are supported; Mission 4 is not implemented.
 
 Graduation unlocks a validated codename, the shop and profile, then shows a one-time Mission 4 transmission. Working starter purchases are Rookie Hacker badge, Neon Pointer cursor and Matrix Terminal skin. Existing free themes remain free. Owned equipment persists, and defaults can be restored. Sound is muted initially and its preference is saved. Teacher detail includes the permanent economy and inventory summary.
 

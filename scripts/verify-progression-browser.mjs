@@ -15,6 +15,7 @@ const skillRoot = process.env.WEB_GAME_SKILL || join(homedir(), '.codex/skills/d
 const { chromium } = await import(pathToFileURL(join(skillRoot, 'node_modules/playwright/index.mjs')).href);
 const temp = await mkdtemp(join(tmpdir(), 'hacker-progression-browser-'));
 const output = resolve('output/playwright/progression'); await mkdir(output, { recursive: true });
+const trainingOutput = join(output, 'training'); await mkdir(trainingOutput, { recursive: true });
 const credential = { salt: 'browser-fixture', hash: scryptSync('browser-fixture-password', 'browser-fixture', 32).toString('hex') };
 await writeFile(join(temp, '.dev-auth.local.json'), JSON.stringify({ version: 1, credentials: { teacher: credential, student: credential } }));
 const phpBackend = process.env.PHP_BACKEND_URL;
@@ -32,6 +33,7 @@ async function request(body) {
   const payload = await response.json(); assert.equal(payload.ok, true, JSON.stringify(payload)); return payload.data;
 }
 async function shot(name) { await page.screenshot({ path: join(output, `${name}.png`), fullPage: true }); await writeFile(join(output, `${name}.json`), JSON.stringify(await state(), null, 2)); }
+async function trainingShot(name) { await page.screenshot({ path: join(trainingOutput, `${name}.png`), fullPage: true }); await writeFile(join(trainingOutput, `${name}.json`), JSON.stringify(await state(), null, 2)); }
 async function login(username = 'test.hacker') {
   await page.locator('input[autocomplete="username"]').fill(username);
   await page.locator('input[type="password"]').fill('browser-fixture-password');
@@ -40,6 +42,7 @@ async function login(username = 'test.hacker') {
 }
 async function begin(number) {
   await page.locator('.mission-card').nth(number - 1).locator('button').click();
+  await page.getByRole('button', { name: /Open briefing/ }).click();
   await page.getByRole('button', { name: /Start tutorial/ }).click();
   for (let i = 0; i < 10; i++) {
     const next = page.locator('.tutorial-screen .primary-button');
@@ -72,6 +75,11 @@ async function play(number) {
   await page.getByRole('button', { name: /Continue/ }).click();
 }
 async function home() { await page.getByRole('button', { name: /Return home/ }).click(); }
+async function answerCalibrationRound() {
+  const target = await page.locator('[data-calibration-target]').getAttribute('data-calibration-target');
+  assert.ok(target, 'Calibration target code should be visible.');
+  await page.locator(`[data-calibration-choice="${target}"]`).click();
+}
 try {
   // Required skill action loop; authenticated journeys below extend its fresh-page coverage.
   await new Promise((done, reject) => {
@@ -112,6 +120,22 @@ try {
   await page.getByRole('button', { name: /Log out|Sign out/i }).click(); await login();
   assert.equal((await state()).progression.hackerCodename, 'NOVA');
   assert.equal((await state()).progression.inventory.length, 2);
+  await page.setViewportSize({ width: 1440, height: 1080 });
+  await page.getByRole('button', { name: /Open Training Center/i }).click();
+  await page.getByRole('button', { name: /Begin Systems Calibration/i }).click();
+  await page.getByRole('button', { name: /Start training/i }).click();
+  await trainingShot('systems-calibration-live');
+  for (let round = 0; round < 5; round += 1) await answerCalibrationRound();
+  await page.getByRole('heading', { name: /Training complete/i }).waitFor();
+  assert.equal(await page.getByText('1 / 20', { exact: true }).count(), 1);
+  await page.waitForTimeout(3100);
+  await trainingShot('systems-calibration-results');
+  await page.getByRole('button', { name: /Return to Training Center/i }).click();
+  await page.reload();
+  await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByText('1 / 20', { exact: true }).count(), 1);
+  await page.waitForTimeout(500);
+  await trainingShot('systems-calibration-persisted');
   await page.getByRole('button', { name: /Log out|Sign out/i }).click(); await login('be_a_hacker');
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.getByRole('button', { name: /Test Student/ }).click(); await shot('teacher-record');
@@ -124,7 +148,7 @@ try {
   assert.deepEqual(errors, []);
   if (!phpBackend) {
     const snapshot = JSON.parse(await readFile(join(temp, '.dev-progress.local.json'), 'utf8'));
-    assert.equal(snapshot.progression.find(([id]) => id === 'dev-test')[1].currentCredits, 20);
+    assert.equal(snapshot.progression.find(([id]) => id === 'dev-test')[1].currentCredits, 21);
   }
   await page.getByRole('button', { name: /Log out|Sign out/i }).click(); await login('himari.hacker');
   for (const missionId of ['mission-1','mission-2','mission-3']) for (let n = 0; n < 2; n++) {

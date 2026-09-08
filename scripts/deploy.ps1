@@ -19,7 +19,7 @@ Invoke-Checked 'npm.cmd' @('run', 'build')
 $deployId = [guid]::NewGuid().ToString('N')
 $deployArchive = Join-Path ([IO.Path]::GetTempPath()) "hacker-$deployId.tar.gz"
 # Explicit allowlist: config.php, local credentials and SSH keys cannot enter the archive.
-$deployFiles = @('index.html', 'favicon.svg', '.htaccess', 'assets', 'shared/economy.json', 'api/index.php', 'bin/create_user.php', 'bin/create_test_student.php', 'bin/check_reset.php', 'bin/check_economy.php', 'bin/provision_standard_accounts.php', 'src/bootstrap.php', 'src/reset_mission.php', 'src/progression.php')
+$deployFiles = @('index.html', 'favicon.svg', '.htaccess', 'assets', 'shared/economy.json', 'api/index.php', 'bin/create_user.php', 'bin/create_test_student.php', 'bin/check_reset.php', 'bin/check_economy.php', 'bin/provision_standard_accounts.php', 'src/bootstrap.php', 'src/reset_mission.php', 'src/progression.php', 'src/training.php')
 try {
     Invoke-Checked 'tar.exe' (@('-czf', $deployArchive, '-C', 'dist') + $deployFiles)
     Invoke-Checked 'tar.exe' @('-tzf', $deployArchive)
@@ -40,6 +40,7 @@ php -l "$stage/release/api/index.php"
 php -l "$stage/release/src/bootstrap.php"
 php -l "$stage/release/src/reset_mission.php"
 php -l "$stage/release/src/progression.php"
+php -l "$stage/release/src/training.php"
 php -l "$stage/release/bin/create_test_student.php"
 php -l "$stage/release/bin/check_reset.php"
 HACKER_CONFIG_PATH="$live/config.php" php "$stage/release/bin/check_reset.php"
