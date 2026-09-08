@@ -92,8 +92,11 @@ describe('application shell', () => {
     vi.stubGlobal('fetch', fetchMock);
     render(<App />);
     fireEvent.click(await screen.findByRole('button', { name: /Open Training Center/i }));
+    expect(screen.getByText('Affina le tue capacità.')).toHaveAttribute('lang', 'it');
     fireEvent.click(screen.getByRole('button', { name: /Begin Systems Calibration/i }));
+    expect(await screen.findByText(/Agente Mirko/)).toHaveAttribute('lang', 'it');
     fireEvent.click(await screen.findByRole('button', { name: /Start training/i }));
+    expect(screen.getByText('Seleziona il codice corrispondente dal flusso di verifica attivo.')).toHaveAttribute('lang', 'it');
     for (let round = 0; round < 5; round += 1) {
       const target = screen.getByTestId('calibration-target').getAttribute('data-calibration-target');
       fireEvent.click(document.querySelector(`[data-calibration-choice="${target}"]`) as HTMLElement);
@@ -101,7 +104,8 @@ describe('application shell', () => {
     expect(await screen.findByRole('heading', { name: /Training complete/i })).toBeInTheDocument();
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ body: expect.stringContaining('"action":"training.finish"') })));
     const finishBody = fetchMock.mock.calls.map(([, init]) => JSON.parse(String(init?.body))).find(body => body.action === 'training.finish');
-    expect(finishBody).toMatchObject({ attemptId: 'training-attempt-1' });
+    expect(Object.keys(finishBody).sort()).toEqual(['action', 'attemptId', 'durationSeconds', 'evidence']);
+    expect(finishBody).toMatchObject({ action: 'training.finish', attemptId: 'training-attempt-1' });
     expect(finishBody.evidence).toHaveLength(5);
   });
 });

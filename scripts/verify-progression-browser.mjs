@@ -122,11 +122,15 @@ try {
   assert.equal((await state()).progression.inventory.length, 2);
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.evaluate(() => document.body.innerText.includes('Affina le tue capacità.')), true);
   await page.getByRole('button', { name: /Begin Systems Calibration/i }).click();
+  await page.getByText('Verifica il segnale.', { exact: true }).waitFor();
   await page.getByRole('button', { name: /Start training/i }).click();
+  await page.getByText('Abbina il codice di accesso', { exact: true }).waitFor();
   await trainingShot('systems-calibration-live');
   for (let round = 0; round < 5; round += 1) await answerCalibrationRound();
   await page.getByRole('heading', { name: /Training complete/i }).waitFor();
+  await page.getByText('Addestramento completato.', { exact: true }).waitFor();
   assert.equal(await page.getByText('1 / 20', { exact: true }).count(), 1);
   await page.waitForTimeout(3100);
   await trainingShot('systems-calibration-results');
