@@ -32,6 +32,33 @@ export type TrainingBest = {
 
 export type SeededRandom = () => number;
 
+export type TrainingTaskValidation<TEvidence> = {
+  valid: boolean;
+  evidence: TEvidence;
+  mistakes: number;
+};
+
+export type TrainingModuleDefinition<TTask, TSelection, TEvidence> = {
+  id: string;
+  title: string;
+  description: string;
+  skill: string;
+  linkedMissionId: string;
+  requiredCompletedMissions: number[];
+  rounds: number;
+  difficulty: 'beginner';
+  generatorVersion: number;
+  scoreRules: TrainingScoreRules;
+  reward: {
+    xpMax: number;
+    creditsPerRun: number;
+    creditCap: number;
+  };
+  speedAchievementSeconds: number;
+  generateTask: (seed: number, roundIndex: number) => TTask;
+  validateTask: (task: TTask, selection: TSelection) => TrainingTaskValidation<TEvidence>;
+};
+
 export function createSeededRandom(seed: number): SeededRandom {
   let state = seed >>> 0;
   return () => {

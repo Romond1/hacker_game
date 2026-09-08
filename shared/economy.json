@@ -20,5 +20,14 @@
   "nodes": [
     { "nodeId": "training", "name": "Home Base", "missionIds": ["mission-1","mission-2","mission-3"], "prerequisites": [], "icon": "⌂", "position": { "x": 0, "y": 0 } },
     { "nodeId": "classified", "name": "Classified Network", "missionIds": ["mission-4"], "prerequisites": ["training"], "icon": "◈", "position": { "x": 0, "y": 1 }, "comingSoon": true }
+  ],
+  "trainingModules": {
+    "systems-calibration": { "xpMax": 150, "credits": 1, "activityCreditCap": 20, "linkedMissionId": "mission-3", "requiredCompletedMissions": [1,2,3], "speedAchievementSeconds": 30 }
+  },
+  "trainingAchievements": [
+    { "id": "first-training", "name": "FIRST TRAINING", "description": "Complete a training module." },
+    { "id": "perfect-calibration", "name": "PERFECT CALIBRATION", "description": "Complete Systems Calibration with 100% accuracy." },
+    { "id": "speed-operator", "name": "SPEED OPERATOR", "description": "Finish within the module speed target." },
+    { "id": "training-master", "name": "TRAINING MASTER", "description": "Earn all Credits from one training module." }
   ]
 }
