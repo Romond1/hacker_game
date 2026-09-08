@@ -4,6 +4,7 @@ import type { SessionUser } from '../../api/client';
 import { missionOne } from '../../missions/mission-one';
 import { missionTwo } from '../../missions/mission-two';
 import { missionThree } from '../../missions/mission-three';
+import { missionFour } from '../../missions/mission-four';
 import { MissionRunner } from './MissionRunner';
 
 const himari: SessionUser = { id: 'dev-himari', username: 'himari.hacker', displayName: 'Himari', role: 'student', supportLanguage: 'ja', themeColor: 'cyan', csrfToken: 'token' };
@@ -91,5 +92,39 @@ describe('MissionRunner', () => {
     fireEvent.change(screen.getByLabelText(/Agent Code/i), { target: { value: ' orbit ' } });
     fireEvent.click(screen.getByRole('button', { name: /Confirm code/i }));
     await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
+  });
+
+  it('teaches selection and right-click Copy/Paste before submitting Mission 4', async () => {
+    const onComplete = vi.fn();
+    render(<MissionRunner mission={missionFour} user={himari} attemptId="attempt-4" onComplete={onComplete} />);
+    open(/Downloads/);
+    open(/INTERCEPTED_SIGNAL\.txt/);
+
+    vi.spyOn(window, 'getSelection').mockReturnValue({ toString: () => 'VX-4821-OMEGA' } as Selection);
+    fireEvent.mouseUp(screen.getByTestId('transfer-source-text'));
+    fireEvent.contextMenu(screen.getByTestId('transfer-source-text'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Copy selected code' }));
+    fireEvent.click(screen.getByRole('button', { name: /close file/i }));
+
+    const destination = screen.getByLabelText('SECURE CHANNEL');
+    expect(destination).toHaveAttribute('readonly');
+    fireEvent.contextMenu(destination);
+    fireEvent.click(await screen.findByRole('button', { name: 'Paste copied code' }));
+    await waitFor(() => expect(destination).toHaveValue('VX-4821-OMEGA'));
+    fireEvent.click(screen.getByRole('button', { name: /Submit transmission/i }));
+
+    await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
+    const events = (fetch as ReturnType<typeof vi.fn>).mock.calls.map(([, options]) => JSON.parse(options.body).type).filter(Boolean);
+    expect(events).toEqual(expect.arrayContaining(['text_selected', 'copy_used', 'paste_used', 'code_submitted']));
+  });
+
+  it('does not offer Copy when the wrong text is selected', () => {
+    render(<MissionRunner mission={missionFour} user={himari} attemptId="attempt-4-wrong" onComplete={() => undefined} />);
+    open(/Downloads/);
+    open(/INTERCEPTED_SIGNAL\.txt/);
+    vi.spyOn(window, 'getSelection').mockReturnValue({ toString: () => 'TRANSMISSION CODE' } as Selection);
+    fireEvent.mouseUp(screen.getByTestId('transfer-source-text'));
+    fireEvent.contextMenu(screen.getByTestId('transfer-source-text'));
+    expect(screen.queryByRole('button', { name: 'Copy selected code' })).not.toBeInTheDocument();
   });
 });
