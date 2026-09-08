@@ -1,0 +1,65 @@
+import { ECONOMY, rankFor, rewardAmounts, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
+
+export class ProgressionError extends Error {
+  constructor(public code: string, message: string) { super(message); }
+}
+
+export function awardMission(state: PlayerProgression, missionId: string, eventId: string, score: number): RewardReceipt {
+  const policy = ECONOMY.missions[missionId as keyof typeof ECONOMY.missions];
+  if (!policy || !Number.isInteger(score) || score < 0 || score > policy.xpMax) throw new ProgressionError('validation_failed', 'Invalid mission result.');
+  const previous = state.missionAttempts[missionId] ?? 0;
+  const number = Number(missionId.replace('mission-', ''));
+  if (!state.completedMissions.includes(number)) state.completedMissions.push(number);
+  state.completedMissions.sort((a, b) => a - b);
+  const rank = rankFor(state.completedMissions);
+  const { xp, credits, creditLimitReached } = rewardAmounts(policy, score, { attempts: previous, earned: state.lifetimeCreditsEarned, rankCap: rank.earningCap });
+  state.missionAttempts[missionId] = previous + 1;
+  state.lifetimeXP += xp;
+  state.currentCredits += credits;
+  state.lifetimeCreditsEarned += credits;
+  state.playerRank = rank.id;
+  state.storyFlags.rookieTrainingStarted = true;
+  if (number === 1 && !state.achievements.includes('first-access')) state.achievements.push('first-access');
+  if ([1,2,3].every(id => state.completedMissions.includes(id))) {
+    state.hackerIdentityUnlocked = true;
+    state.dateUnlocked ??= new Date().toISOString();
+    state.storyFlags.rookieTrainingCompleted = true;
+    state.storyFlags.shopUnlocked = true;
+    state.storyFlags.networkMapUnlocked = true;
+    if (!state.unlockedNodes.includes('classified')) state.unlockedNodes.push('classified');
+    if (!state.achievements.includes('rookie-no-more')) state.achievements.push('rookie-no-more');
+  }
+  return { source: missionId, eventId, xp, credits, totalXP: state.lifetimeXP, currentCredits: state.currentCredits, creditLimitReached };
+}
+
+export function createIdentity(state: PlayerProgression, value: string) {
+  if (!state.hackerIdentityUnlocked) throw new ProgressionError('identity_locked', 'Complete Rookie Training first.');
+  const codename = value.trim().toUpperCase();
+  const normalized = codename.replace(/[0134578]/g, char => ({ '0': 'O', '1': 'I', '3': 'E', '4': 'A', '5': 'S', '7': 'T', '8': 'B' })[char]!).replace(/[_-]/g, '');
+  if (!/^[A-Z][A-Z0-9_-]{2,15}$/.test(codename) || ECONOMY.blockedCodenameFragments.some(word => normalized.includes(word))) throw new ProgressionError('invalid_codename', 'Use 3–16 letters, numbers, hyphens or underscores. Choose a classroom-friendly name.');
+  state.hackerCodename = codename;
+  state.storyFlags.identityCreated = true;
+}
+
+export function purchaseItem(state: PlayerProgression, itemId: string) {
+  const item = ECONOMY.items.find(item => item.itemId === itemId);
+  if (!state.storyFlags.shopUnlocked) throw new ProgressionError('shop_locked', 'Complete Rookie Training to gain access.');
+  if (!item?.purchasable) throw new ProgressionError('item_unavailable', 'This item is unavailable.');
+  const rank = rankFor(state.completedMissions);
+  if (ECONOMY.ranks.findIndex(entry => entry.id === rank.id) < ECONOMY.ranks.findIndex(entry => entry.id === item.requiredRank)) throw new ProgressionError('rank_locked', 'Reach the required rank first.');
+  if (state.inventory.includes(itemId)) throw new ProgressionError('already_owned', 'You already own this item.');
+  if (state.currentCredits < item.price) throw new ProgressionError('insufficient_credits', 'You need more Credits for this item.');
+  if (state.lifetimeCreditsSpent + item.price > rank.spendingCap) throw new ProgressionError('spending_cap', 'Reach the next rank to increase your spending allowance.');
+  state.currentCredits -= item.price;
+  state.lifetimeCreditsSpent += item.price;
+  state.inventory.push(itemId);
+  if (item.category === 'companion') state.storyFlags.firstCompanionPurchased = true;
+}
+
+export function equipItem(state: PlayerProgression, itemId: string, category: string) {
+  if (!ECONOMY.items.some(item => item.category === category)) throw new ProgressionError('invalid_category', 'Choose an available category.');
+  if (!itemId) { delete state.equippedItems[category]; return; }
+  const item = ECONOMY.items.find(item => item.itemId === itemId);
+  if (!item?.equipable || item.category !== category || !state.inventory.includes(itemId)) throw new ProgressionError('item_not_owned', 'Purchase this item before equipping it.');
+  state.equippedItems[category] = itemId;
+}

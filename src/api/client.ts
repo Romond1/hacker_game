@@ -1,4 +1,5 @@
 import type { SupportLanguage } from '../domain/mission';
+import type { PlayerProgression } from '../domain/progression';
 
 export type Role = 'student' | 'teacher';
 
@@ -39,6 +40,7 @@ export type MissionProgress = {
 };
 
 export type StudentDashboard = {
+  progression?: PlayerProgression;
   totalPoints: number;
   rank: string;
   currentMission: number;
@@ -77,7 +79,7 @@ export type TeacherAttempt = {
   incorrectActions: number;
 };
 
-export type TeacherStudentDetail = { student: TeacherStudent; attempts: TeacherAttempt[] };
+export type TeacherStudentDetail = { student: TeacherStudent; attempts: TeacherAttempt[]; progression?: PlayerProgression };
 
 type ApiEnvelope<T> = { ok: true; data: T } | { ok: false; error: { code: string; message: string } };
 

@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 require __DIR__ . '/../src/bootstrap.php';
+require __DIR__ . '/../src/reset_mission.php';
+require_once __DIR__ . '/../src/progression.php';
 
 try {
     start_secure_session();
@@ -62,6 +64,7 @@ try {
             respond([
                 'totalPoints' => array_sum(array_map(fn(array $row): int => (int) $row['total_points'], $rows)),
                 'rank' => 'Rookie Agent',
+                'progression' => economy_transaction(db(), $user['id']),
                 'currentMission' => (int) $user['current_mission'],
                 'completedMissions' => array_values(array_map(fn(array $row): int => (int) str_replace('mission-', '', $row['mission_id']), array_filter($rows, fn(array $row): bool => (bool) $row['completed']))),
                 'bestScore' => $missionOne ? (int) $missionOne['best_score'] : null,
@@ -82,6 +85,15 @@ try {
                 ], $attempts->fetchAll()),
             ]);
 
+        case 'student.identity':
+        case 'student.purchase':
+        case 'student.equip':
+        case 'student.story':
+        case 'student.sound':
+            $user = current_user();
+            if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
+            respond(['progression' => economy_transaction(db(), $user['id'], $action, $input)]);
+
         case 'student.settings':
             $user = current_user();
             if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
@@ -94,14 +106,17 @@ try {
             $user = current_user();
             if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
             $missionId = require_string($input, 'missionId', 50);
+            db()->beginTransaction();
+            lock_student_progress(db(), $user['id']);
             $mission = db()->prepare('SELECT m.id, m.mission_number, COALESCE(up.unlocked, IF(m.mission_number = 1, 1, 0)) unlocked FROM missions m LEFT JOIN user_progress up ON up.mission_id = m.id AND up.user_id = ? WHERE m.id = ? AND m.is_active = 1');
             $mission->execute([$user['id'], $missionId]);
             $missionRow = $mission->fetch();
-            if (!$missionRow) fail('mission_not_found', 'Mission is unavailable.', 404);
-            if (!(bool) $missionRow['unlocked']) fail('mission_locked', 'Complete the previous mission first.', 403);
+            if (!$missionRow) { db()->rollBack(); fail('mission_not_found', 'Mission is unavailable.', 404); }
+            if (!(bool) $missionRow['unlocked']) { db()->rollBack(); fail('mission_locked', 'Complete the previous mission first.', 403); }
             $attemptId = uuid_v4();
             db()->prepare('INSERT INTO attempts (id, user_id, mission_id, started_at) VALUES (?, ?, ?, UTC_TIMESTAMP())')->execute([$attemptId, $user['id'], $missionId]);
             db()->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, JSON_OBJECT())')->execute([$attemptId, 'mission_started']);
+            db()->commit();
             respond(['attemptId' => $attemptId], 201);
 
         case 'attempt.event':
@@ -133,10 +148,18 @@ try {
             $incorrect = max(0, min(999, (int) ($stats['incorrectActions'] ?? 0)));
             $pdo = db(); $pdo->beginTransaction();
             try {
-                $lockedAttempt = $pdo->prepare('SELECT a.*, m.mission_number FROM attempts a JOIN missions m ON m.id = a.mission_id WHERE a.id = ? AND a.user_id = ? AND a.completed = 0 FOR UPDATE');
+                lock_student_progress($pdo, $user['id']);
+                $lockedAttempt = $pdo->prepare('SELECT a.*, m.mission_number FROM attempts a JOIN missions m ON m.id = a.mission_id WHERE a.id = ? AND a.user_id = ? FOR UPDATE');
                 $lockedAttempt->execute([$attemptId, $user['id']]);
                 $attempt = $lockedAttempt->fetch();
                 if (!$attempt) { $pdo->rollBack(); fail('attempt_not_found', 'Attempt not found.', 404); }
+                $economy = economy_load_locked($pdo, $user['id']);
+                if ((bool) $attempt['completed']) {
+                    $reward = economy_receipt($pdo, $user['id'], $attempt['mission_id'], $attemptId);
+                    if ($reward === null) throw new RuntimeException('Completed attempt receipt missing');
+                    $pdo->commit();
+                    respond(['score' => (int) $attempt['score'], 'reward' => $reward]);
+                }
                 $pdo->prepare('UPDATE attempts SET completed_at = UTC_TIMESTAMP(), duration_seconds = ?, score = ?, completed = 1, hint_count = ?, translation_count = ?, correct_actions = ?, incorrect_actions = ? WHERE id = ? AND user_id = ? AND completed = 0')->execute([$duration, $score, $hints, $translations, $correct, $incorrect, $attemptId, $user['id']]);
                 $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration], JSON_THROW_ON_ERROR)]);
                 $pdo->prepare('INSERT INTO user_progress (user_id, mission_id, unlocked, completed, best_score, best_time_seconds, total_points, attempt_count, completed_at) VALUES (?, ?, 1, 1, ?, ?, ?, 1, UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE unlocked = 1, completed = 1, best_score = GREATEST(COALESCE(best_score, 0), VALUES(best_score)), best_time_seconds = IF(best_time_seconds IS NULL, VALUES(best_time_seconds), LEAST(best_time_seconds, VALUES(best_time_seconds))), total_points = total_points + VALUES(total_points), attempt_count = attempt_count + 1, completed_at = COALESCE(completed_at, UTC_TIMESTAMP())')->execute([$user['id'], $attempt['mission_id'], $score, $duration, $score]);
@@ -150,11 +173,24 @@ try {
                 $nextMissionId = $nextMissionRow['id'] ?? null;
                 if ($nextMissionId !== null) {
                     $pdo->prepare('INSERT INTO user_progress (user_id, mission_id, unlocked) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE unlocked = 1')->execute([$user['id'], $nextMissionId]);
-                    $pdo->prepare('UPDATE users SET current_mission = ? WHERE id = ? AND current_mission < ?')->execute([(int) $nextMissionRow['mission_number'], $user['id'], (int) $nextMissionRow['mission_number']]);
                 }
+                $missionNumber = (int) $attempt['mission_number'];
+                if (!in_array($missionNumber, $economy['completedMissions'], true)) $economy['completedMissions'][] = $missionNumber;
+                economy_milestones($pdo, $user['id'], $economy);
+                $policy = economy_catalog()['missions'][$attempt['mission_id']] ?? ['credits' => 0, 'xpMax' => 1000];
+                $reward = economy_award($pdo, $user['id'], $economy, $attempt['mission_id'], $attemptId, $policy, $score);
+                refresh_current_mission($pdo, $user['id']);
                 $pdo->commit();
             } catch (Throwable $error) { $pdo->rollBack(); throw $error; }
-            respond(['score' => $score]);
+            respond(['score' => $score, 'reward' => $reward]);
+
+        case 'teacher.resetMission':
+            require_teacher();
+            $studentId = require_string($input, 'studentId', 36);
+            $missionId = require_string($input, 'missionId', 50);
+            try { $result = reset_student_mission(db(), $studentId, $missionId); }
+            catch (MissionResetError $error) { fail($error->getMessage(), 'Student or mission not found.', 404); }
+            respond($result);
 
         case 'teacher.students':
             require_teacher();
@@ -171,7 +207,7 @@ try {
             if (!$student) fail('student_not_found', 'Student not found.', 404);
             $attempts = db()->prepare('SELECT id, mission_id, started_at, completed_at, duration_seconds, score, completed, hint_count, translation_count, correct_actions, incorrect_actions FROM attempts WHERE user_id = ? ORDER BY started_at DESC');
             $attempts->execute([$studentId]);
-            respond(['student' => teacher_student_row($student), 'attempts' => array_map(fn(array $row): array => [
+            respond(['progression' => economy_transaction(db(), $studentId), 'student' => teacher_student_row($student), 'attempts' => array_map(fn(array $row): array => [
                 'id' => $row['id'], 'missionId' => $row['mission_id'], 'startedAt' => $row['started_at'],
                 'completedAt' => $row['completed_at'], 'durationSeconds' => $row['duration_seconds'] === null ? null : (int) $row['duration_seconds'],
                 'score' => $row['score'] === null ? null : (int) $row['score'], 'completed' => (bool) $row['completed'],
@@ -182,6 +218,8 @@ try {
         default:
             fail('action_not_found', 'Unknown API action.', 404);
     }
+} catch (EconomyError $error) {
+    fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', 422);
 } catch (PDOException $error) {
     error_log(json_encode(['type' => 'database_error', 'message' => $error->getMessage()]));
     fail('server_error', 'The training server could not complete the request.', 500);

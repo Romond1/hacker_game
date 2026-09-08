@@ -6,6 +6,16 @@ const bootstrap = await readFile('server/src/bootstrap.php', 'utf8');
 const schema = await readFile('server/migrations/001_initial.sql', 'utf8');
 const migrationTwo = await readFile('server/migrations/002_three_missions.sql', 'utf8');
 const provisioner = await readFile('server/bin/provision_standard_accounts.php', 'utf8');
+const resetCase = api.split("case 'teacher.resetMission':")[1]?.split("case 'teacher.students':")[0];
+assert.ok(resetCase && resetCase.indexOf('require_teacher()') < resetCase.indexOf('reset_student_mission('), 'Reset must authorize Teacher before any mutation.');
+assert.ok(api.includes("if (!in_array($action, ['auth.login', 'auth.session'], true)) require_csrf();"), 'Reset must remain protected by CSRF.');
+const reset = await readFile('server/src/reset_mission.php', 'utf8');
+const resetCheck = await readFile('server/bin/check_reset.php', 'utf8');
+const deploy = await readFile('scripts/deploy.ps1', 'utf8');
+for (const file of ['shared/economy.json', 'src/progression.php']) assert.ok(deploy.includes(file), `Deployment must include ${file}`);
+for (const table of ['player_economy', 'reward_ledger', 'reward_counters', 'player_inventory']) assert.ok(resetCheck.includes(table), `Deployment preflight must require economy schema ${table}`);
+assert.ok(!resetCheck.includes('CREATE TEMPORARY TABLE `{$table}` LIKE `{$table}`'), 'Reset check must not copy a table onto the same SQL name (MariaDB error 1066).');
+for (const token of ['beginTransaction()', 'FOR UPDATE', 'rollBack()', 'user_id = ? AND mission_id = ?']) assert.ok(reset.includes(token), `Reset contract missing ${token}`);
 
 for (const token of ['password_verify(', 'require_csrf()', 'require_teacher()', 'assert_owned_attempt(', "'mission_completed'"]) {
   assert.ok(api.includes(token), `API security contract missing ${token}`);

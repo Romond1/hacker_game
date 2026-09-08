@@ -1,6 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { api, type SessionUser } from '../../api/client';
 import { calculateScore, findNode, getNextHint, getTranslation, matchesConfirmationCode, matchesObjective, type FileNode, type MissionDefinition, type ScoreResult } from '../../domain/mission';
+import type { RewardReceipt } from '../../domain/progression';
+import { Copy } from '../progression/Copy';
 
 type EventType = 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed';
 
@@ -10,7 +12,7 @@ type MissionRunnerProps = {
   mission: MissionDefinition;
   user: SessionUser;
   attemptId: string;
-  onComplete: (score: ScoreResult, duration: number, stats: MissionResultStats) => void;
+  onComplete: (score: ScoreResult, duration: number, stats: MissionResultStats, reward?: RewardReceipt) => void | Promise<void>;
 };
 
 function containsTarget(node: FileNode, targetIds: Set<string>): boolean {
@@ -46,6 +48,9 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   const [codeError, setCodeError] = useState('');
   const startedAt = useMemo(() => Date.now(), []);
   const finished = useRef(false);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const pendingResult = useRef<{ score: ScoreResult; duration: number; stats: Record<string, unknown>; resultStats: MissionResultStats } | undefined>(undefined);
   const current = findNode(mission.filesystem, path) ?? mission.filesystem;
   const targetIds = useMemo(() => new Set(mission.objectives.flatMap((objective) => objective.targetId ? [objective.targetId] : [])), [mission]);
 
@@ -77,11 +82,22 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
       translationsUsed: translatedIds.size, durationSeconds: duration,
     };
     const score = calculateScore(mission.scoring, stats);
-    await api('attempt.finish', { attemptId, score: score.total, durationSeconds: duration, stats }, user.csrfToken);
-    window.setTimeout(() => onComplete(score, duration, { hints: usedHints.length, translations: translatedIds.size, correct: nextCorrect, incorrect: nextIncorrect }), 200);
+    pendingResult.current = { score, duration, stats, resultStats: { hints: usedHints.length, translations: translatedIds.size, correct: nextCorrect, incorrect: nextIncorrect } };
+    await saveResult();
+  }
+
+  async function saveResult() {
+    const result = pendingResult.current; if (!result || saving) return;
+    setSaving(true); setSaveFailed(false);
+    try {
+      const response = await api<{ reward?: RewardReceipt }>('attempt.finish', { attemptId, score: result.score.total, durationSeconds: result.duration, stats: result.stats }, user.csrfToken);
+      await onComplete(result.score, result.duration, result.resultStats, response.reward);
+    } catch { setSaveFailed(true); }
+    finally { setSaving(false); }
   }
 
   async function openNode(node: FileNode) {
+    if (finished.current) return;
     setSelectedId(node.id);
     const helpful = containsTarget(node, targetIds);
     if (node.type === 'folder') {
@@ -105,6 +121,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function goBack() {
+    if (finished.current) return;
     if (path.length === 0) return;
     setPath((value) => value.slice(0, -1));
     setOpenedFile(undefined);
@@ -116,12 +133,14 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function translate(textId: string) {
+    if (finished.current) return;
     if (translatedIds.has(textId)) return;
     setTranslatedIds((value) => new Set(value).add(textId));
     await log('translation_used', { textId, missionId: mission.id });
   }
 
   async function hint() {
+    if (finished.current) return;
     const next = getNextHint(mission, usedHints, completedObjectives);
     if (!next) { setGuideMessage(getTranslation(mission, 'guideExhausted', user.supportLanguage)); return; }
     setUsedHints((value) => [...value, next.id]);
@@ -145,9 +164,10 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   const canConfirm = mission.completion.type === 'confirm_code' && completedObjectives.has(mission.completion.targetObjectiveId);
 
   return <main className="mission-screen">
-    <header className="mission-header"><div><p>MISSION {String(mission.number).padStart(2, '0')}</p><strong>{mission.title.en.toUpperCase()}</strong></div><div className="mission-objective"><span>OBJECTIVE</span><p>{mission.translations.objective.en}</p>{objectiveTranslated && <small lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</small>}</div><button className="translate-button" onClick={() => void translate('objective')} disabled={objectiveTranslated}>◎ {objectiveTranslated ? 'Translated' : 'Translate'}</button><div className="score-live"><span>PROGRESS</span><strong>{completedObjectives.size}/{mission.objectives.length}</strong></div></header>
-    <section className="computer-shell"><div className="computer-toolbar"><button onClick={() => void goBack()} disabled={path.length === 0}>← <span>Back</span></button><div className="current-path"><span>⌂</span> Desktop {path.map((part) => <b key={part}> &gt; {part}</b>)}</div><div className="view-label">TRAINING COMPUTER</div></div><div className="computer-body"><div className="files-area">{current.children?.length ? current.children.map((node) => <button key={node.id} className={`file-item ${selectedId === node.id ? 'selected' : ''}`} onClick={() => setSelectedId(node.id)} onDoubleClick={() => void openNode(node)}><span className={node.type === 'folder' ? 'folder-icon' : 'file-icon'}>{fileBadge(node)}</span><strong>{node.name}</strong><small>{fileLabel(node)}</small></button>) : <p className="empty-folder">This folder is empty.</p>}</div>{openedFile && <div className="file-modal" role="dialog" aria-label={openedFile.name}><div><span className="file-icon">{fileBadge(openedFile)}</span><strong>{openedFile.name}</strong><button aria-label="Close file" onClick={() => setOpenedFile(undefined)}>×</button></div><pre>{openedFile.content?.en}</pre>{translatedIds.has(openedTranslationId) && <pre className="file-translation" lang={user.supportLanguage}>{openedFile.content?.[user.supportLanguage]}</pre>}<button className="translate-button file-translate" onClick={() => void translate(openedTranslationId)} disabled={translatedIds.has(openedTranslationId)}>◎ Translate file</button></div>}</div></section>
-    {canConfirm && <section className="code-confirmation"><label htmlFor="agent-code">Agent Code</label><input id="agent-code" value={code} onChange={(event) => setCode(event.target.value)} autoComplete="off" /><button className="primary-button" onClick={() => void confirmCode()}>Confirm code</button>{codeError && <p role="alert">{codeError}</p>}</section>}
-    <aside className="cyber-guide"><div className="guide-heading"><div className="guide-orb small">CG</div><div><span>CYBER GUIDE</span><small>SCRIPTED TRAINING HELPER</small></div></div><p>{guideMessage}</p><button onClick={() => void hint()}>Ask for next hint <span>＋</span></button></aside><p className="mission-tip">Tip: Single-click selects. Double-click opens.</p>
+    {(saving || saveFailed) && <div className="mission-save-overlay" role="dialog" aria-modal="true" aria-label="Saving mission"><div>{saveFailed ? <><p role="alert"><Copy id="saveError" language={user.supportLanguage} /></p><button autoFocus className="primary-button" onClick={() => void saveResult()}><Copy id="retry" language={user.supportLanguage} /></button></> : <p role="status"><Copy id="saving" language={user.supportLanguage} /></p>}</div></div>}
+    <header className="mission-header" inert={saving || saveFailed ? true : undefined}><div><p>MISSION {String(mission.number).padStart(2, '0')}</p><strong>{mission.title.en.toUpperCase()}</strong></div><div className="mission-objective"><span>OBJECTIVE</span><p>{mission.translations.objective.en}</p>{objectiveTranslated && <small lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</small>}</div><button className="translate-button" onClick={() => void translate('objective')} disabled={objectiveTranslated}>◎ {objectiveTranslated ? 'Translated' : 'Translate'}</button><div className="score-live"><span>PROGRESS</span><strong>{completedObjectives.size}/{mission.objectives.length}</strong></div></header>
+    <section className="computer-shell" inert={saving || saveFailed ? true : undefined}><div className="computer-toolbar"><button onClick={() => void goBack()} disabled={path.length === 0}>← <span>Back</span></button><div className="current-path"><span>⌂</span> Desktop {path.map((part) => <b key={part}> &gt; {part}</b>)}</div><div className="view-label">TRAINING COMPUTER</div></div><div className="computer-body"><div className="files-area">{current.children?.length ? current.children.map((node) => <button key={node.id} className={`file-item ${selectedId === node.id ? 'selected' : ''}`} onClick={() => setSelectedId(node.id)} onDoubleClick={() => void openNode(node)}><span className={node.type === 'folder' ? 'folder-icon' : 'file-icon'}>{fileBadge(node)}</span><strong>{node.name}</strong><small>{fileLabel(node)}</small></button>) : <p className="empty-folder">This folder is empty.</p>}</div>{openedFile && <div className="file-modal" role="dialog" aria-label={openedFile.name}><div><span className="file-icon">{fileBadge(openedFile)}</span><strong>{openedFile.name}</strong><button aria-label="Close file" onClick={() => setOpenedFile(undefined)}>×</button></div><pre>{openedFile.content?.en}</pre>{translatedIds.has(openedTranslationId) && <pre className="file-translation" lang={user.supportLanguage}>{openedFile.content?.[user.supportLanguage]}</pre>}<button className="translate-button file-translate" onClick={() => void translate(openedTranslationId)} disabled={translatedIds.has(openedTranslationId)}>◎ Translate file</button></div>}</div></section>
+    {canConfirm && <section className="code-confirmation" inert={saving || saveFailed ? true : undefined}><label htmlFor="agent-code">Agent Code</label><input id="agent-code" value={code} onChange={(event) => setCode(event.target.value)} autoComplete="off" /><button className="primary-button" onClick={() => void confirmCode()}>Confirm code</button>{codeError && <p role="alert">{codeError}</p>}</section>}
+    <aside className="cyber-guide" inert={saving || saveFailed ? true : undefined}><div className="guide-heading"><div className="guide-orb small">CG</div><div><span>CYBER GUIDE</span><small>SCRIPTED TRAINING HELPER</small></div></div><p>{guideMessage}</p><button onClick={() => void hint()}>Ask for next hint <span>＋</span></button></aside><p className="mission-tip">Tip: Single-click selects. Double-click opens.</p>
   </main>;
 }

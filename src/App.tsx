@@ -12,8 +12,13 @@ import { Results as MissionResults } from './components/mission/Results';
 import { StudentHome as MissionDashboard } from './components/dashboard/StudentHome';
 import { TeacherDashboard as MissionControl } from './components/teacher/TeacherDashboard';
 import { TeacherStudentRecord as StudentRecord } from './components/teacher/TeacherStudentRecord';
+import { emptyProgression, ECONOMY, type PlayerProgression, type RewardReceipt } from './domain/progression';
+import { HackerShop } from './components/progression/HackerShop';
+import { IdentityProtocol, Transmission } from './components/progression/IdentityProtocol';
+import { RewardSequence } from './components/progression/RewardSequence';
+import './progression.css';
 
-type Screen = 'login' | 'home' | 'settings' | 'briefing' | 'tutorial' | 'mission' | 'results' | 'teacher' | 'teacher-student';
+type Screen = 'login' | 'home' | 'shop' | 'settings' | 'briefing' | 'tutorial' | 'mission' | 'results' | 'teacher' | 'teacher-student';
 type EventType = 'mission_started' | 'tutorial_completed' | 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed' | 'mission_completed';
 
 const THEMES: Record<ThemeName, { label: string; color: string }> = {
@@ -214,7 +219,8 @@ export default function App() {
   const [teacherDetail, setTeacherDetail] = useState<TeacherStudentDetail>();
   const [attemptId, setAttemptId] = useState<string>();
   const [selectedMissionId, setSelectedMissionId] = useState<string>(missionOne.id);
-  const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: MissionResultStats; previousBest: number | null; previousBestTime: number | null }>();
+  const [result, setResult] = useState<{ score: ScoreResult; duration: number; stats: MissionResultStats; previousBest: number | null; previousBestTime: number | null; reward?: RewardReceipt }>();
+  const [rewardVisible, setRewardVisible] = useState(false);
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -229,10 +235,12 @@ export default function App() {
       role: user?.role ?? null,
       selectedMissionId,
       completedMissions: dashboard.completedMissions,
+      progression: dashboard.progression,
+      rewardVisible,
     });
     window.advanceTime = (_milliseconds: number) => undefined;
     return () => { delete window.render_game_to_text; delete window.advanceTime; };
-  }, [dashboard.completedMissions, screen, selectedMissionId, user]);
+  }, [dashboard, rewardVisible, screen, selectedMissionId, user]);
 
   useEffect(() => {
     void api<{ user: SessionUser }>('auth.session').then(({ user: current }) => void authenticate(current)).catch(() => setScreen('login'));
@@ -258,28 +266,38 @@ export default function App() {
   }
   const selectedMission = getMission(selectedMissionId) ?? missionOne;
   async function beginMission() { if (!user) return; const nextId = (await api<{ attemptId: string }>('attempt.start', { missionId: selectedMission.id }, user.csrfToken)).attemptId; await api('attempt.event', { attemptId: nextId, type: 'tutorial_completed', data: { tutorialId: `${selectedMission.id}-intro` } }, user.csrfToken); setAttemptId(nextId); setScreen('mission'); }
-  async function completeMission(score: ScoreResult, duration: number, stats: MissionResultStats) {
+  async function completeMission(score: ScoreResult, duration: number, stats: MissionResultStats, reward?: RewardReceipt) {
     if (!user) return;
     const previous = dashboard.missions.find((mission) => mission.missionId === selectedMission.id);
     const refreshed = await api<StudentDashboard>('student.dashboard', {}, user.csrfToken);
     setDashboard(refreshed);
-    setResult({ score, duration, stats, previousBest: previous?.bestScore ?? null, previousBestTime: previous?.bestTimeSeconds ?? null });
+    setResult({ score, duration, stats, previousBest: previous?.bestScore ?? null, previousBestTime: previous?.bestTimeSeconds ?? null, reward });
+    setRewardVisible(Boolean(reward));
     setScreen('results');
   }
 
   if (!user || screen === 'login') return <LoginScreen onAuthenticated={(next) => void authenticate(next)} />;
   const theme = THEMES[user.themeColor];
+  const progression = dashboard.progression;
+  const updateProgression = (state: PlayerProgression) => setDashboard(current => ({ ...current, progression: state }));
+  const pendingIdentity = progression?.hackerIdentityUnlocked && !progression.hackerCodename;
+  const pendingTransmission = progression?.hackerCodename && !progression.storyFlags.mission4TransmissionSeen;
   const content = (() => {
-    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('briefing'); }} onSettings={() => setScreen('settings')} />;
+    if (screen === 'home' && progression && pendingIdentity) return <IdentityProtocol user={user} progression={progression} onUpdate={updateProgression} />;
+    if (screen === 'home' && progression && pendingTransmission) return <Transmission user={user} progression={progression} onUpdate={updateProgression} />;
+    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('briefing'); }} onSettings={() => setScreen('settings')} onShop={() => setScreen('shop')} onProgression={updateProgression} />;
+    if (screen === 'shop') return <HackerShop user={user} progression={progression ?? emptyProgression()} onUpdate={updateProgression} onBack={() => setScreen('home')} />;
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
     if (screen === 'briefing') return <MissionBriefing mission={selectedMission} user={user} onBack={() => setScreen('home')} onStart={() => setScreen('tutorial')} />;
     if (screen === 'tutorial') return <MissionTutorial mission={selectedMission} user={user} onComplete={() => void beginMission()} />;
-    if (screen === 'mission' && attemptId) return <MissionRunner mission={selectedMission} user={user} attemptId={attemptId} onComplete={(score, duration, stats) => void completeMission(score, duration, stats)} />;
-    if (screen === 'results' && result) return <MissionResults user={user} mission={selectedMission} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
-    if (screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} />;
+    if (screen === 'mission' && attemptId) return <MissionRunner mission={selectedMission} user={user} attemptId={attemptId} onComplete={completeMission} />;
+    if (screen === 'results' && result && rewardVisible && result.reward) return <RewardSequence user={user} reward={result.reward} progression={progression ?? emptyProgression()} missionNumber={selectedMission.number} onContinue={() => { setRewardVisible(false); if (pendingIdentity || pendingTransmission) setScreen('home'); }} />;
+    if (screen === 'results' && result) return <MissionResults user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} mission={selectedMission} {...result} onHome={() => setScreen('home')} onReplay={() => setScreen('briefing')} />;
+    if (user.role === 'teacher' && screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} onReset={async (missionId) => { await api('teacher.resetMission', { studentId: teacherDetail.student.id, missionId }, user.csrfToken); const [detail, list] = await Promise.all([api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken), api<{ students: TeacherStudent[] }>('teacher.students', {}, user.csrfToken)]); setTeacherDetail(detail); setStudents(list.students); }} />;
     if (screen === 'teacher') return <MissionControl students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
     return null;
   })();
 
-  return <div className="app-shell notranslate" translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><Topbar user={user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{content}</div>;
+  const equipmentClasses = Object.values(progression?.equippedItems ?? {}).map(id => ECONOMY.items.find(item => item.itemId === id)?.asset.className ?? '').join(' ');
+  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><div inert={rewardVisible && screen === 'results' ? true : undefined}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} /></div>{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
 }

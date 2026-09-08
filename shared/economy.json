@@ -1,0 +1,24 @@
+{
+  "missions": {
+    "mission-1": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
+    "mission-2": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
+    "mission-3": { "xpMax": 1000, "credits": 30, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 }
+  },
+  "ranks": [
+    { "id": "rookie", "name": "Rookie", "requiredMissions": [], "earningCap": 140, "spendingCap": 140 },
+    { "id": "operator", "name": "Operator", "requiredMissions": [1,2,3], "earningCap": 140, "spendingCap": 140 },
+    { "id": "infiltrator", "name": "Infiltrator", "requiredMissions": [1,2,3,4,5,6,7,8,9,10], "earningCap": 1200, "spendingCap": 1200 }
+  ],
+  "items": [
+    { "itemId": "rookie-badge", "name": "Rookie Hacker", "description": "Wear proof that you made it through training.", "category": "badge", "price": 40, "rarity": "standard", "icon": "◇", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "label": "ROOKIE HACKER" } },
+    { "itemId": "neon-pointer", "name": "Neon Pointer", "description": "A bright cyan pointer for your next operation.", "category": "cursor", "price": 60, "rarity": "standard", "icon": "↗", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "className": "neon-pointer" } },
+    { "itemId": "matrix-terminal", "name": "Matrix Terminal", "description": "Green scanlines and a glowing training computer.", "category": "terminalTheme", "price": 100, "rarity": "rare", "icon": ">_", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "className": "matrix-terminal" } },
+    { "itemId": "mini-drone", "name": "Mini Drone", "description": "Your own hovering companion. Reach Mission 10 to gain clearance.", "category": "companion", "price": 600, "rarity": "legendary", "icon": "⌁", "requiredRank": "infiltrator", "purchasable": true, "equipable": true, "asset": { "className": "mini-drone" } }
+  ],
+  "suggestedCodenames": ["NOVA","ZERO","BYTE","GHOST","GLITCH","ECHO","PIXEL","SHADOW","CIRCUIT","VECTOR"],
+  "blockedCodenameFragments": ["FUCK","SHIT","BITCH","CUNT","NIGGER","NAZI","HITLER","PENIS","PUSSY","ASSHOLE","DICK","SEX","MERDA","CAZZO","STRONZ"],
+  "nodes": [
+    { "nodeId": "training", "name": "Home Base", "missionIds": ["mission-1","mission-2","mission-3"], "prerequisites": [], "icon": "⌂", "position": { "x": 0, "y": 0 } },
+    { "nodeId": "classified", "name": "Classified Network", "missionIds": ["mission-4"], "prerequisites": ["training"], "icon": "◈", "position": { "x": 0, "y": 1 }, "comingSoon": true }
+  ]
+}

@@ -13,7 +13,7 @@ The application is designed for `https://beahero.fun/hacker/`: Vite builds the R
 - English + Italian/Japanese briefings and tutorial
 - Translation-on-demand and scripted state-aware Cyber Guide during scored play
 - Immutable attempts, extensible event history, scoring, results, and read-only teacher Mission Control
-- Development-only local authentication for all five standard profiles with ephemeral in-memory progress
+- Development-only local authentication for all five standard profiles with private local progress persistence
 
 ## Requirements
 
@@ -40,7 +40,7 @@ npm run dev
 
 Open `http://127.0.0.1:5173/hacker/`. The Vite development server provides a local-only API for `himari.hacker`, `kotone.hacker`, `mirko.hacker`, `cloe.hacker`, and `be_a_hacker`. This working copy already has the requested development credentials in the gitignored `.dev-auth.local.json`; that file is never copied into `dist/`.
 
-Mission attempts, theme changes, and teacher views work locally and are held in memory until Vite restarts. To replace the local passwords later, run `npm run setup:dev-auth`, enter the shared student and teacher passwords, and restart Vite. There is no preview-user bypass: every local profile uses the real login flow.
+Mission attempts, themes, economy, inventory and story progress persist locally in the gitignored `.dev-progress.local.json` file. Sessions expire when Vite restarts; sign in again to resume. Production continues to use MySQL. To replace the local passwords later, run `npm run setup:dev-auth`, enter the shared student and teacher passwords, and restart Vite. There is no preview-user bypass: every local profile uses the real login flow.
 
 ## Login languages and Chrome translation
 
@@ -56,6 +56,7 @@ The document and application shell use `lang="en"`, `translate="no"`, the `notra
 ```powershell
 mysql -u root -p beahero_hacker < server/migrations/001_initial.sql
 mysql -u root -p beahero_hacker < server/migrations/002_three_missions.sql
+mysql -u root -p beahero_hacker < server/migrations/003_progression_economy.sql
 ```
 
 3. Copy `server/config.example.php` to `server/config.php` and fill in the local PDO DSN, database username, and database password. Set `production` to `false` so the session cookie works over local HTTP. `server/config.php` is gitignored.
@@ -127,7 +128,7 @@ dist/
 ## Deploy to XServer at `/hacker/`
 
 1. In XServer's database panel, create a MySQL database and least-privilege database user.
-2. Import `server/migrations/001_initial.sql` and then `server/migrations/002_three_missions.sql` with phpMyAdmin. For an existing Mission 1 database, import only migration 002.
+2. Import migrations 001, 002, then 003 with phpMyAdmin. For an existing database, apply only missing migrations in order.
 3. Run `npm ci` and `npm run build` locally. Node.js is not needed on XServer.
 4. Upload the **contents** of `dist/` into the domain's `public_html/hacker/` directory.
 5. On the server, copy `config.example.php` to `config.php`, insert the XServer database details, leave `base_path` as `/hacker/`, and leave `production` as `true`.
@@ -140,7 +141,34 @@ The app uses a state-based SPA rather than path URLs, so it needs no rewrite of 
 
 ## Database migrations
 
-Migrations live in `server/migrations/` and are applied in filename order. Apply both `001_initial.sql` and `002_three_missions.sql` to a new database; apply only `002_three_missions.sql` when upgrading an existing Mission 1 database. Back up the database first and record applied filenames in deployment notes.
+### Teacher mission resets and test account
+
+Open a student record in Mission Control and choose **Reset Mission 1/2/3**. Confirm the named student and mission to permanently remove that mission's attempts, events, scores, points and awards. Later missions retain their progress and unlocks. Shared independence awards survive when another retained attempt qualifies. The selected mission keeps its existing unlock state. The student's current mission returns to the earliest unlocked incomplete mission. Students cannot call this API: it requires a teacher session and CSRF token. Reset after the student stops playing; an old attempt cannot be submitted again after reset, and the student should refresh their page.
+
+`test.hacker` is available locally with the shared local student password. After `npm run deploy`, run `npm run setup:test-student` once from this computer to create it on XServer. This copies the password hash from `himari.hacker`, whose password is the shared live student password, into a new independent student record. It never changes existing student accounts. If test.hacker already exists, it leaves its password and progress unchanged. The test account uses Italian support and an orange theme, and appears as **Test Student** in Mission Control. If students later have different passwords, choose a source explicitly over SSH with `php bin/create_test_student.php SOURCE_USERNAME`.
+
+The progression upgrade requires migration 003 before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
+
+### Publishing updates from this Windows computer
+
+Run `npm run deploy:preview` to run tests/build and inspect the upload archive without connecting to XServer. Run `npm run deploy` to publish through SSH to the configured `xs738394` account on port 10022. The default key location is `SSH passkey/xs738394.key`; override it with the `HACKER_SSH_KEY` environment variable if needed. Enter the key passphrase when SSH asks (it may ask more than once).
+
+The command stages files privately, checks PHP syntax on XServer, backs up the current game files to `~/.hacker-backups/<release-id>.tar.gz`, and copies the new frontend and PHP files. It preserves the live `config.php`, retains old hashed assets, and does not change the database or reset accounts. Backups include the private configuration and remain outside public_html. Staged releases and backups are retained; periodically review their disk usage. Deploy between classes: file copying is not an atomic release and active sessions may encounter mixed versions. If publishing fails after copying begins, stop and inspect the error; the printed release ID/staging path identifies the corresponding backup.
+
+New mission database migrations must still be reviewed and applied separately in the required order, including unlock rules for students who already completed the former final mission. Back up the database before applying migrations; the deployment archive only backs up files. Verify login and a student attempt after publishing.
+
+### Adding another live student
+
+After publishing the updated package (which now includes `bin/create_user.php`), connect over SSH and run, substituting the new student's details:
+
+```sh
+cd ~/beahero.fun/public_html/hacker
+php bin/create_user.php yuki.hacker Yuki student ja
+```
+
+Use `ja` for Japanese support or `it` for Italian. The script prompts privately for a password of at least 12 characters and creates one new account; existing usernames are not overwritten. The teacher dashboard lists database students automatically when refreshed. No XServer database/user settings or frontend rebuild are needed per student. Local development accounts are separate. Do not rerun `provision_standard_accounts.php` to add a student: that resets the standard profiles' passwords and settings.
+
+Migrations live in `server/migrations/` and are applied in filename order. Apply `001_initial.sql`, `002_three_missions.sql`, then `003_progression_economy.sql` to a new database. An existing three-mission database needs only 003; an existing Mission 1 database needs 002 then 003. Back up the database first and record applied filenames in deployment notes.
 
 ## Mission definitions and future missions
 
@@ -166,3 +194,43 @@ Mission definitions are source-controlled. MySQL stores user-specific state only
 - Event types are allowlisted and event JSON is size-limited.
 - Database configuration is never part of the frontend bundle.
 - The application stores minimal student profile and learning-progress data and has no leaderboard or student communication.
+
+
+## Phase 1 progression and economy
+
+Missions 1–3 are Rookie Training. Their existing calculated scores become permanent lifetime XP; Credits are separate and spendable. Successful completions award 20/20/30 Credits respectively, only on the first two completions of each mission. Later replays still add XP. Rookie and Operator cumulative earning/spending allowances are 140 Credits. Mission 10 and its prerequisites grant Infiltrator; the 600-Credit Mini Drone requires that rank. The configured Infiltrator allowance is 1,200, reserved for future campaign rewards.
+
+Edit `shared/economy.json` to change rewards, prices, rank prerequisites/budgets, suggested names, or node metadata. `src/domain/progression.ts` supplies public types, generic cap calculations, and map-node derivation; `server/src/progression.php` owns authoritative transactions. New reward sources must provide trusted server policy and a stable unique event ID. Never accept arbitrary reward amounts from the browser. Daily/activity/cooldown/attempt policies are supported; no minigames or Mission 4 exercises are implemented yet.
+
+Graduation unlocks a validated codename, the shop and profile, then shows a one-time Mission 4 transmission. Working starter purchases are Rookie Hacker badge, Neon Pointer cursor and Matrix Terminal skin. Existing free themes remain free. Owned equipment persists, and defaults can be restored. Sound is muted initially and its preference is saved. Teacher detail includes the permanent economy and inventory summary.
+
+Teacher resets continue to remove selected mission performance records and mission-specific awards. They **do not** remove lifetime XP, Credits, inventory, permanent achievements, story milestones or credit counters. Consequently the legacy training-points total can differ from lifetime XP after a reset. Resets cannot reopen credit slots.
+
+### Safe upgrade of an existing database
+
+1. Back up the MySQL database separately from the deployment file backup.
+2. Run `php server/bin/check_economy.php` with the existing server configuration (or set `HACKER_CONFIG_PATH` to that configuration). This is a read-only aggregate inspection of students, progress, successful attempts, eligible historical credit slots and graduates. Review the counts before changing schema.
+3. Apply `server/migrations/003_progression_economy.sql` after migration 002. It only adds tables and achievement definitions and is safe to rerun.
+4. Publish the complete package. `npm run deploy` now includes the catalog and progression service. Its existing shadow-table reset check also requires the new schema, so publishing stops before copying application files if 003 is missing. The deploy command never applies schema migrations itself.
+5. On first access, each player's old points and up to two historical completions per mission are initialized transactionally once. Existing graduates receive the identity/breach sequence on next entry. No accounts, scores, passwords or existing progress are reset.
+
+The immutable reward ledger and inventory uniqueness constraints supplement user-row locking. Duplicate completion retries return the original receipt. Concurrent purchases cannot double-spend. Avoid rolling back just the application after new rewards have been granted; preserve the economy tables and assess the compatibility of the previous application first.
+
+### Verification commands
+
+```powershell
+npm test
+npm run check
+npm run build
+npm run check:server-contract
+# Set PHP_BINARY if PHP is not on PATH.
+node scripts/check-php.mjs
+# Configured MySQL + migration 003; all fixture writes use connection-local shadow tables.
+php server/tests/progression_integration.php
+php server/bin/check_reset.php
+# Disposable local DB only; the script enforces an isolated database name and explicit opt-in.
+$env:HACKER_ISOLATED_TEST = '1'
+php server/tests/progression_concurrency.php
+```
+
+`node --experimental-transform-types scripts/verify-progression-browser.mjs` runs the supplied web-game action client and a full authenticated browser journey using disposable development credentials. It requires the develop-web-game skill's Playwright installation (`WEB_GAME_SKILL` can override its directory). Screenshots and state snapshots go to `output/playwright/progression/`. Set `PHP_BACKEND_URL` only for an isolated PHP test server with fixtures from `server/tests/progression_http_fixture.php`; these fixture scripts reject production database names. They are not included in the deployment archive.

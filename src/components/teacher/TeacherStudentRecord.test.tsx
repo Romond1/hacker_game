@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import type { TeacherStudentDetail } from '../../api/client';
 import { TeacherStudentRecord } from './TeacherStudentRecord';
 
@@ -9,6 +9,28 @@ const detail: TeacherStudentDetail = {
 };
 
 describe('TeacherStudentRecord', () => {
+  it('requires confirmation and sends only the selected mission', async () => {
+    const reset = vi.fn().mockResolvedValue(undefined);
+    render(<TeacherStudentRecord detail={detail} onBack={() => undefined} onReset={reset} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Mission 2' }));
+    expect(reset).not.toHaveBeenCalled();
+    expect(screen.getByRole('alertdialog')).toHaveTextContent('Himari');
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(reset).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Mission 2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm reset' }));
+    await waitFor(() => expect(reset).toHaveBeenCalledExactlyOnceWith('mission-2'));
+    expect(await screen.findByRole('status')).toHaveTextContent('reset');
+  });
+
+  it('shows reset failures and keeps the record available', async () => {
+    render(<TeacherStudentRecord detail={detail} onBack={() => undefined} onReset={async () => { throw new Error('Server unavailable'); }} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Reset Mission 1' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm reset' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Server unavailable');
+    expect(screen.getByText('802')).toBeInTheDocument();
+  });
+
   it('labels and reports attempts from all three missions', () => {
     render(<TeacherStudentRecord detail={detail} onBack={() => undefined} />);
     expect(screen.getByText('Mission 1 · Computer Training')).toBeInTheDocument();

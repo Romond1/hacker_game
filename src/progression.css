@@ -1,0 +1,115 @@
+/* Progression shares the existing terminal palette and readable student scale. */
+.progression-copy { display: inline-block; }
+.progression-copy > small { display: block; font-size: .67em; font-weight: 500; letter-spacing: 0; line-height: 1.5; opacity: .78; margin-top: 3px; }
+.progression-copy > span { display: block; }
+.hacker-profile { display: grid; grid-template-columns: 1fr 1.1fr auto; gap: 28px; padding: 28px 0; border-top: 1px solid #29453b; border-bottom: 1px solid #29453b; align-items: center; margin-bottom: 32px; }
+.hacker-identity h2 { margin: 0; font: 800 1.65rem 'Cascadia Mono', monospace; letter-spacing: .08em; overflow-wrap: anywhere; }
+.hacker-identity .eyebrow { margin-bottom: 8px; }
+.profile-values { display: flex; gap: 38px; margin: 0; }
+.profile-values dt { font-size: .78rem; color: var(--muted); }
+.profile-values dd { margin: 6px 0 0; font: 700 1.8rem 'Cascadia Mono', monospace; }
+.profile-actions { display: grid; gap: 8px; }
+.sound-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: .65rem; min-height: 40px; }
+.profile-achievements { grid-column: 1 / -1; display: flex; gap: 18px; flex-wrap: wrap; font: 600 .6rem 'Cascadia Mono', monospace; color: var(--accent); }
+.equipped-badge { display: inline-block; margin-top: 12px; border: 1px solid var(--accent); color: var(--accent); padding: 5px 9px; font: 700 .56rem monospace; letter-spacing: .08em; }
+.rookie-introduction { max-width: 850px; margin: 0 0 38px; }
+.rookie-introduction h2 { font-size: 1.12rem; margin-bottom: 10px; }
+.rookie-introduction p { color: #b6c9c1; font-size: .86rem; }
+.shop-heading { display: flex; align-items: center; justify-content: space-between; gap: 28px; border-bottom: 1px solid #29453b; padding-bottom: 28px; }
+.shop-heading h1 { font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; margin: 0; }
+.shop-heading h1 small { font-size: .32em; margin-top: 12px; }
+.shop-page .back-link { margin-bottom: 25px; }
+.wallet { border-left: 1px solid #29453b; padding-left: 35px; text-align: right; }
+.wallet > strong { display: block; color: var(--accent); font: 700 2.8rem 'Cascadia Mono', monospace; line-height: 1.2; }
+.wallet > .progression-copy { font-size: .8rem; }
+.economy-help { margin: 25px 0 0; max-width: 850px; font-size: .8rem; color: #b6c9c1; }
+.shop-feedback { min-height: 28px; }
+.purchase-confirmation { border-left: 3px solid var(--accent); padding: 12px 18px; background: var(--accent-soft); margin: 20px 0; animation: reward-arrive .25s ease-out; }
+.inventory-strip { margin: 20px 0 42px; }
+.inventory-strip h2 { font-size: 1.1rem; }
+.inventory-strip > p { color: var(--muted); font-size: .8rem; }
+.inventory-items { display: flex; flex-wrap: wrap; gap: 18px; }
+.inventory-items > div { padding: 15px 0; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; border-bottom: 1px solid #29453b; }
+.inventory-items strong { font-size: .85rem; }
+.inventory-items small { color: var(--accent); }
+.shop-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 42px 32px; }
+.shop-item { display: flex; gap: 22px; border-top: 1px solid #29453b; padding-top: 24px; min-width: 0; }
+.shop-item-details { flex: 1; min-width: 0; }
+.shop-item-details h2 { font-size: 1.25rem; margin-bottom: 10px; }
+.shop-item-details > p:not(.eyebrow) { font-size: .76rem; color: var(--muted); min-height: 60px; }
+.shop-item .eyebrow { font-size: .53rem; margin-bottom: 9px; }
+.item-preview { width: 112px; height: 136px; flex-shrink: 0; display: grid; place-items: center; background: #0b2018; position: relative; overflow: hidden; }
+.item-preview > span { font: 700 2.8rem 'Cascadia Mono', monospace; color: var(--accent); transition: transform .2s ease; }
+.shop-item:hover .item-preview > span { transform: translateY(-4px); }
+.item-preview.neon-pointer > span { color: #56f5ed; text-shadow: 0 0 18px #56f5ed80; }
+.item-preview.matrix-terminal { background: repeating-linear-gradient(0deg, #123421 0px, #123421 2px, #082316 3px, #082316 6px); }
+.item-preview.mini-drone > span { border: 2px solid #b4bfc3; border-radius: 50%; width: 64px; height: 48px; display: grid; place-items: center; line-height: 1; color: #b4bfc3; }
+.item-price { display: flex; gap: 6px; align-items: baseline; color: var(--accent); margin: 14px 0; font-size: 1rem; }
+.item-price .progression-copy { font-size: .68rem; }
+.shop-item button { width: 100%; font-size: .75rem; }
+.shop-item button:disabled { opacity: .55; cursor: default; }
+.shop-locked { text-align: center; padding: 70px 0; }
+.shop-locked > span { font-size: 5rem; color: var(--muted); }
+.shop-locked h2 { font: 700 1.4rem monospace; letter-spacing: .2em; }
+.shop-locked p { color: var(--muted); }
+.protocol-screen { min-height: calc(100svh - 74px); display: grid; place-items: center; padding: 40px 24px 70px; }
+.protocol-content { width: min(740px, 100%); }
+.protocol-content h1 { font: 800 clamp(1.8rem, 4vw, 3rem)/1.15 'Cascadia Mono', monospace; letter-spacing: -.03em; margin: 20px 0; }
+.protocol-content h1 small { font: 500 .32em/1.6 'Segoe UI', sans-serif; margin-top: 14px; }
+.protocol-content > p { color: #b6c9c1; font-size: .9rem; }
+.protocol-content .primary-button { margin-top: 24px; }
+.breach-screen { background: repeating-linear-gradient(0deg, transparent, transparent 4px, #ffbd6620 5px, transparent 6px); animation: breach-entry .7s ease-out; }
+.breach-screen .eyebrow, .breach-symbol { color: #ffbd66; }
+.breach-symbol { font: 900 3rem monospace; border: 2px solid currentColor; width: 80px; height: 80px; display: grid; place-items: center; margin: 35px 0; }
+.protocol-content form label { display: block; font-size: .78rem; color: var(--muted); margin: 25px 0 10px; }
+.protocol-content input { display: block; width: 100%; background: #081b13; color: var(--accent); border: 1px solid #3f6e58; border-bottom: 3px solid var(--accent); padding: 18px; font: 700 clamp(1.3rem, 4vw, 2rem) 'Cascadia Mono', monospace; letter-spacing: .08em; border-radius: 0; }
+.name-rules { margin-top: 12px; color: var(--muted); font-size: .66rem; }
+.codename-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.codename-suggestions button { border-radius: 0; padding: 8px 14px; font: 600 .7rem monospace; min-height: 42px; }
+.classified { color: var(--accent); }
+.incoming-signal { display: flex; align-items: center; gap: 14px; padding: 22px 0; font: 600 .75rem monospace; }
+.incoming-signal > span { height: 8px; width: 8px; background: var(--accent); border-radius: 50%; animation: signal-pulse 2s ease-in-out infinite; }
+.mission-teaser h2 { font-size: 1.4rem; }
+.mission-teaser .progression-copy { vertical-align: top; }
+.reward-sequence { min-height: calc(100svh - 74px); position: relative; overflow: hidden; display: grid; place-items: center; padding: 40px 24px; }
+.reward-content { width: min(760px, 100%); text-align: center; position: relative; z-index: 1; animation: reward-arrive .45s ease-out; }
+.reward-content h1 { font: 800 clamp(1.8rem, 5vw, 3.5rem)/1.1 'Cascadia Mono', monospace; letter-spacing: -.05em; margin: 18px 0; color: var(--accent); }
+.reward-content h1 small { font: 500 .25em/1.6 'Segoe UI', sans-serif; margin-top: 12px; }
+.reward-content > p { color: var(--muted); }
+.reward-amounts { display: grid; grid-template-columns: 1fr 1fr; margin: 32px 0; border-top: 1px solid #29453b; border-bottom: 1px solid #29453b; padding: 26px 0; }
+.reward-amounts > div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.reward-amounts > div + div { border-left: 1px solid #29453b; }
+.reward-amounts strong { font: 800 clamp(2rem, 5vw, 3.5rem) 'Cascadia Mono', monospace; font-variant-numeric: tabular-nums; }
+.reward-amounts small { color: var(--muted); font-size: .6rem; }
+.reward-limit { font-size: .7rem; }
+.rookie-reward-progress { margin: 20px 0 28px; }
+.rookie-reward-progress > strong { font-size: .9rem; }
+.rookie-reward-progress > small { font: 600 .6rem monospace; color: var(--muted); }
+.training-segments { display: flex; justify-content: center; gap: 8px; margin: 15px 0 8px; }
+.training-segments > span { width: 100px; padding: 8px; font: 600 .7rem monospace; background: #10271d; color: #719383; border-bottom: 3px solid #29453b; }
+.training-segments > span.complete { color: var(--accent); border-color: var(--accent); }
+.mission-save-overlay { position: fixed; inset: 0; z-index: 100; background: #06100ded; display: grid; place-items: center; padding: 24px; }
+.mission-save-overlay > div { max-width: 650px; text-align: center; }
+.app-shell.neon-pointer, .app-shell.neon-pointer button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='32' viewBox='0 0 28 32'%3E%3Cpath d='M3 2L23 19L13 20L9 29Z' fill='%2356f5ed' stroke='%2305100d' stroke-width='2'/%3E%3C/svg%3E") 3 2, auto; }
+.app-shell.matrix-terminal .computer-shell { background: repeating-linear-gradient(0deg, #072013, #072013 3px, #10301d 4px, #10301d 5px); box-shadow: 0 0 28px #34ff6d26; border-color: #54d582; }
+.app-shell.matrix-terminal .computer-body { background: transparent; }
+.app-shell.matrix-terminal .files-area .file-item { color: #deffe9; }
+.app-shell.matrix-terminal .files-area .file-item small, .app-shell.matrix-terminal .empty-folder { color: #b1d1bd; }
+.app-shell.matrix-terminal .files-area .file-item:hover, .app-shell.matrix-terminal .files-area .file-item.selected { background: #21492f; border-color: #54d582; }
+.app-shell.matrix-terminal .computer-toolbar { border-bottom-color: #54d582; }
+.drone-companion { position: fixed; right: 25px; bottom: 20px; z-index: 12; display: flex; gap: 4px; align-items: center; pointer-events: none; animation: drone-hover 3s ease-in-out infinite; }
+.drone-companion span { display: grid; place-items: center; height: 44px; width: 62px; border: 2px solid #adbec4; background: #0a211a; border-radius: 50%; color: var(--accent); box-shadow: 0 6px 25px #0008; }
+.drone-companion i { width: 26px; height: 4px; border-top: 2px solid #d0dde2; }
+.teacher-economy { padding: 22px 0; border-top: 1px solid #29453b; border-bottom: 1px solid #29453b; margin: 20px 0; }
+.teacher-economy dl { display: flex; flex-wrap: wrap; gap: 22px 38px; }
+.teacher-economy dt { font-size: .65rem; color: var(--muted); }
+.teacher-economy dd { margin: 4px 0 0; font-weight: 700; }
+.teacher-economy p { font-size: .72rem; color: var(--muted); }
+@keyframes reward-arrive { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes breach-entry { 0%, 25% { transform: translateX(-3px); filter: brightness(1.6); } 15%, 40% { transform: translateX(3px); } 100% { transform: none; filter: none; } }
+@keyframes signal-pulse { 50% { opacity: .25; } }
+@keyframes drone-hover { 50% { transform: translateY(-8px); } }
+@media (max-width: 850px) { .hacker-profile { grid-template-columns: 1fr 1fr; } .profile-actions { grid-column: 1 / -1; display: flex; gap: 20px; } .shop-catalog { grid-template-columns: 1fr; } .shop-item-details > p:not(.eyebrow) { min-height: 0; } }
+@media (max-width: 520px) { .hacker-profile { gap: 20px; grid-template-columns: 1fr; } .profile-values { gap: 45px; } .profile-actions { flex-wrap: wrap; } .shop-heading { align-items: flex-start; gap: 12px; } .wallet { padding-left: 16px; } .wallet > strong { font-size: 2rem; } .shop-heading h1 { font-size: 1.75rem; } .item-preview { width: 75px; height: 105px; } .shop-item { gap: 16px; } .protocol-screen { padding: 30px 24px 55px; } .reward-sequence { padding: 25px 20px; } .reward-amounts { margin: 20px 0; } .reward-content .primary-button { width: 100%; } .shop-item-details h2 { font-size: 1.05rem; } }
+@media (prefers-reduced-motion: reduce) { .breach-screen, .reward-content, .purchase-confirmation, .incoming-signal > span, .drone-companion, .celebration i { animation: none !important; } .shop-item:hover .item-preview > span { transform: none; } }
+.item-description-support { display: block; font-size: .8em; margin-top: 6px; line-height: 1.6; }

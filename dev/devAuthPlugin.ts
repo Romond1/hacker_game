@@ -1,8 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, renameSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin } from 'vite';
-import { createDevAuthService, DevApiError, type DevCredentialFile } from './authCore.ts';
+import { createDevAuthService, DevApiError, type DevCredentialFile, type DevSnapshot } from './authCore.ts';
+import { ProgressionError } from './progressionCore.ts';
 
 const COOKIE = 'hacker_dev_session';
 const THEMES = ['green', 'blue', 'pink', 'purple', 'orange', 'cyan'] as const;
@@ -24,9 +25,17 @@ async function jsonBody(req: IncomingMessage): Promise<Record<string, unknown>> 
 
 export function devAuthPlugin(root = process.cwd()): Plugin {
   const credentialPath = resolve(root, '.dev-auth.local.json');
+  const statePath = resolve(root, '.dev-progress.local.json');
   const service = existsSync(credentialPath)
-    ? createDevAuthService(JSON.parse(readFileSync(credentialPath, 'utf8')) as DevCredentialFile)
+    ? createDevAuthService(JSON.parse(readFileSync(credentialPath, 'utf8')) as DevCredentialFile, existsSync(statePath) ? JSON.parse(readFileSync(statePath, 'utf8')) as DevSnapshot : undefined)
     : null;
+  function savedResponse(res: ServerResponse, data: unknown, status = 200) {
+    if (service) {
+      writeFileSync(`${statePath}.tmp`, JSON.stringify(service.snapshot()), { mode: 0o600 });
+      renameSync(`${statePath}.tmp`, statePath);
+    }
+    return response(res, data, status);
+  }
 
   return {
     name: 'hacker-local-auth-api',
@@ -56,24 +65,40 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
             return response(res);
           }
           if (action === 'student.dashboard') return user.role === 'student' ? response(res, service.dashboard(user.id)) : failure(res, 'forbidden', 'Student access required.', 403);
+          if (['student.identity', 'student.purchase', 'student.equip', 'student.story', 'student.sound'].includes(action)) {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            if (action === 'student.identity') return savedResponse(res, service.identity(user.id, String(body.codename ?? '')));
+            if (action === 'student.purchase') return savedResponse(res, service.purchase(user.id, String(body.itemId ?? '')));
+            if (action === 'student.equip') return savedResponse(res, service.equip(user.id, String(body.itemId ?? ''), String(body.category ?? '')));
+            if (action === 'student.story') return savedResponse(res, service.story(user.id, String(body.flag ?? '')));
+            if (typeof body.muted !== 'boolean') return failure(res, 'validation_failed', 'Choose a sound preference.', 422);
+            return savedResponse(res, service.sound(user.id, body.muted));
+          }
           if (action === 'student.settings') {
             const theme = String(body.themeColor ?? '') as typeof THEMES[number];
             if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
-            return THEMES.includes(theme) ? response(res, service.settings(user.id, theme)) : failure(res, 'validation_failed', 'Choose an available theme.', 422);
+            return THEMES.includes(theme) ? savedResponse(res, service.settings(user.id, theme)) : failure(res, 'validation_failed', 'Choose an available theme.', 422);
           }
           if (action === 'attempt.start') {
             if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
-            return response(res, service.startAttempt(user.id, String(body.missionId ?? 'mission-1')), 201);
+            return savedResponse(res, service.startAttempt(user.id, String(body.missionId ?? 'mission-1')), 201);
           }
           if (action === 'attempt.event') {
             if (!service.ownsAttempt(user.id, String(body.attemptId ?? ''))) return failure(res, 'attempt_not_found', 'Attempt not found.', 404);
             return response(res, {}, 201);
           }
           if (action === 'attempt.finish') {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            const existing = service.rewardReceipt(user.id, String(body.attemptId ?? ''));
+            if (existing) return response(res, { score: existing.xp, reward: existing });
             const finished = service.finishAttempt(user.id, String(body.attemptId ?? ''), Number(body.score), Number(body.durationSeconds), (body.stats ?? {}) as Record<string, unknown>);
-            return finished ? response(res, { score: Number(body.score) }) : failure(res, 'attempt_not_found', 'Attempt not found.', 404);
+            return finished ? savedResponse(res, { score: Number(body.score), reward: service.rewardReceipt(user.id, String(body.attemptId)) }) : failure(res, 'attempt_not_found', 'Attempt not found.', 404);
           }
           if (action === 'teacher.students') return user.role === 'teacher' ? response(res, { students: service.teacherStudents() }) : failure(res, 'forbidden', 'Teacher access required.', 403);
+          if (action === 'teacher.resetMission') {
+            if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);
+            return savedResponse(res, service.resetMission(user.id, String(body.studentId ?? ''), String(body.missionId ?? '')));
+          }
           if (action === 'teacher.student') {
             if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);
             const detail = service.teacherStudent(String(body.studentId ?? ''));
@@ -81,9 +106,10 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
           }
           return failure(res, 'action_not_found', 'Unknown API action.', 404);
         } catch (error) {
+          if (error instanceof ProgressionError) return failure(res, error.code, error.message, 422);
           if (error instanceof DevApiError) {
-            const status = error.code === 'mission_locked' ? 403 : 404;
-            const message = error.code === 'mission_locked' ? 'Complete the previous mission first.' : 'Mission not found.';
+            const status = ['mission_locked', 'forbidden'].includes(error.code) ? 403 : 404;
+            const message = { mission_locked: 'Complete the previous mission first.', forbidden: 'Teacher access required.', student_not_found: 'Student not found.', mission_not_found: 'Mission not found.' }[error.code];
             return failure(res, error.code, message, status);
           }
           return failure(res, 'invalid_request', 'The request could not be read.', 400);

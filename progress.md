@@ -7,6 +7,8 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Production target: PHP/MySQL, not deployed in this iteration
 
 ## Progress
+- 2026-09-08 deployment fix: MariaDB reported error 1066 for same-name CREATE TEMPORARY TABLE LIKE in reset-check setup. Added a distinct temporary schema copy before creating each shadow table. No fixture writes occur until every shadow exists. Regression contract catches the original statement; live validation remains part of the next deployment.
+- 2026-09-08: Added teacher-only selected-mission reset with confirmation, CSRF/role enforcement, transactional user locking, other-mission preservation and shared reward reassignment. Added test.hacker locally plus one-time live setup command using the existing student password hash. Deployment includes an isolated temporary-table reset check; live SSH still requires user passphrase.
 - Started implementation on `feature/three-mission-progression`.
 - Added Mission 1 regression coverage and a typed three-mission catalog.
 - Added ordered objective prerequisites, confirmation-code matching, Follow the Trail, and File Detective definitions.
@@ -29,3 +31,19 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Browser-tested replay entry, Italian and Japanese profile-driven screens, Cloe/Himari zero-progress isolation, Teacher's three labelled Mirko attempts, student-to-teacher authorization denial, and locked-mission denial.
 - Visually inspected desktop results, the full mobile three-card dashboard, and the desktop Teacher record. The mobile dashboard had no unintended horizontal overflow.
 - No XServer deployment or live data change was performed.
+- Verification: frontend/service/HTTP tests and build passed; isolated Chrome flow verified test login, teacher confirmation, selected reset, preserved Mission 2 and refreshed totals. Live PHP/MySQL checks run as a deployment prerequisite; SSH BatchMode could not authenticate here. Publish with npm run deploy, then create live test account with npm run setup:test-student.
+
+## Phase 1 expansion — 2026-09-08
+- Approved specification: docs/superpowers/specs/2026-09-08-progression-economy-design.md. Implementation stays in the existing feature checkout to preserve pending reset/deployment changes.
+- Added shared economy catalog, permanent XP/Credit accounting, two successful credit awards per mission, rank budgets, inventory/equipment, moderated codename, story flags, capped generic activity policies and future node state.
+- Added 3-second server-confirmed reward sequence, graduation breach, identity selection, Mission 4 transmission, shop/profile, bilingual copy, reusable audio/confetti and persistent mute. Existing free themes and exercises remain intact.
+- PHP/MariaDB transaction and concurrency tests passed in a disposable local database, including historical backfill, migration rerun, reset preservation, duplicate rewards and competing purchases. Acquired checksum-verified PHP 8.4.25 and MariaDB 11.4.8 runtimes under D:/Temp; no installed service or live student database changes.
+- Browser journey passed against the development API, including all three real mission exercises, credit cap, purchases/equipment, refresh/logout/login, desktop/mobile layouts and teacher records. Screenshots reviewed in output/playwright/progression.
+- Found and fixed a packaged catalog path error by running PHP separately from the repository layout. scripts/check-php.mjs now prevents regression.
+- Live deployment is outside this implementation run. Before publishing, back up the database, inspect aggregate preflight, and apply migration 003. Deploy script gates publishing on required schema and packages new files.
+- Final PHP/MySQL browser journey passed through real HTTP endpoints: all three exercises, 20/20/30 rewards, second replay credit payout and third cap, graduation/identity/transmission, purchases/equipment, refresh/logout, teacher reset retention, and Japanese premium terminal.
+- Found and fixed a timezone-dependent cooldown bug: ledger timestamps now explicitly use UTC, historical entries retain original completion timestamps, and disabled cooldowns cannot suppress payouts. Added non-UTC session regression coverage.
+- Final automated checks: 55 frontend/domain/service tests plus 16 dedicated development API tests passed; TypeScript/build/server contracts and deployment archive preview passed; PHP syntax/policy/package-layout checks and MariaDB migration/reset/concurrency checks passed. Browser console had no unexpected errors.
+- Manual review and integration testing completed by primary agent; additional subagent review was unavailable due to its usage limit. No commits, live publishing, credential changes, or student data mutations performed. Existing pending work retained.
+- Screenshot review prompted higher-contrast Matrix Terminal file labels. Browser rerun checks the corrected premium appearance.
+- Corrected premium-theme screenshot verified; final development browser rerun passed. Temporary PHP HTTP and MariaDB test servers stopped after validation.

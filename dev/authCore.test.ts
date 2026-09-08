@@ -18,14 +18,48 @@ function fixture(): DevCredentialFile {
 }
 
 describe('local development authentication', () => {
-  it('contains the five standard profiles with the expected roles and languages', () => {
+  it('contains the standard profiles and the separate test student', () => {
     expect(STANDARD_DEV_PROFILES.map(({ username, role, supportLanguage }) => ({ username, role, supportLanguage }))).toEqual([
       { username: 'himari.hacker', role: 'student', supportLanguage: 'ja' },
       { username: 'kotone.hacker', role: 'student', supportLanguage: 'ja' },
       { username: 'mirko.hacker', role: 'student', supportLanguage: 'it' },
       { username: 'cloe.hacker', role: 'student', supportLanguage: 'it' },
+      { username: 'test.hacker', role: 'student', supportLanguage: 'it' },
       { username: 'be_a_hacker', role: 'teacher', supportLanguage: 'it' },
     ]);
+  });
+
+  it('allows the test student to use the shared student password', () => {
+    const service = createDevAuthService(fixture());
+    expect(service.login('test.hacker', 'student-test-secret')?.user).toMatchObject({ role: 'student', username: 'test.hacker' });
+  });
+
+  it('resets only the selected mission and rejects old attempts after reset', () => {
+    const service = createDevAuthService(fixture());
+    for (const id of ['dev-test', 'dev-himari']) {
+      for (const mission of ['mission-1', 'mission-2']) {
+        const attempt = service.startAttempt(id, mission);
+        service.finishAttempt(id, attempt.attemptId, 700, 60, {});
+      }
+    }
+    const open = service.startAttempt('dev-test', 'mission-1');
+    service.resetMission('dev-teacher', 'dev-test', 'mission-1');
+    expect(service.dashboard('dev-test')).toMatchObject({ totalPoints: 700, completedMissions: [2], currentMission: 1 });
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, true, true]);
+    expect(service.teacherStudent('dev-test')?.attempts.map(a => a.missionId)).toEqual(['mission-2']);
+    expect(service.finishAttempt('dev-test', open.attemptId, 999, 1, {})).toBe(false);
+    expect(service.dashboard('dev-himari').totalPoints).toBe(1400);
+    service.resetMission('dev-teacher', 'dev-test', 'mission-1');
+    expect(service.dashboard('dev-test').totalPoints).toBe(700);
+  });
+
+  it('rejects student resets and invalid targets without changing records', () => {
+    const service = createDevAuthService(fixture());
+    expect(() => service.resetMission('dev-test', 'dev-test', 'mission-1')).toThrow('forbidden');
+    expect(() => service.resetMission('dev-teacher', 'dev-teacher', 'mission-1')).toThrow('student_not_found');
+    expect(() => service.resetMission('dev-teacher', 'dev-test', 'missing')).toThrow('mission_not_found');
+    service.resetMission('dev-teacher', 'dev-test', 'mission-3');
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, false, false]);
   });
 
   it('accepts the shared student credential and rejects a wrong credential', () => {

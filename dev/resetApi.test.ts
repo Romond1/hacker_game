@@ -1,0 +1,65 @@
+import { afterAll, beforeAll, expect, it } from 'vitest';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { scryptSync } from 'node:crypto';
+import { createServer, type ViteDevServer } from 'vite';
+import { devAuthPlugin } from './devAuthPlugin';
+
+let server: ViteDevServer;
+let directory: string;
+let url: string;
+beforeAll(async () => {
+  directory = await mkdtemp(join(tmpdir(), 'hacker-reset-api-'));
+  const credential = { salt: 'test-salt', hash: scryptSync('fixture-secret', 'test-salt', 32).toString('hex') };
+  await writeFile(join(directory, '.dev-auth.local.json'), JSON.stringify({ version: 1, credentials: { teacher: credential, student: credential } }));
+  server = await createServer({ configFile: false, root: directory, plugins: [devAuthPlugin(directory)], server: { port: 0, host: '127.0.0.1' }, logLevel: 'silent' });
+  await server.listen();
+  const address = server.httpServer!.address();
+  if (!address || typeof address === 'string') throw new Error('Missing test port');
+  url = `http://127.0.0.1:${address.port}/hacker/api/index.php`;
+});
+afterAll(async () => { await server?.close(); if (directory) await rm(directory, { recursive: true, force: true }); });
+
+async function request(body: object, cookie = '', token = '') {
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: cookie, 'X-CSRF-Token': token }, body: JSON.stringify(body) });
+}
+async function login(username: string) {
+  const response = await request({ action: 'auth.login', username, password: 'fixture-secret' });
+  const { data } = await response.json();
+  return { cookie: response.headers.get('set-cookie')!.split(';')[0], token: data.user.csrfToken };
+}
+
+it('enforces session, role, and CSRF on resets through the HTTP API', async () => {
+  const body = { action: 'teacher.resetMission', studentId: 'dev-test', missionId: 'mission-1' };
+  expect((await request(body)).status).toBe(401);
+  const student = await login('test.hacker');
+  expect((await request(body, student.cookie, student.token)).status).toBe(403);
+  const teacher = await login('be_a_hacker');
+  expect((await request(body, teacher.cookie)).status).toBe(403);
+  expect((await request(body, teacher.cookie, 'invalid')).status).toBe(403);
+  expect((await request(body, teacher.cookie, teacher.token)).status).toBe(200);
+  expect((await request({ ...body, studentId: 'dev-teacher' }, teacher.cookie, teacher.token)).status).toBe(404);
+});
+
+it('protects economy endpoints and serializes concurrent purchase/reward requests', async () => {
+  const student = await login('mirko.hacker');
+  const teacher = await login('be_a_hacker');
+  for (const action of ['student.identity','student.purchase','student.equip','student.story','student.sound']) {
+    expect((await request({ action }, student.cookie)).status).toBe(403);
+    expect((await request({ action }, teacher.cookie, teacher.token)).status).toBe(403);
+  }
+  for (const missionId of ['mission-1','mission-2','mission-3']) {
+    const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
+    const body = { action: 'attempt.finish', attemptId: started.attemptId, score: 800, durationSeconds: 60, stats: {} };
+    const receipts = await Promise.all([request(body, student.cookie, student.token), request(body, student.cookie, student.token)]);
+    const results = await Promise.all(receipts.map(response => response.json()));
+    expect(results[0].data.reward).toEqual(results[1].data.reward);
+  }
+  const buy = { action: 'student.purchase', itemId: 'rookie-badge' };
+  const purchases = await Promise.all([request(buy, student.cookie, student.token), request(buy, student.cookie, student.token)]);
+  expect(purchases.map(response => response.status).sort()).toEqual([200, 422]);
+  const { data } = await (await request({ action: 'student.dashboard' }, student.cookie, student.token)).json();
+  expect(data.progression).toMatchObject({ lifetimeXP: 2400, currentCredits: 30, lifetimeCreditsSpent: 40, inventory: ['rookie-badge'] });
+  expect((await request({ action: 'student.purchase', itemId: 'mini-drone' }, student.cookie, student.token)).status).toBe(422);
+});

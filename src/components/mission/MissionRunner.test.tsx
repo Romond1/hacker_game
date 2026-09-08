@@ -26,6 +26,24 @@ describe('MissionRunner', () => {
     await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
   });
 
+  it('retries a failed save with the same attempt and only completes after confirmation', async () => {
+    let finishes = 0;
+    vi.stubGlobal('fetch', vi.fn().mockImplementation(async (_url, options) => {
+      const body = JSON.parse(options.body);
+      if (body.action === 'attempt.finish' && ++finishes === 1) throw new Error('Offline');
+      return new Response(JSON.stringify({ ok: true, data: { reward: { source: 'mission-1', eventId: 'attempt-retry', xp: 1000, credits: 20, totalXP: 1000, currentCredits: 20, creditLimitReached: false } } }));
+    }));
+    const onComplete = vi.fn();
+    render(<MissionRunner mission={missionOne} user={himari} attemptId="attempt-retry" onComplete={onComplete} />);
+    open(/Training/); open(/Agent Files/); open(/Agent Card\.txt/);
+    await screen.findByRole('button', { name: /Retry saving/ });
+    expect(onComplete).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /Retry saving/ }));
+    await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
+    const calls = (fetch as ReturnType<typeof vi.fn>).mock.calls.map(([, options]) => JSON.parse(options.body)).filter(call => call.action === 'attempt.finish');
+    expect(calls.map(call => call.attemptId)).toEqual(['attempt-retry', 'attempt-retry']);
+  });
+
   it('requires the ordered clue trail before Mission 2 can finish', async () => {
     const onComplete = vi.fn();
     render(<MissionRunner mission={missionTwo} user={himari} attemptId="attempt-2" onComplete={onComplete} />);
