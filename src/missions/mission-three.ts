@@ -4,6 +4,7 @@ const t = (en: string, it: string, ja: string): LocalizedText => ({ en, it, ja }
 
 export const missionThree: MissionDefinition = {
   id: 'mission-3', slug: 'file-detective', number: 3,
+  lifecycle: { prerequisiteMissionId: 'mission-2', associatedTrainingId: 'systems-calibration', replay: 'allowed', difficulty: 'beginner', warningState: 'none' },
   title: t('File Detective', 'Detective dei file', 'ファイル探偵'),
   story: t('Find the useful report, read its Agent Code, and confirm the code.', 'Trova il rapporto utile, leggi il Codice Agente e confermalo.', '必要なレポートを見つけ、エージェントコードを読んで入力しましょう。'),
   skills: [

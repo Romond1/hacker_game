@@ -6,6 +6,7 @@ export const missionTwo: MissionDefinition = {
   id: 'mission-2',
   slug: 'follow-the-trail',
   number: 2,
+  lifecycle: { prerequisiteMissionId: 'mission-1', replay: 'allowed', difficulty: 'beginner', warningState: 'none', unlocks: ['mission-3'] },
   title: t('Follow the Trail', 'Segui le tracce', '手がかりをたどれ'),
   story: t(
     'A training message was split into clues. Follow each clue and recover the final message.',

@@ -6,6 +6,7 @@ export const missionOne: MissionDefinition = {
   id: 'mission-1',
   slug: 'computer-training',
   number: 1,
+  lifecycle: { replay: 'allowed', difficulty: 'beginner', warningState: 'none', unlocks: ['mission-2'] },
   title: t('Computer Training', 'Addestramento al computer', 'コンピュータートレーニング'),
   story: t(
     'Your Agent Card is hidden inside the training computer. Find it and open it.',

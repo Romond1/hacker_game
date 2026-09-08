@@ -46,10 +46,25 @@ export type ScoringRules = {
   targetSeconds: number;
 };
 
+export type MissionLifecycleConfig = {
+  prerequisiteMissionId?: string;
+  requiredRank?: string;
+  associatedTrainingId?: string;
+  replay: 'allowed';
+  optionalTimerSeconds?: number;
+  bonusConditions?: string[];
+  unlocks?: string[];
+  achievementIds?: string[];
+  storyFlags?: string[];
+  warningState?: 'none' | 'alert';
+  difficulty?: 'beginner' | 'standard' | 'advanced';
+};
+
 export type MissionDefinition = {
   id: string;
   slug: string;
   number: number;
+  lifecycle: MissionLifecycleConfig;
   title: LocalizedText;
   story: LocalizedText;
   skills: LocalizedText[];
