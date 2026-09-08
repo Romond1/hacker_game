@@ -71,3 +71,7 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Verification: deployment preview passed 106 frontend and 25 development tests plus server contracts/build/archive inspection. The complete development-API browser journey passed with no unexpected console errors; live, results, and persisted Training Center screenshots were visually inspected at 1440×1080 with no clipping or layout defects.
 - Task 14 verification gate passed: 106 frontend/domain/component tests and 25 development-service/API tests; TypeScript, production build, server contracts, deployment package, and all PHP syntax/policy checks; isolated MariaDB progression, training, reset, non-UTC, duplicate-reward, and concurrency checks; and the complete authenticated browser journey.
 - Final inline review compared all 52 changed files with `phase-1-complete`; no whitespace errors, uncommitted files, live deployment, live database writes, or Mission 4 implementation were present.
+
+## Training bilingual support — 2026-09-09
+- Approved boundary: student-facing training is English-first with always-visible Italian/Japanese support and no penalty; mission Translate controls, event logging, and score penalties remain unchanged.
+- Added a typed training-only copy catalog, dynamic instruction formatters, a reusable bilingual renderer, and localized Systems Calibration metadata. Catalog, module, and TypeScript checks pass.

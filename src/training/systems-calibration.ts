@@ -37,6 +37,11 @@ export const systemsCalibration: TrainingModuleDefinition<CalibrationTask, strin
   title: 'Systems Calibration',
   description: 'Match each access code to verify the training systems.',
   skill: 'Visual matching',
+  localized: {
+    title: { en: 'Systems Calibration', it: 'Calibrazione dei sistemi', ja: 'システム調整' },
+    description: { en: 'Match each access code to verify the training systems.', it: 'Abbina ogni codice di accesso per verificare i sistemi di addestramento.', ja: 'アクセスコードを一致させて、トレーニングシステムを確認します。' },
+    skill: { en: 'Visual matching', it: 'Abbinamento visivo', ja: '視覚照合' },
+  },
   linkedMissionId: 'mission-3',
   requiredCompletedMissions: [1, 2, 3],
   rounds: 5,

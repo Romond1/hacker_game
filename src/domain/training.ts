@@ -67,11 +67,14 @@ export type TrainingTaskValidation<TEvidence> = {
   mistakes: number;
 };
 
+export type LocalizedTrainingText = { en: string; it: string; ja: string };
+
 export type TrainingModuleDefinition<TTask, TSelection, TEvidence> = {
   id: string;
   title: string;
   description: string;
   skill: string;
+  localized: { title: LocalizedTrainingText; description: LocalizedTrainingText; skill: LocalizedTrainingText };
   linkedMissionId: string;
   requiredCompletedMissions: number[];
   rounds: number;
