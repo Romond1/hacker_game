@@ -145,3 +145,6 @@ function refresh_current_mission(PDO $pdo, string $userId): void
     $number = $current->fetchColumn();
     if ($number !== false) $pdo->prepare('UPDATE users SET current_mission = ? WHERE id = ?')->execute([(int) $number, $userId]);
 }
+
+require_once __DIR__ . '/progression.php';
+require_once __DIR__ . '/training.php';
