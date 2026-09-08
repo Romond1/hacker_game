@@ -4,10 +4,11 @@ if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 require __DIR__ . '/../src/bootstrap.php';
 require __DIR__ . '/../src/reset_mission.php';
 require_once __DIR__ . '/../src/progression.php';
+require_once __DIR__ . '/../src/training.php';
 function expect(bool $condition, string $label): void { if (!$condition) throw new RuntimeException($label); }
 // Requires migration 003. Shadow EVERY writable table before any fixture write.
 $pdo = db();
-foreach (['users','missions','user_progress','attempts','attempt_events','achievements','user_achievements','player_economy','reward_ledger','reward_counters','player_inventory'] as $table) {
+foreach (['users','missions','user_progress','attempts','attempt_events','achievements','user_achievements','player_economy','reward_ledger','reward_counters','player_inventory','training_attempts','user_training_progress'] as $table) {
     $pdo->exec("CREATE TEMPORARY TABLE __economy_shape_{$table} LIKE {$table}");
     $pdo->exec("CREATE TEMPORARY TABLE {$table} LIKE __economy_shape_{$table}");
 }
@@ -60,3 +61,19 @@ foreach ([1,2,3] as $number) {
 $pdo->commit();
 expect(abs((int)$pdo->query("SELECT TIMESTAMPDIFF(SECOND, created_at, UTC_TIMESTAMP()) FROM reward_ledger WHERE user_id = 'timezone-test' LIMIT 1")->fetchColumn()) < 5, 'ledger timestamps are UTC');
 echo "Non-UTC session replay reward checks passed.\n";
+
+// Training and the shop must observe the same progression balances.
+$pdo->exec("INSERT INTO users (id, username, display_name, password_hash) VALUES ('shared-ledger-test', 'shared-ledger-test', 'Test', 'fixture')");
+economy_transaction($pdo, 'shared-ledger-test');
+$pdo->beginTransaction(); lock_student_progress($pdo, 'shared-ledger-test');
+$shared = economy_load_locked($pdo, 'shared-ledger-test');
+$shared['completedMissions'] = [1,2,3]; $shared['currentCredits'] = 70; $shared['lifetimeCreditsEarned'] = 70;
+economy_milestones($pdo, 'shared-ledger-test', $shared); economy_save($pdo, 'shared-ledger-test', $shared); $pdo->commit();
+$trainingAttempt = training_start($pdo, 'shared-ledger-test', 'systems-calibration');
+$trainingEvidence = [];
+for ($round=0; $round<$trainingAttempt['rounds']; $round++) $trainingEvidence[] = ['selectedCode'=>training_generate_task($trainingAttempt['seed'], $round)['correctCode']];
+$trainingCompletion = training_finish($pdo, 'shared-ledger-test', $trainingAttempt['attemptId'], $trainingEvidence, 20);
+expect($trainingCompletion['progression']['currentCredits'] === 71 && $trainingCompletion['progression']['lifetimeXP'] === 150, 'training updates shared balances');
+$shared = economy_transaction($pdo, 'shared-ledger-test', 'student.purchase', ['itemId'=>'rookie-badge']);
+expect($shared['currentCredits'] === 31 && $shared['lifetimeCreditsSpent'] === 40, 'shop spends training Credit from shared balance');
+echo "Training and shop shared-ledger checks passed.\n";

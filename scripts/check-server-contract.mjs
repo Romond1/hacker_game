@@ -5,6 +5,7 @@ const api = await readFile('server/api/index.php', 'utf8');
 const bootstrap = await readFile('server/src/bootstrap.php', 'utf8');
 const schema = await readFile('server/migrations/001_initial.sql', 'utf8');
 const migrationTwo = await readFile('server/migrations/002_three_missions.sql', 'utf8');
+const training = await readFile('server/src/training.php', 'utf8');
 const provisioner = await readFile('server/bin/provision_standard_accounts.php', 'utf8');
 const resetCase = api.split("case 'teacher.resetMission':")[1]?.split("case 'teacher.students':")[0];
 assert.ok(resetCase && resetCase.indexOf('require_teacher()') < resetCase.indexOf('reset_student_mission('), 'Reset must authorize Teacher before any mutation.');
@@ -36,6 +37,15 @@ for (const token of ["'mission-2'", "'mission-3'", "'pathfinder'", "'file-detect
 }
 for (const token of ['mission_locked', 'FOR UPDATE', 'nextMissionId', "'missions'"]) {
   assert.ok(api.includes(token), `Progression API missing ${token}`);
+}
+for (const token of ["case 'training.start':", "case 'training.finish':"]) {
+  assert.ok(api.includes(token), `Training API missing ${token}`);
+}
+for (const token of ['FOR UPDATE', 'economy_award(', "'training:' . $definition['id']"]) {
+  assert.ok(training.includes(token), `Training policy missing ${token}`);
+}
+for (const token of ["$input['credits']", "$input['xp']"]) {
+  assert.ok(!api.includes(token), `Training API must not trust client reward field ${token}`);
 }
 assert.ok(provisioner.includes("['be_a_hacker', 'Teacher', 'teacher'"), 'Teacher profile must display as Teacher.');
 const forbiddenStudentSecret = ['hack', '1', '.', '1'].join('');

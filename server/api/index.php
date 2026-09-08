@@ -4,6 +4,7 @@ declare(strict_types=1);
 require __DIR__ . '/../src/bootstrap.php';
 require __DIR__ . '/../src/reset_mission.php';
 require_once __DIR__ . '/../src/progression.php';
+require_once __DIR__ . '/../src/training.php';
 
 try {
     start_secure_session();
@@ -83,6 +84,7 @@ try {
                     'correctActions' => (int) $row['correct_actions'], 'incorrectActions' => (int) $row['incorrect_actions'],
                     'startedAt' => $row['started_at'],
                 ], $attempts->fetchAll()),
+                'training' => training_summaries(db(), $user['id']),
             ]);
 
         case 'student.identity':
@@ -184,6 +186,21 @@ try {
             } catch (Throwable $error) { $pdo->rollBack(); throw $error; }
             respond(['score' => $score, 'reward' => $reward]);
 
+        case 'training.start':
+            $user = current_user();
+            if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
+            $trainingId = require_string($input, 'trainingId', 50);
+            respond(training_start(db(), $user['id'], $trainingId), 201);
+
+        case 'training.finish':
+            $user = current_user();
+            if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
+            $attemptId = require_string($input, 'attemptId', 36);
+            $evidence = $input['evidence'] ?? null;
+            $duration = filter_var($input['durationSeconds'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 86400]]);
+            if (!is_array($evidence) || $duration === false) fail('validation_failed', 'Invalid training result.', 422);
+            respond(training_finish(db(), $user['id'], $attemptId, $evidence, $duration));
+
         case 'teacher.resetMission':
             require_teacher();
             $studentId = require_string($input, 'studentId', 36);
@@ -207,7 +224,7 @@ try {
             if (!$student) fail('student_not_found', 'Student not found.', 404);
             $attempts = db()->prepare('SELECT id, mission_id, started_at, completed_at, duration_seconds, score, completed, hint_count, translation_count, correct_actions, incorrect_actions FROM attempts WHERE user_id = ? ORDER BY started_at DESC');
             $attempts->execute([$studentId]);
-            respond(['progression' => economy_transaction(db(), $studentId), 'student' => teacher_student_row($student), 'attempts' => array_map(fn(array $row): array => [
+            respond(['progression' => economy_transaction(db(), $studentId), 'training' => training_summaries(db(), $studentId), 'student' => teacher_student_row($student), 'attempts' => array_map(fn(array $row): array => [
                 'id' => $row['id'], 'missionId' => $row['mission_id'], 'startedAt' => $row['started_at'],
                 'completedAt' => $row['completed_at'], 'durationSeconds' => $row['duration_seconds'] === null ? null : (int) $row['duration_seconds'],
                 'score' => $row['score'] === null ? null : (int) $row['score'], 'completed' => (bool) $row['completed'],
@@ -218,6 +235,13 @@ try {
         default:
             fail('action_not_found', 'Unknown API action.', 404);
     }
+} catch (TrainingError $error) {
+    $status = match ($error->getMessage()) {
+        'training_locked' => 403,
+        'training_not_found', 'training_attempt_not_found' => 404,
+        default => 422,
+    };
+    fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', $status);
 } catch (EconomyError $error) {
     fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', 422);
 } catch (PDOException $error) {
