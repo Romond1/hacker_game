@@ -127,7 +127,7 @@ try {
             $attemptId = require_string($input, 'attemptId', 36);
             assert_owned_attempt($attemptId, $user['id'], true);
             $type = require_string($input, 'type', 50);
-            $allowed = ['tutorial_completed', 'folder_opened', 'file_opened', 'back_used', 'translation_used', 'hint_used', 'objective_completed', 'mission_completed', 'mission_abandoned'];
+            $allowed = ['tutorial_completed', 'folder_opened', 'file_opened', 'back_used', 'text_selected', 'copy_used', 'paste_used', 'code_submitted', 'translation_used', 'hint_used', 'objective_completed', 'mission_completed', 'mission_abandoned'];
             if (!in_array($type, $allowed, true)) fail('validation_failed', 'Unknown event type.', 422);
             $data = $input['data'] ?? [];
             if (!is_array($data)) fail('validation_failed', 'Event data must be an object.', 422);
@@ -165,7 +165,7 @@ try {
                 $pdo->prepare('UPDATE attempts SET completed_at = UTC_TIMESTAMP(), duration_seconds = ?, score = ?, completed = 1, hint_count = ?, translation_count = ?, correct_actions = ?, incorrect_actions = ? WHERE id = ? AND user_id = ? AND completed = 0')->execute([$duration, $score, $hints, $translations, $correct, $incorrect, $attemptId, $user['id']]);
                 $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration], JSON_THROW_ON_ERROR)]);
                 $pdo->prepare('INSERT INTO user_progress (user_id, mission_id, unlocked, completed, best_score, best_time_seconds, total_points, attempt_count, completed_at) VALUES (?, ?, 1, 1, ?, ?, ?, 1, UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE unlocked = 1, completed = 1, best_score = GREATEST(COALESCE(best_score, 0), VALUES(best_score)), best_time_seconds = IF(best_time_seconds IS NULL, VALUES(best_time_seconds), LEAST(best_time_seconds, VALUES(best_time_seconds))), total_points = total_points + VALUES(total_points), attempt_count = attempt_count + 1, completed_at = COALESCE(completed_at, UTC_TIMESTAMP())')->execute([$user['id'], $attempt['mission_id'], $score, $duration, $score]);
-                $rewardId = match ($attempt['mission_id']) { 'mission-1' => 'agent-card', 'mission-2' => 'pathfinder', 'mission-3' => 'file-detective', default => null };
+                $rewardId = match ($attempt['mission_id']) { 'mission-1' => 'agent-card', 'mission-2' => 'pathfinder', 'mission-3' => 'file-detective', 'mission-4' => 'communication-node-secured', default => null };
                 if ($rewardId !== null) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, ?)')->execute([$user['id'], $rewardId, $attemptId]);
                 if ($hints === 0) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, ?)')->execute([$user['id'], 'guide-independent', $attemptId]);
                 if ($translations === 0) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, ?)')->execute([$user['id'], 'english-independent', $attemptId]);

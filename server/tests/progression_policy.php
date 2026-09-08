@@ -8,6 +8,7 @@ foreach (['ab', 'NÖVA', 'SH1T', 'F_U_C_K', 'abcdefghijklmnopq', '123', '---'] a
 }
 check(economy_rank([1,2,3])['id'] === 'operator', 'graduation rank');
 check(economy_rank([10])['id'] === 'rookie', 'prerequisites required');
+check(economy_catalog()['missions']['mission-4']['credits'] === 30, 'Mission 4 trusted reward');
 $policy = economy_catalog()['missions']['mission-1'];
 check(economy_reward_amounts($policy, 800, 0, 0, 140)['credits'] === 20, 'first award');
 check(economy_reward_amounts($policy, 800, 1, 20, 140, 20, -32400)['credits'] === 20, 'no cooldown configured means timezone offsets cannot suppress replay rewards');

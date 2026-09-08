@@ -2,11 +2,12 @@
   "missions": {
     "mission-1": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
     "mission-2": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
-    "mission-3": { "xpMax": 1000, "credits": 30, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 }
+    "mission-3": { "xpMax": 1000, "credits": 30, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
+    "mission-4": { "xpMax": 1000, "credits": 30, "rookie": false, "nodeId": "classified", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 }
   },
   "ranks": [
     { "id": "rookie", "name": "Rookie", "requiredMissions": [], "earningCap": 140, "spendingCap": 140 },
-    { "id": "operator", "name": "Operator", "requiredMissions": [1,2,3], "earningCap": 140, "spendingCap": 140 },
+    { "id": "operator", "name": "Operator", "requiredMissions": [1,2,3], "earningCap": 240, "spendingCap": 240 },
     { "id": "infiltrator", "name": "Infiltrator", "requiredMissions": [1,2,3,4,5,6,7,8,9,10], "earningCap": 1200, "spendingCap": 1200 }
   ],
   "items": [
@@ -19,7 +20,7 @@
   "blockedCodenameFragments": ["FUCK","SHIT","BITCH","CUNT","NIGGER","NAZI","HITLER","PENIS","PUSSY","ASSHOLE","DICK","SEX","MERDA","CAZZO","STRONZ"],
   "nodes": [
     { "nodeId": "training", "name": "Home Base", "missionIds": ["mission-1","mission-2","mission-3"], "prerequisites": [], "icon": "⌂", "position": { "x": 0, "y": 0 } },
-    { "nodeId": "classified", "name": "Classified Network", "missionIds": ["mission-4"], "prerequisites": ["training"], "icon": "◈", "position": { "x": 0, "y": 1 }, "comingSoon": true }
+    { "nodeId": "classified", "name": "Classified Network", "missionIds": ["mission-4"], "prerequisites": ["training"], "icon": "◈", "position": { "x": 0, "y": 1 } }
   ],
   "trainingModules": {
     "systems-calibration": { "xpMax": 150, "credits": 1, "activityCreditCap": 20, "linkedMissionId": "mission-3", "requiredCompletedMissions": [1,2,3], "speedAchievementSeconds": 30 },

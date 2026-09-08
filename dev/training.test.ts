@@ -32,6 +32,8 @@ function perfectTransferEvidence(attempt: { seed: number; rounds: number }): Dat
 describe('development training policy', () => {
   it('caps Data Transfer Credits at 20 while its twenty-first run still awards XP', () => {
     const state = completedMissionFourState();
+    state.currentCredits = 200;
+    state.lifetimeCreditsEarned = 200;
     const training = emptyTrainingStore();
     let last;
     for (let run = 0; run < 21; run += 1) {
@@ -41,6 +43,7 @@ describe('development training policy', () => {
     }
     expect(training.progress['data-transfer']).toMatchObject({ creditsEarned: 20, rewardedRuns: 20, completedRuns: 21, bestScore: 5000, bestAccuracy: 100, highestRank: 'S' });
     expect(last?.reward).toMatchObject({ credits: 0, xp: 150 });
+    expect(state.lifetimeCreditsEarned).toBe(220);
   });
 
   it('rejects forged Data Transfer evidence and keeps it locked before Mission 4', () => {

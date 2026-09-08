@@ -8,10 +8,13 @@ class TrainingError extends RuntimeException {}
 function training_definition(string $trainingId): array
 {
     $policy = economy_catalog()['trainingModules'][$trainingId] ?? null;
-    if (!is_array($policy) || $trainingId !== 'systems-calibration') throw new TrainingError('training_not_found');
+    if (!is_array($policy) || !in_array($trainingId, ['systems-calibration', 'data-transfer'], true)) throw new TrainingError('training_not_found');
+    $rules = $trainingId === 'data-transfer'
+        ? ['basePerSuccess'=>900, 'errorPenalty'=>200, 'targetSeconds'=>75, 'timeBonus'=>500]
+        : ['basePerSuccess'=>900, 'errorPenalty'=>200, 'targetSeconds'=>30, 'timeBonus'=>500];
     return $policy + [
-        'id'=>'systems-calibration', 'difficulty'=>'beginner', 'generatorVersion'=>1, 'rounds'=>5,
-        'scoreRules'=>['basePerSuccess'=>900, 'errorPenalty'=>200, 'targetSeconds'=>30, 'timeBonus'=>500],
+        'id'=>$trainingId, 'kind'=>$trainingId, 'difficulty'=>'beginner', 'generatorVersion'=>1, 'rounds'=>5,
+        'scoreRules'=>$rules,
     ];
 }
 
@@ -21,10 +24,20 @@ function training_random(int &$state): float
     return $state / 4294967296;
 }
 
-function training_generate_task(int $seed, int $roundIndex): array
+function training_generate_task(int $seed, int $roundIndex, string $trainingId = 'systems-calibration'): array
 {
     if ($seed < 0 || $seed > 0xffffffff || $roundIndex < 0) throw new TrainingError('invalid_generator_input');
     $state = ($seed + $roundIndex * 7919) & 0xffffffff;
+    if ($trainingId === 'data-transfer') {
+        $prefixes = ['K9','BLUE','NOVA','VECTOR','ECHO','CYBER'];
+        $suffixes = ['ALPHA','773','OMEGA','42','DELTA','900'];
+        $destinations = ['SECURE CHANNEL','TERMINAL B','RELAY NODE','VAULT INPUT','CHANNEL 7'];
+        $prefix = $prefixes[(int) floor(training_random($state) * count($prefixes))];
+        $suffix = $suffixes[(int) floor(training_random($state) * count($suffixes))];
+        $destination = $destinations[(int) floor(training_random($state) * count($destinations))];
+        return ['code'=>"{$prefix}-{$suffix}", 'destination'=>$destination];
+    }
+    if ($trainingId !== 'systems-calibration') throw new TrainingError('training_not_found');
     $choices = [];
     while (count($choices) < 4) {
         $code = (string) (1000 + (int) floor(training_random($state) * 9000));
@@ -139,11 +152,18 @@ function training_finish(PDO $pdo, string $userId, string $attemptId, array $evi
 
         $round = 0; $errors = 0; $streak = 0; $longest = 0;
         foreach ($evidence as $entry) {
-            if ($round >= $definition['rounds'] || !is_array($entry) || !is_string($entry['selectedCode'] ?? null)) throw new TrainingError('invalid_training_evidence');
-            $task = training_generate_task((int) $attempt['seed'], $round);
-            $selected = $entry['selectedCode'];
-            if (!in_array($selected, $task['choices'], true)) throw new TrainingError('invalid_training_evidence');
-            if ($selected === $task['correctCode']) {
+            if ($round >= $definition['rounds'] || !is_array($entry)) throw new TrainingError('invalid_training_evidence');
+            $task = training_generate_task((int) $attempt['seed'], $round, $definition['id']);
+            if ($definition['kind'] === 'systems-calibration') {
+                $selected = $entry['selectedCode'] ?? null;
+                if (!is_string($selected) || !in_array($selected, $task['choices'], true)) throw new TrainingError('invalid_training_evidence');
+                $valid = $selected === $task['correctCode'];
+            } else {
+                $selected = $entry['pastedText'] ?? null;
+                if (!is_string($selected) || !preg_match('/^[A-Z0-9-]{1,32}$/D', $selected)) throw new TrainingError('invalid_training_evidence');
+                $valid = $selected === $task['code'];
+            }
+            if ($valid) {
                 $round++; $streak++; $longest = max($longest, $streak);
             } else {
                 $errors++; $streak = 0;

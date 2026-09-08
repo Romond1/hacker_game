@@ -41,6 +41,8 @@ export const PROGRESSION_COPY = {
   breach: ['NETWORK BREACH IN PROGRESS', 'VIOLAZIONE DELLA RETE IN CORSO', 'ネットワーク侵入を検出中'],
   incoming: ['INCOMING TRANSMISSION…', 'TRASMISSIONE IN ARRIVO…', '通信受信中…'],
   classified: ['CLASSIFIED', 'RISERVATO', '機密'],
+  sourceIdentified: ['SOURCE IDENTIFIED', 'FONTE IDENTIFICATA', '発信源を特定'],
+  unknownNetworkActivity: ['UNKNOWN NETWORK ACTIVITY DETECTED', 'ATTIVITÀ DI RETE SCONOSCIUTA RILEVATA', '未知のネットワーク活動を検出'],
   teaserHelp: ['Your training is over. Something is moving beyond the home network. Mission 4 is coming.', 'L’addestramento è finito. Qualcosa si muove oltre la rete di casa. La missione 4 sta arrivando.', 'トレーニングは終了。ホームネットワークの先で何かが動いています。ミッション4は近日公開。'],
   enterNetwork: ['Enter home base', 'Entra nella base', 'ホームベースに入る'],
   soundOn: ['Sound on', 'Audio attivo', 'サウンド：オン'],

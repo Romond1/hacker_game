@@ -14,11 +14,11 @@ function dashboard(missions: MissionProgress[]): StudentDashboard {
 }
 
 describe('StudentHome', () => {
-  it('shows one available mission and two locked missions for a new student', () => {
+  it('shows one available mission and three locked missions for a new student', () => {
     render(<StudentHome user={mirko} dashboard={dashboard([mission(1), mission(2), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} />);
-    expect(screen.getAllByRole('article')).toHaveLength(3);
+    expect(screen.getAllByRole('article')).toHaveLength(4);
     expect(screen.getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
-    expect(screen.getAllByText('Locked')).toHaveLength(2);
+    expect(screen.getAllByText('Locked')).toHaveLength(3);
     expect(screen.queryByRole('button', { name: /Replay/i })).not.toBeInTheDocument();
   });
 
@@ -36,10 +36,15 @@ describe('StudentHome', () => {
     expect(screen.getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
   });
 
-  it('shows a bilingual coming-soon teaser after all three missions', () => {
-    render(<StudentHome user={mirko} dashboard={dashboard([1, 2, 3].map((number) => mission(number, { unlocked: true, completed: true, bestScore: 900, bestTimeSeconds: 50 })))} onMission={vi.fn()} onSettings={vi.fn()} />);
-    expect(screen.getByText('More training missions are coming soon.')).toBeInTheDocument();
-    expect(screen.getByText('Nuove missioni di addestramento arriveranno presto.')).toHaveAttribute('lang', 'it');
+  it('shows Mission 4 as an available operator mission after all three rookie missions', () => {
+    render(<StudentHome user={mirko} dashboard={dashboard([
+      ...[1, 2, 3].map((number) => mission(number, { unlocked: true, completed: true, bestScore: 900, bestTimeSeconds: 50 })),
+      mission(4, { unlocked: true }),
+    ])} onMission={vi.fn()} onSettings={vi.fn()} />);
+    const fourth = screen.getByRole('article', { name: /Mission 4: Intercepted Transmission/i });
+    expect(within(fourth).getByText('OPERATOR')).toBeInTheDocument();
+    expect(within(fourth).getByText('Available now')).toBeInTheDocument();
+    expect(within(fourth).getByRole('button', { name: /Open briefing/i })).toBeInTheDocument();
   });
 
   it('shows aggregate Training Center status only after a module unlocks', () => {

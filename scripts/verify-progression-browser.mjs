@@ -68,6 +68,15 @@ async function play(number) {
     await open(/^Documents/); await open(/^Investigation/); await open(/^mission-report.txt/);
     await page.getByLabel(/Agent Code/i).fill('ORBIT'); await page.getByRole('button', { name: /Confirm code/i }).click();
   }
+  if (number === 4) {
+    await open(/^Downloads/); await open(/^INTERCEPTED_SIGNAL.txt/);
+    const source = page.getByTestId('transfer-source-text');
+    await source.selectText(); await source.dispatchEvent('mouseup'); await source.click({ button: 'right' });
+    await page.getByRole('button', { name: 'Copy selected code' }).click();
+    await page.getByLabel('SECURE CHANNEL').click({ button: 'right' });
+    await page.getByRole('button', { name: 'Paste copied code' }).click();
+    await page.getByRole('button', { name: /Submit transmission/i }).click();
+  }
   await page.getByRole('dialog', { name: 'Mission rewards' }).waitFor();
   assert.equal(await page.getByRole('button', { name: /Continue/ }).isDisabled(), true);
   await page.waitForTimeout(3100);
@@ -79,6 +88,14 @@ async function answerCalibrationRound() {
   const target = await page.locator('[data-calibration-target]').getAttribute('data-calibration-target');
   assert.ok(target, 'Calibration target code should be visible.');
   await page.locator(`[data-calibration-choice="${target}"]`).click();
+}
+async function answerDataTransferRound() {
+  const source = page.getByTestId('data-transfer-source');
+  await source.selectText(); await source.dispatchEvent('mouseup'); await source.click({ button: 'right' });
+  await page.getByRole('button', { name: 'Copy selected text' }).click();
+  await page.getByLabel(/SECURE CHANNEL|TERMINAL B|RELAY NODE|VAULT INPUT|CHANNEL 7/).click({ button: 'right' });
+  await page.getByRole('button', { name: 'Paste copied text' }).click();
+  await page.getByRole('button', { name: /Submit transfer/i }).click();
 }
 try {
   // Required skill action loop; authenticated journeys below extend its fresh-page coverage.
@@ -98,21 +115,28 @@ try {
   await page.getByRole('button', { name: /Save codename/ }).click(); await page.locator('.transmission-screen').waitFor(); await shot('transmission');
   await page.getByRole('button', { name: /Enter home base/ }).click(); await page.locator('.hacker-profile').waitFor();
   assert.equal((await state()).progression.currentCredits, 70);
+  await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByRole('button', { name: /Begin Data Transfer/i }).count(), 0);
+  await page.getByRole('button', { name: /Home Base/i }).click();
+  await play(4);
+  await page.getByText('SOURCE IDENTIFIED', { exact: true }).waitFor();
+  await shot('mission-4-story-reveal');
+  await home(); assert.equal((await state()).progression.currentCredits, 100);
   await page.getByRole('button', { name: /Hacker Shop/ }).click(); await shot('shop');
   await page.getByRole('button', { name: /Buy Rookie Hacker/ }).click();
   await page.getByRole('button', { name: /Equip Rookie Hacker/ }).click();
   await page.getByRole('button', { name: /Use default for Rookie Hacker/ }).waitFor();
-  assert.equal((await state()).progression.currentCredits, 30);
+  assert.equal((await state()).progression.currentCredits, 60);
   await page.reload(); await page.locator('.hacker-profile').waitFor();
   assert.equal((await state()).progression.equippedItems.badge, 'rookie-badge');
   await shot('operator-home');
-  await play(1); await home(); assert.equal((await state()).progression.currentCredits, 50);
-  await play(1); await home(); assert.equal((await state()).progression.currentCredits, 50);
-  await play(3); await home(); assert.equal((await state()).progression.currentCredits, 80);
+  await play(1); await home(); assert.equal((await state()).progression.currentCredits, 80);
+  await play(1); await home(); assert.equal((await state()).progression.currentCredits, 80);
+  await play(3); await home(); assert.equal((await state()).progression.currentCredits, 110);
   await page.getByRole('button', { name: /Hacker Shop/ }).click();
   await page.getByRole('button', { name: /Buy Neon Pointer/ }).click(); await page.getByRole('button', { name: /Equip Neon Pointer/ }).click();
   await page.getByRole('button', { name: /Use default for Neon Pointer/ }).waitFor();
-  assert.equal((await state()).progression.currentCredits, 20);
+  assert.equal((await state()).progression.currentCredits, 50);
   assert.equal(await page.locator('.app-shell.neon-pointer').count(), 1);
   await page.setViewportSize({ width: 390, height: 844 }); await shot('mobile-shop');
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
@@ -140,10 +164,26 @@ try {
   assert.equal(await page.getByText('1 / 20', { exact: true }).count(), 1);
   await page.waitForTimeout(500);
   await trainingShot('systems-calibration-persisted');
+  await page.getByRole('button', { name: /Begin Data Transfer/i }).click();
+  await page.getByText('Trasferisci i dati.', { exact: true }).waitFor();
+  await page.getByRole('button', { name: /Start training/i }).click();
+  await page.getByText('Seleziona il codice. Fai clic destro e scegli Copia.', { exact: true }).waitFor();
+  await trainingShot('data-transfer-live');
+  for (let round = 0; round < 5; round += 1) await answerDataTransferRound();
+  await page.getByRole('heading', { name: /Training complete/i }).waitFor();
+  assert.equal(await page.getByText('1 / 20', { exact: true }).count(), 1);
+  await page.waitForTimeout(3100);
+  await trainingShot('data-transfer-results');
+  await page.getByRole('button', { name: /Return to Training Center/i }).click();
+  await page.reload(); await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByRole('article', { name: /Data Transfer/i }).getByText('1 / 20', { exact: true }).count(), 1);
+  await page.waitForTimeout(500);
+  await trainingShot('data-transfer-persisted');
   await page.getByRole('button', { name: /Log out|Sign out/i }).click(); await login('be_a_hacker');
   await page.setViewportSize({ width: 1440, height: 1080 });
   await page.getByRole('button', { name: /Test Student/ }).click(); await shot('teacher-record');
   assert.equal(await page.getByText('Hacker: NOVA').count(), 1);
+  assert.equal(await page.getByText('Data Transfer', { exact: true }).count(), 1);
   await page.getByRole('button', { name: 'Reset Mission 1', exact: true }).click();
   await page.getByRole('button', { name: 'Confirm reset', exact: true }).click();
   await page.getByRole('status').filter({ hasText: 'Mission 1 reset' }).waitFor();
@@ -152,7 +192,7 @@ try {
   assert.deepEqual(errors, []);
   if (!phpBackend) {
     const snapshot = JSON.parse(await readFile(join(temp, '.dev-progress.local.json'), 'utf8'));
-    assert.equal(snapshot.progression.find(([id]) => id === 'dev-test')[1].currentCredits, 21);
+    assert.equal(snapshot.progression.find(([id]) => id === 'dev-test')[1].currentCredits, 52);
   }
   await page.getByRole('button', { name: /Log out|Sign out/i }).click(); await login('himari.hacker');
   for (const missionId of ['mission-1','mission-2','mission-3']) for (let n = 0; n < 2; n++) {

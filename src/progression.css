@@ -85,6 +85,9 @@
 .rookie-reward-progress { margin: 20px 0 28px; }
 .rookie-reward-progress > strong { font-size: .9rem; }
 .rookie-reward-progress > small { font: 600 .6rem monospace; color: var(--muted); }
+.mission-four-story-beat { display: grid; gap: 8px; margin: 20px auto 28px; max-width: 560px; padding: 20px; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.mission-four-story-beat > strong { color: var(--accent); font: 800 .9rem/1.4 'Cascadia Mono', monospace; letter-spacing: .08em; }
+.mission-four-story-beat .progression-copy > span { font: 800 clamp(1rem, 3vw, 1.4rem)/1.3 'Cascadia Mono', monospace; letter-spacing: .04em; }
 .training-segments { display: flex; justify-content: center; gap: 8px; margin: 15px 0 8px; }
 .training-segments > span { width: 100px; padding: 8px; font: 600 .7rem monospace; background: #10271d; color: #719383; border-bottom: 3px solid #29453b; }
 .training-segments > span.complete { color: var(--accent); border-color: var(--accent); }

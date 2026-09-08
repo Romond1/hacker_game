@@ -55,4 +55,18 @@ describe('permanent progression economy', () => {
     expect(restored.dashboard('dev-test')).toEqual(service.dashboard('dev-test'));
     expect(restored.dashboard('dev-himari').progression.currentCredits).toBe(0);
   });
+
+  it('rewards Mission 4 and persists the secured communication story outcome', () => {
+    const { service, complete, graduate } = setup();
+    graduate();
+    const first = complete('mission-4');
+    expect(service.rewardReceipt('dev-test', first)).toMatchObject({ xp: 800, credits: 30 });
+    expect(service.dashboard('dev-test')).toMatchObject({
+      completedMissions: [1, 2, 3, 4],
+      progression: {
+        storyFlags: { communicationNodeSecured: true, sourceIdentified: true, unknownNetworkActivityDetected: true },
+      },
+      training: expect.arrayContaining([expect.objectContaining({ trainingId: 'data-transfer', unlocked: true })]),
+    });
+  });
 });

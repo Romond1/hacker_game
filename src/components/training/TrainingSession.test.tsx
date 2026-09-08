@@ -108,4 +108,14 @@ describe('TrainingSession', () => {
     await waitFor(() => expect(finish).toHaveBeenCalledOnce());
     expect(finish.mock.calls[0][0].evidence).toEqual(Array.from({ length: 5 }, (_, round) => ({ pastedText: dataTransfer.generateTask(42, round).code })));
   });
+
+  it('shows Japanese support instructions throughout Data Transfer without a translation action', () => {
+    const japaneseStudent = { ...student, supportLanguage: 'ja' as const };
+    render(<TrainingSession module={dataTransfer} attempt={attempt({ trainingId: 'data-transfer', rounds: 5 })} user={japaneseStudent} finish={vi.fn()} onExit={vi.fn()} />);
+    expect(screen.getByText('データを転送しましょう。')).toHaveAttribute('lang', 'ja');
+    fireEvent.click(screen.getByRole('button', { name: /Start training/i }));
+    expect(screen.getByText('コードを選択し、右クリックして「コピー」を選びます。')).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText('転送を送信')).toHaveAttribute('lang', 'ja');
+    expect(screen.queryByRole('button', { name: /Translate/i })).not.toBeInTheDocument();
+  });
 });

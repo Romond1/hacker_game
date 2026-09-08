@@ -13,7 +13,7 @@
     "src/domain/progression.ts",
     "src/domain/training.ts",
     "src/training/catalog.ts",
-    "src/training/systems-calibration.ts"
-    ,"src/training/data-transfer.ts"
+    "src/training/systems-calibration.ts",
+    "src/training/data-transfer.ts"
   ]
 }

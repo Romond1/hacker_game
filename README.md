@@ -59,6 +59,7 @@ mysql -u root -p beahero_hacker < server/migrations/001_initial.sql
 mysql -u root -p beahero_hacker < server/migrations/002_three_missions.sql
 mysql -u root -p beahero_hacker < server/migrations/003_progression_economy.sql
 mysql -u root -p beahero_hacker < server/migrations/004_training_framework.sql
+mysql -u root -p beahero_hacker < server/migrations/005_mission_4_data_transfer.sql
 ```
 
 3. Copy `server/config.example.php` to `server/config.php` and fill in the local PDO DSN, database username, and database password. Set `production` to `false` so the session cookie works over local HTTP. `server/config.php` is gitignored.
@@ -151,7 +152,7 @@ Open a student record in Mission Control and choose **Reset Mission 1/2/3**. Con
 
 `test.hacker` is available locally with the shared local student password. After `npm run deploy`, run `npm run setup:test-student` once from this computer to create it on XServer. This copies the password hash from `himari.hacker`, whose password is the shared live student password, into a new independent student record. It never changes existing student accounts. If test.hacker already exists, it leaves its password and progress unchanged. The test account uses Italian support and an orange theme, and appears as **Test Student** in Mission Control. If students later have different passwords, choose a source explicitly over SSH with `php bin/create_test_student.php SOURCE_USERNAME`.
 
-The progression upgrade requires migration 003, and skill training requires migration 004, before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
+The progression upgrade requires migration 003, skill training requires migration 004, and Mission 4/Data Transfer requires migration 005 before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
 
 ### Publishing updates from this Windows computer
 
@@ -172,11 +173,11 @@ php bin/create_user.php yuki.hacker Yuki student ja
 
 Use `ja` for Japanese support or `it` for Italian. The script prompts privately for a password of at least 12 characters and creates one new account; existing usernames are not overwritten. The teacher dashboard lists database students automatically when refreshed. No XServer database/user settings or frontend rebuild are needed per student. Local development accounts are separate. Do not rerun `provision_standard_accounts.php` to add a student: that resets the standard profiles' passwords and settings.
 
-Migrations live in `server/migrations/` and are applied in filename order. Apply `001_initial.sql`, `002_three_missions.sql`, `003_progression_economy.sql`, then `004_training_framework.sql` to a new database. An existing Phase 1 database needs 004. Back up the database first and record applied filenames in deployment notes.
+Migrations live in `server/migrations/` and are applied in filename order. Apply `001_initial.sql`, `002_three_missions.sql`, `003_progression_economy.sql`, `004_training_framework.sql`, then `005_mission_4_data_transfer.sql` to a new database. An existing Phase 2.1 database needs 005. Back up the database first and record applied filenames in deployment notes.
 
 ## Mission definitions and future missions
 
-Mission content lives in `src/missions/`. The three definitions are registered in `src/missions/catalog.ts`; shared types and behavior live in `src/domain/mission.ts`. `MissionTemplate` owns the shared locked → briefing → tutorial → active → reward → results lifecycle, while each mission's mechanics remain in the existing runner.
+Mission content lives in `src/missions/`. The four definitions are registered in `src/missions/catalog.ts`; shared types and behavior live in `src/domain/mission.ts`. `MissionTemplate` owns the shared locked → briefing → tutorial → active → reward → results lifecycle, while each mission's mechanics remain in the existing runner.
 
 To add a mission:
 
@@ -190,11 +191,11 @@ Mission definitions are source-controlled. MySQL stores user-specific state only
 
 ## Skill training framework
 
-Systems Calibration is the first reusable training module. It unlocks after Mission 3 and runs five deterministic, server-verifiable rounds. A successful run awards up to 150 XP plus 1 Credit; activity Credits stop at 20, while replay XP and personal-best tracking continue. Training attempts, evidence validation, rewards, bests, and achievements are authoritative in the development service and PHP/MySQL service—the browser never submits reward amounts.
+Systems Calibration unlocks after Mission 3. Data Transfer unlocks after Mission 4 and practices the right-click Copy/Paste skill introduced by that mission. Both reusable modules run five deterministic, server-verifiable rounds. A successful run awards up to 150 XP plus 1 Credit; each module's activity Credits stop independently at 20, while replay XP and personal-best tracking continue. Training attempts, evidence validation, rewards, bests, and achievements are authoritative in the development service and PHP/MySQL service—the browser never submits reward amounts.
 
 Training definitions are registered in `src/training/catalog.ts`. Each definition supplies metadata, trusted reward policy, seeded task generation, and an evidence validator; `TrainingSession` supplies the generic intro/round/save/retry/results lifecycle. To add a future module, create its task adapter, register it in the catalog and shared economy policy, implement the same generator/version in the PHP service, and add cross-runtime fixture tests. Teacher records expose aggregate runs, Credits, best accuracy, and rank, never individual answers.
 
-Mission 4 is not implemented. When its real exercise is designed, register its mission definition and a real associated training module through these extension points rather than adding placeholder gameplay.
+Mission 4 uses the shared mission lifecycle and adds a reusable transfer challenge to the existing runner. It teaches selecting a transmission code and using right-click Copy and Paste before Data Transfer provides repetition; keyboard shortcuts are intentionally deferred.
 
 ## Security notes
 
@@ -210,11 +211,11 @@ Mission 4 is not implemented. When its real exercise is designed, register its m
 
 ## Phase 1 progression and economy
 
-Missions 1–3 are Rookie Training. Their existing calculated scores become permanent lifetime XP; Credits are separate and spendable. Successful completions award 20/20/30 Credits respectively, only on the first two completions of each mission. Later replays still add XP. Rookie and Operator cumulative earning/spending allowances are 140 Credits. Mission 10 and its prerequisites grant Infiltrator; the 600-Credit Mini Drone requires that rank. The configured Infiltrator allowance is 1,200, reserved for future campaign rewards.
+Missions 1–3 are Rookie Training. Their existing calculated scores become permanent lifetime XP; Credits are separate and spendable. Successful completions award 20/20/30 Credits respectively, only on the first two completions of each mission. Mission 4 awards 30 Credits under the same two-completion rule. Later replays still add XP. The Rookie cumulative earning/spending allowance is 140 Credits; Operator expands to 240 so the currently available mission and training Credit pools remain earnable. Mission 10 and its prerequisites grant Infiltrator; the 600-Credit Mini Drone requires that rank. The configured Infiltrator allowance is 1,200, reserved for future campaign rewards.
 
-Edit `shared/economy.json` to change rewards, prices, rank prerequisites/budgets, suggested names, training policies, or node metadata. `src/domain/progression.ts` supplies public types, generic cap calculations, and map-node derivation; `server/src/progression.php` owns authoritative transactions. New reward sources must provide trusted server policy and a stable unique event ID. Never accept arbitrary reward amounts from the browser. Daily/activity/cooldown/attempt policies are supported; Mission 4 is not implemented.
+Edit `shared/economy.json` to change rewards, prices, rank prerequisites/budgets, suggested names, training policies, or node metadata. `src/domain/progression.ts` supplies public types, generic cap calculations, and map-node derivation; `server/src/progression.php` owns authoritative transactions. New reward sources must provide trusted server policy and a stable unique event ID. Never accept arbitrary reward amounts from the browser. Daily/activity/cooldown/attempt policies are supported.
 
-Graduation unlocks a validated codename, the shop and profile, then shows a one-time Mission 4 transmission. Working starter purchases are Rookie Hacker badge, Neon Pointer cursor and Matrix Terminal skin. Existing free themes remain free. Owned equipment persists, and defaults can be restored. Sound is muted initially and its preference is saved. Teacher detail includes the permanent economy and inventory summary.
+Graduation unlocks a validated codename, the shop and profile, then shows a one-time Mission 4 transmission. Completing Mission 4 secures the communication node, identifies the source, records the new story flags, and unlocks Data Transfer Training. Working starter purchases are Rookie Hacker badge, Neon Pointer cursor and Matrix Terminal skin. Existing free themes remain free. Owned equipment persists, and defaults can be restored. Sound is muted initially and its preference is saved. Teacher detail includes the permanent economy, inventory, and aggregate training summary.
 
 Teacher resets continue to remove selected mission performance records and mission-specific awards. They **do not** remove lifetime XP, Credits, inventory, permanent achievements, story milestones or credit counters. Consequently the legacy training-points total can differ from lifetime XP after a reset. Resets cannot reopen credit slots.
 

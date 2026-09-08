@@ -18,6 +18,15 @@ function perfect_training_evidence(array $attempt): array
     return $evidence;
 }
 
+function perfect_data_transfer_evidence(array $attempt): array
+{
+    $evidence = [];
+    for ($round = 0; $round < $attempt['rounds']; $round++) {
+        $evidence[] = ['pastedText'=>training_generate_task($attempt['seed'], $round, 'data-transfer')['code']];
+    }
+    return $evidence;
+}
+
 $pdo = db();
 foreach (['users','missions','user_progress','attempts','attempt_events','achievements','user_achievements','player_economy','reward_ledger','reward_counters','player_inventory','training_attempts','user_training_progress'] as $table) {
     $pdo->exec("CREATE TEMPORARY TABLE __training_shape_{$table} LIKE {$table}");
@@ -82,5 +91,38 @@ training_expect($receipts[20]['credits'] === 0 && $receipts[20]['xp'] === 150, '
 training_expect((int) $pdo->query("SELECT COUNT(*) FROM reward_ledger WHERE user_id='training-test' AND source='training:systems-calibration'")->fetchColumn() === 21, 'one ledger receipt per attempt');
 $achievementIds = $pdo->query("SELECT achievement_id FROM user_achievements WHERE user_id='training-test' ORDER BY achievement_id")->fetchAll(PDO::FETCH_COLUMN);
 foreach (['first-training','perfect-calibration','speed-operator','training-master'] as $id) training_expect(in_array($id, $achievementIds, true), "achievement {$id}");
+
+try {
+    training_start($pdo, 'training-test', 'data-transfer');
+    throw new RuntimeException('data transfer started before Mission 4');
+} catch (TrainingError $expected) {
+    training_expect($expected->getMessage() === 'training_locked', 'data transfer locked reason');
+}
+
+$pdo->beginTransaction();
+lock_student_progress($pdo, 'training-test');
+$state = economy_load_locked($pdo, 'training-test');
+$state['completedMissions'] = [1,2,3,4];
+economy_milestones($pdo, 'training-test', $state);
+economy_save($pdo, 'training-test', $state);
+$pdo->commit();
+
+$transferReceipts = [];
+for ($run = 0; $run < 21; $run++) {
+    $attempt = training_start($pdo, 'training-test', 'data-transfer');
+    $completion = training_finish($pdo, 'training-test', $attempt['attemptId'], perfect_data_transfer_evidence($attempt), 20);
+    $transferReceipts[] = $completion['reward'];
+    training_expect($completion['reward']['credits'] === ($run < 20 ? 1 : 0), "Data Transfer Credit cap run {$run}");
+    training_expect($completion['result']['accuracy'] === 100 && $completion['result']['rank'] === 'S', "Data Transfer canonical result {$run}");
+}
+
+$summaries = training_summaries($pdo, 'training-test');
+$transferSummary = null;
+foreach ($summaries as $candidate) if ($candidate['trainingId'] === 'data-transfer') $transferSummary = $candidate;
+training_expect(is_array($transferSummary), 'data transfer summary exists');
+training_expect($transferSummary['completedRuns'] === 21 && $transferSummary['rewardedRuns'] === 20 && $transferSummary['creditsEarned'] === 20, 'data transfer completion and Credit totals');
+training_expect($transferSummary['bestScore'] === 5000 && $transferSummary['bestAccuracy'] === 100 && $transferSummary['longestStreak'] === 5 && $transferSummary['highestRank'] === 'S', 'data transfer personal best preservation');
+training_expect($transferReceipts[20]['credits'] === 0 && $transferReceipts[20]['xp'] === 150, 'data transfer continues with XP after cap');
+training_expect((int) $pdo->query("SELECT COUNT(*) FROM reward_ledger WHERE user_id='training-test' AND source='training:data-transfer'")->fetchColumn() === 21, 'one data transfer ledger receipt per attempt');
 
 echo "Training integration checks passed using connection-local temporary tables.\n";

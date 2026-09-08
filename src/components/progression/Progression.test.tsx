@@ -36,6 +36,15 @@ describe('progression experiences', () => {
     expect(next).toHaveBeenCalledOnce();
     expect(screen.getByText('+20')).toBeInTheDocument();
   });
+  it('reveals the Mission 4 story outcome instead of rookie training progress', () => {
+    vi.useFakeTimers();
+    render(<RewardSequence user={user} missionNumber={4} progression={{ ...emptyProgression(), completedMissions: [1,2,3,4] }} reward={{ source: 'mission-4', eventId: 'm4', xp: 1000, credits: 30, totalXP: 3400, currentCredits: 90, creditLimitReached: false }} onContinue={vi.fn()} />);
+    expect(screen.getByText('COMMUNICATION NODE SECURED')).toBeInTheDocument();
+    expect(screen.getByText('SOURCE IDENTIFIED')).toBeInTheDocument();
+    expect(screen.getByText('FONTE IDENTIFICATA')).toHaveAttribute('lang', 'it');
+    expect(screen.getByText('UNKNOWN NETWORK ACTIVITY DETECTED')).toBeInTheDocument();
+    expect(screen.queryByLabelText(/training missions complete/i)).not.toBeInTheDocument();
+  });
   it('shows identity input after the breach and saves a suggested codename', async () => {
     const state = { ...emptyProgression(), hackerIdentityUnlocked: true };
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: { progression: { ...state, hackerCodename: 'NOVA' } } }))));

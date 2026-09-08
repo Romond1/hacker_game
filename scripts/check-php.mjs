@@ -17,6 +17,7 @@ function lint(dir) {
 }
 lint('server');
 run(['server/tests/progression_policy.php']);
+run(['server/tests/training_policy.php']);
 run(['server/tests/security_contract.php']);
 // Test the flattened deployment layout outside the repo, so a repository-relative
 // catalog fallback cannot hide a broken packaged path.

@@ -6,6 +6,7 @@ const bootstrap = await readFile('server/src/bootstrap.php', 'utf8');
 const schema = await readFile('server/migrations/001_initial.sql', 'utf8');
 const migrationTwo = await readFile('server/migrations/002_three_missions.sql', 'utf8');
 const training = await readFile('server/src/training.php', 'utf8');
+const phase22 = await readFile('server/migrations/005_mission_4_data_transfer.sql', 'utf8');
 const provisioner = await readFile('server/bin/provision_standard_accounts.php', 'utf8');
 const resetCase = api.split("case 'teacher.resetMission':")[1]?.split("case 'teacher.students':")[0];
 assert.ok(resetCase && resetCase.indexOf('require_teacher()') < resetCase.indexOf('reset_student_mission('), 'Reset must authorize Teacher before any mutation.');
@@ -40,6 +41,13 @@ for (const token of ['mission_locked', 'FOR UPDATE', 'nextMissionId', "'missions
 }
 for (const token of ["case 'training.start':", "case 'training.finish':"]) {
   assert.ok(api.includes(token), `Training API missing ${token}`);
+}
+for (const token of ["'mission-4'", "'communication-node-secured'"]) {
+  assert.ok(phase22.includes(token), `Phase 2.2 migration missing ${token}`);
+}
+assert.ok(training.includes("'data-transfer'"), 'Training policy missing data-transfer');
+for (const token of ["'text_selected'", "'copy_used'", "'paste_used'", "'code_submitted'"]) {
+  assert.ok(api.includes(token), `Mission 4 event allowlist missing ${token}`);
 }
 for (const token of ['FOR UPDATE', 'economy_award(', "'training:' . $definition['id']"]) {
   assert.ok(training.includes(token), `Training policy missing ${token}`);

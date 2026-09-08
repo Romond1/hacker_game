@@ -20,6 +20,15 @@ $expected = [
     ['prompt'=>'VERIFY 5756', 'choices'=>['5756','4568','7776','2985'], 'correctCode'=>'5756'],
 ];
 foreach ($expected as $round=>$task) training_check(training_generate_task(42, $round) === $task, "generator v1 round {$round}");
+$transferExpected = [
+    ['code'=>'BLUE-ALPHA','destination'=>'RELAY NODE'],
+    ['code'=>'BLUE-OMEGA','destination'=>'VAULT INPUT'],
+    ['code'=>'NOVA-42','destination'=>'CHANNEL 7'],
+    ['code'=>'NOVA-900','destination'=>'SECURE CHANNEL'],
+    ['code'=>'VECTOR-773','destination'=>'TERMINAL B'],
+];
+foreach ($transferExpected as $round=>$task) training_check(training_generate_task(42, $round, 'data-transfer') === $task, "data transfer generator v1 round {$round}");
+training_check(training_definition('data-transfer')['activityCreditCap'] === 20, 'data transfer Credit cap');
 
 $imperfect = training_calculate(['successes'=>5, 'errors'=>1, 'longestStreak'=>5, 'durationSeconds'=>20, 'totalRounds'=>5]);
 training_check($imperfect['score'] === 4800 && $imperfect['accuracy'] === 83 && $imperfect['rank'] === 'S', 'imperfect parity');

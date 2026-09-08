@@ -47,6 +47,9 @@ export function networkNodes(state: PlayerProgression) {
     const completed = node.missionIds.every(id => state.completedMissions.includes(Number(id.replace('mission-', ''))));
     const unlocked = state.unlockedNodes.includes(node.nodeId);
     const status: NodeStatus = completed ? 'COMPLETED' : unlocked ? 'AVAILABLE' : 'LOCKED';
-    return { ...node, status, unlocked, completed, storyState: node.comingSoon ? (state.storyFlags.mission4TransmissionSeen ? 'transmission-seen' : 'incoming') : 'training' };
+    const storyState = node.nodeId === 'classified'
+      ? state.storyFlags.communicationNodeSecured ? 'secured' : state.storyFlags.mission4TransmissionSeen ? 'transmission-seen' : 'incoming'
+      : 'training';
+    return { ...node, status, unlocked, completed, storyState };
   });
 }

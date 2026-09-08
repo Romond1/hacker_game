@@ -46,6 +46,12 @@ export function awardMission(state: PlayerProgression, missionId: string, eventI
     if (!state.unlockedNodes.includes('classified')) state.unlockedNodes.push('classified');
     if (!state.achievements.includes('rookie-no-more')) state.achievements.push('rookie-no-more');
   }
+  if (number === 4) {
+    state.storyFlags.communicationNodeSecured = true;
+    state.storyFlags.sourceIdentified = true;
+    state.storyFlags.unknownNetworkActivityDetected = true;
+    if (!state.achievements.includes('communication-node-secured')) state.achievements.push('communication-node-secured');
+  }
   return receipt;
 }
 

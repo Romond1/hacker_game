@@ -56,6 +56,7 @@ const DEV_MISSIONS = [
   { missionId: 'mission-1', missionNumber: 1 },
   { missionId: 'mission-2', missionNumber: 2 },
   { missionId: 'mission-3', missionNumber: 3 },
+  { missionId: 'mission-4', missionNumber: 4 },
 ] as const;
 
 export class DevApiError extends Error {
@@ -148,7 +149,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     const completed = missions.filter((mission) => mission.completed);
     const scores = missions.flatMap((mission) => mission.bestScore === null ? [] : [mission.bestScore]);
     const times = missions.flatMap((mission) => mission.bestTimeSeconds === null ? [] : [mission.bestTimeSeconds]);
-    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? 3;
+    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? 4;
     return {
       progression: structuredClone(progressionFor(userId)),
       totalPoints: missions.reduce((sum, mission) => sum + mission.totalPoints, 0), rank: 'Rookie Agent', currentMission,

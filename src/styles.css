@@ -209,6 +209,7 @@ button.file-item { cursor: pointer; }
 .results-screen { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
 .result-hero { padding: 10vh 8vw; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 30% 35%, var(--accent-soft), transparent 35%), #07130f; }
 .result-hero h1 { font-size: clamp(4rem, 7vw, 7rem); line-height: .88; margin: 18px 0 28px; }
+.result-hero:has(.mission-four-story-beat) h1 { font-size: clamp(2.6rem, 3.7vw, 4rem); line-height: .95; }
 .result-hero > p:last-child { color: #a4b8b0; font-size: 1.1rem; }
 .agent-card-reward { width: 290px; aspect-ratio: 1.58; border: 1px solid var(--accent); background: linear-gradient(135deg, #102a21, #07120f); box-shadow: 0 0 55px var(--accent-soft); padding: 22px; display: flex; flex-direction: column; margin-bottom: 8vh; transform: rotate(-4deg); }
 .agent-card-reward span, .agent-card-reward small { font: 700 .6rem 'Space Mono'; letter-spacing: .13em; color: var(--accent); }

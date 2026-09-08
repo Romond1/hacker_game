@@ -67,6 +67,12 @@ function economy_milestones(PDO $pdo, string $userId, array &$state): void
         $state['storyFlags']['networkMapUnlocked'] = true;
         if (!in_array('classified', $state['unlockedNodes'], true)) $state['unlockedNodes'][] = 'classified';
     }
+    if (in_array(4, $state['completedMissions'], true)) {
+        $awards[] = 'communication-node-secured';
+        $state['storyFlags']['communicationNodeSecured'] = true;
+        $state['storyFlags']['sourceIdentified'] = true;
+        $state['storyFlags']['unknownNetworkActivityDetected'] = true;
+    }
     foreach ($awards as $id) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, NULL)')->execute([$userId, $id]);
 }
 
