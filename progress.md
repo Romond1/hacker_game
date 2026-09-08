@@ -47,3 +47,8 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Manual review and integration testing completed by primary agent; additional subagent review was unavailable due to its usage limit. No commits, live publishing, credential changes, or student data mutations performed. Existing pending work retained.
 - Screenshot review prompted higher-contrast Matrix Terminal file labels. Browser rerun checks the corrected premium appearance.
 - Corrected premium-theme screenshot verified; final development browser rerun passed. Temporary PHP HTTP and MariaDB test servers stopped after validation.
+
+## Phase 2.1 — 2026-09-08
+- Task 1 complete: added the pure training score/rank/seed/personal-best domain through test-first development.
+- Verification: 15 training-domain tests and 11 mission/progression regression tests passed; TypeScript check passed.
+- Two-stage review: specification compliant and code-quality approved. Optional future test hardening: explicit penalty/clamp and exact time-bonus boundary cases.
