@@ -43,6 +43,34 @@ it('enforces session, role, and CSRF on resets through the HTTP API', async () =
   expect((await request({ ...body, studentId: 'dev-teacher' }, teacher.cookie, teacher.token)).status).toBe(404);
 });
 
+it('restricts teacher balance adjustments and returns the corrected account state', async () => {
+  const student = await login('test.hacker');
+  const teacher = await login('be_a_hacker');
+  const body = { action: 'teacher.setBalances', studentId: 'dev-test', lifetimeXP: 0, currentCredits: 0 };
+  expect((await request(body, student.cookie, student.token)).status).toBe(403);
+  expect((await request(body, teacher.cookie)).status).toBe(403);
+  const applied = await request(body, teacher.cookie, teacher.token);
+  expect(applied.status).toBe(200);
+  expect((await applied.json()).data.progression).toMatchObject({ lifetimeXP: 0, currentCredits: 0 });
+  expect((await request({ ...body, currentCredits: -1 }, teacher.cookie, teacher.token)).status).toBe(422);
+});
+
+it('requires student session, CSRF, and a completed mission before robot training starts', async () => {
+  const student = await login('kotone.hacker');
+  const teacher = await login('be_a_hacker');
+  const body = { action: 'robot.start', mode: 'base_defense' };
+  expect((await request(body, teacher.cookie, teacher.token)).status).toBe(403);
+  expect((await request(body, student.cookie)).status).toBe(403);
+  expect((await request(body, student.cookie, student.token)).status).toBe(403);
+  const { data: attempt } = await (await request({ action: 'attempt.start', missionId: 'mission-1' }, student.cookie, student.token)).json();
+  await request({ action: 'attempt.finish', attemptId: attempt.attemptId, score: 800, durationSeconds: 60, stats: {} }, student.cookie, student.token);
+  const started = await request(body, student.cookie, student.token);
+  expect(started.status).toBe(201);
+  const { data: run } = await started.json();
+  expect(run).toMatchObject({ mode: 'base_defense', runId: expect.any(String) });
+  expect((await request({ action: 'robot.finish', runId: run.runId, result: { mode: 'reinforcements', victory: true, wavesCompleted: 3, robotsDestroyed: 1 } }, student.cookie, student.token)).status).toBe(422);
+});
+
 it('protects economy endpoints and serializes concurrent purchase/reward requests', async () => {
   const student = await login('mirko.hacker');
   const teacher = await login('be_a_hacker');

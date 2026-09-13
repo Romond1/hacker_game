@@ -14,6 +14,7 @@ function check_reset_assert(bool $condition, string $label): void {
 // A setup failure aborts before test fixtures or reset calls are executed.
 try {
     $pdo = db();
+    foreach (['teacher_economy_adjustments', 'robot_training_runs'] as $table) $pdo->query("SELECT 1 FROM `{$table}` LIMIT 0");
     foreach (['users', 'missions', 'user_progress', 'attempts', 'attempt_events', 'achievements', 'user_achievements', 'player_economy', 'reward_ledger', 'reward_counters', 'player_inventory'] as $table) {
         // MariaDB rejects CREATE TEMPORARY TABLE t LIKE t with error 1066.
         // Copy the empty structure under a distinct temporary name first, then

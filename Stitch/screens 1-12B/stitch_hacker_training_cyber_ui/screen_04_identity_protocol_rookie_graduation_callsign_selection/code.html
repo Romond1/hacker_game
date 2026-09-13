@@ -1,0 +1,600 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CYBER HERO // SCREEN 04 — Identity Protocol &amp; Callsign Registration</title>
+<!-- Google Fonts: Space Grotesk & Share Tech Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;family=Space+Grotesk:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"Share Tech Mono"', 'monospace'],
+            display: ['"Space Grotesk"', 'sans-serif'],
+          },
+          colors: {
+            obsidian: '#07100c',
+            'obsidian-card': 'rgba(11, 21, 17, 0.78)',
+            'solar-orange': '#ff8c00',
+            'signal-green': '#00ff88',
+            'circuit-cyan': '#00f0ff',
+            'pulse-pink': '#ec4899',
+            'stealth-purple': '#a855f7',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Cyberpunk & Asynchronous Flowing RGB Border Animations (Screen 02 Parity) -->
+<style data-purpose="cyber-background-and-animations">
+    /* Deep cyber grid background */
+    body {
+      background-color: #060d0a;
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Phosphor scanning laser sweep beam sweeping downward */
+    .laser-scan-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: linear-gradient(90deg, transparent 4%, rgba(0, 255, 136, 0.85) 50%, rgba(0, 240, 255, 0.9) 75%, transparent 96%);
+      box-shadow: 0 0 18px rgba(0, 255, 136, 0.95), 0 0 35px rgba(0, 240, 255, 0.6);
+      animation: laserSweep 7s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    @keyframes laserSweep {
+      0% { transform: translateY(-10px); opacity: 0; }
+      12% { opacity: 1; }
+      88% { opacity: 1; }
+      100% { transform: translateY(105vh); opacity: 0; }
+    }
+
+    /* Ambient drifting geometric floating polygons */
+    @keyframes floatPoly {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.3; }
+      80% { opacity: 0.3; }
+      100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+    }
+    .floating-poly-1 { animation: floatPoly 18s linear infinite; left: 7%; }
+    .floating-poly-2 { animation: floatPoly 24s linear infinite -8s; left: 86%; }
+    .floating-poly-3 { animation: floatPoly 21s linear infinite -4s; left: 48%; }
+    .floating-poly-4 { animation: floatPoly 27s linear infinite -12s; left: 24%; }
+  </style>
+<style data-purpose="asynchronous-rgb-borders">
+    /* Wrapper base for high-tech RGB glowing panels with 20% softened spectral borders */
+    .rgb-border-wrapper {
+      position: relative;
+      border-radius: 20px;
+      padding: 1.5px;
+      overflow: hidden;
+    }
+
+    .rgb-border-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -150%;
+      pointer-events: none;
+      opacity: 0.28;
+      filter: blur(5px);
+    }
+
+    /* Clockwise Orbit RGB */
+    .rgb-orbit-cw::before {
+      background: conic-gradient(from 0deg, #00f0ff, #00ff88, #ff8c00, #ec4899, #a855f7, #00f0ff);
+      animation: orbitRotateCW 8s linear infinite;
+    }
+
+    /* Counter-Clockwise Orbit RGB */
+    .rgb-orbit-ccw::before {
+      background: conic-gradient(from 180deg, #ff8c00, #a855f7, #00f0ff, #00ff88, #ff8c00);
+      animation: orbitRotateCCW 11s linear infinite;
+    }
+
+    /* Horizontal Wave Gradient Drift */
+    .rgb-wave-h::before,
+    .rgb-wave-drift::before {
+      background: linear-gradient(90deg, #00f0ff, #00ff88, #ff8c00, #ec4899, #a855f7, #00f0ff);
+      background-size: 300% 300%;
+      animation: waveDrift 9s ease infinite;
+    }
+
+    /* Diagonal Oscillating Wave */
+    .rgb-wave-diag::before,
+    .rgb-diagonal-wave::before {
+      background: linear-gradient(135deg, #ff8c00, #00f0ff, #00ff88, #a855f7, #ff8c00);
+      background-size: 250% 250%;
+      animation: diagWave 12s ease-in-out infinite;
+    }
+
+    @keyframes orbitRotateCW {
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes orbitRotateCCW {
+      100% { transform: rotate(-360deg); }
+    }
+    @keyframes waveDrift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes diagWave {
+      0%, 100% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+    }
+
+    /* Frosted Obsidian Glass Body */
+    .glass-surface {
+      background: rgba(11, 21, 17, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 19px;
+    }
+  </style>
+<!-- END: Custom Cyberpunk & Asynchronous Flowing RGB Border Animations -->
+</head>
+<body class="text-slate-200 min-h-screen relative overflow-x-hidden selection:bg-solar-orange selection:text-black">
+<!-- BEGIN: Ambient Background Canvas & Drifting Poly Grid -->
+<div aria-hidden="true" class="laser-scan-line"></div>
+<!-- Ambient glowing backdrop orbs -->
+<div class="fixed top-12 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="fixed bottom-20 right-1/4 w-[28rem] h-[28rem] bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="fixed top-1/2 right-12 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<!-- Drifting Wireframe Geometry -->
+<div class="floating-poly-1 fixed pointer-events-none -z-10 opacity-25 text-cyan-400 font-mono text-xs">
+<svg fill="none" height="48" stroke="currentColor" stroke-width="1.5" viewBox="0 0 48 48" width="48">
+<polygon points="24,4 44,24 24,44 4,24"></polygon>
+<circle cx="24" cy="24" r="8"></circle>
+</svg>
+</div>
+<div class="floating-poly-2 fixed pointer-events-none -z-10 opacity-25 text-emerald-400 font-mono text-xs">
+<svg fill="none" height="60" stroke="currentColor" stroke-width="1.5" viewBox="0 0 60 60" width="60">
+<circle cx="30" cy="30" r="26" stroke-dasharray="4 4"></circle>
+<polygon points="30,8 50,46 10,46"></polygon>
+</svg>
+</div>
+<div class="floating-poly-3 fixed pointer-events-none -z-10 opacity-25 text-solar-orange font-mono text-xs">
+<svg fill="none" height="52" stroke="currentColor" stroke-width="1.5" viewBox="0 0 52 52" width="52">
+<rect height="36" transform="rotate(45 26 26)" width="36" x="8" y="8"></rect>
+<path d="M26 4 L26 48 M4 26 L48 26"></path>
+</svg>
+</div>
+<div class="floating-poly-4 fixed pointer-events-none -z-10 opacity-25 text-purple-400 font-mono text-xs">
+<svg fill="none" height="44" stroke="currentColor" stroke-width="1.5" viewBox="0 0 44 44" width="44">
+<circle cx="22" cy="22" r="18"></circle>
+<polygon points="22,6 36,34 8,34"></polygon>
+</svg>
+</div>
+<!-- END: Ambient Background Canvas & Drifting Poly Grid -->
+<!-- BEGIN: Main Outer Layout Container -->
+<div class="max-w-[1480px] mx-auto px-4 py-5 space-y-5 relative z-10">
+<!-- BEGIN: Top Command Bar -->
+<header class="rgb-border-wrapper rgb-orbit-cw">
+<div class="glass-surface px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
+<!-- Brand & Official Shield Emblem Badge -->
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-cyan-500/20 border border-amber-500/50 flex items-center justify-center shadow-lg shadow-amber-500/20 overflow-hidden shrink-0">
+<img alt="Cyber Hero Logo" class="w-full h-full object-contain p-0.5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKweVJdUQJ9a7CfvWdDd9qU7LkRWzSsnKjyjNeVTuJIPEhHLNTWWofXj6JKEM7lJJ6rTROqFEQMYaFXghQ5QNdKYLpyZ_dUfCGxRiigjHcgSw_5HHXjszLA23_KiCB4_5CnISHKnhlTWZexRywfz9gYDIU9YQKcsrgypOC2LFfk6_OokPFcixuPi28tksHlaOPypwxLT67uHnIjoirtMkUf3AuoxwAx5S_hZ0Una3DV8nlVUscvkw07-t6r6X471kEpdc">
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="text-base font-black tracking-wider text-white uppercase font-display">CYBER HERO</h1>
+<span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-500/20 text-solar-orange border border-amber-500/40 uppercase tracking-widest font-bold">CADET ADVANCEMENT DECK</span>
+</div>
+<div class="flex items-center gap-2 text-xs font-mono text-emerald-400 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span class="tracking-wide">ENCLAVE GATEWAY // SECURITY CLEARANCE ELEVATION</span>
+</div>
+</div>
+</div>
+<!-- Central Operative Progression Status (Enlarged and Crisp) -->
+<div class="hidden lg:flex items-center gap-6 font-mono text-xs border-x border-white/10 px-6 py-1">
+<div>
+<div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">SECURITY CLEARANCE:</div>
+<div class="text-solar-orange font-black text-sm flex items-center gap-1.5 mt-0.5">
+<span class="px-2 py-0.5 bg-solar-orange/20 border border-solar-orange/60 rounded text-xs font-bold text-white shadow-sm">LEVEL 04</span>
+<span class="tracking-wide">OPERATOR CANDIDATE</span>
+</div>
+</div>
+<div>
+<div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">SECURITY DRILL STATS:</div>
+<div class="text-emerald-400 font-black text-sm flex items-center gap-1.5 mt-0.5">
+<span class="">100% COMPLETE</span>
+<span class="text-xs text-slate-400 font-normal">(12/12 CLEARED)</span>
+</div>
+</div>
+<div>
+<div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">NEURAL PARITY:</div>
+<div class="text-circuit-cyan font-black text-sm mt-0.5 tracking-wide">99.8% [LOCKED]</div>
+</div>
+</div>
+<!-- Top Right Navigation & Protocol Tracker (Crisp & Enlarged) -->
+<div class="flex items-center gap-3">
+<div class="px-4 py-2 rounded-lg bg-white/5 border border-white/15 text-right">
+<div class="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-semibold">PROTOCOL ACTIVE</div>
+<div class="text-sm font-mono font-black text-circuit-cyan tracking-wider">STEP 04 OF 12</div>
+</div>
+<button class="px-4 py-2.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 hover:text-rose-200 border border-rose-500/40 text-xs font-mono font-black tracking-wider transition-all flex items-center gap-2 shadow-sm">
+<svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path>
+</svg>
+<span class="">DISENGAGE</span>
+</button>
+</div>
+</div>
+</header>
+<!-- END: Top Command Bar -->
+<!-- BEGIN: Sub-Header Protocol Banner -->
+<div class="rgb-border-wrapper rgb-wave-h">
+<div class="glass-surface px-6 py-2.5 flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+<div class="flex items-center gap-2.5">
+<span class="px-2.5 py-0.5 rounded bg-solar-orange/25 text-solar-orange font-black text-xs border border-solar-orange/50 tracking-wider">SCREEN 04</span>
+<span class="text-slate-200 tracking-wider font-semibold uppercase text-xs">PROTOCOL 04 — CLEARANCE ELEVATION &amp; TACTICAL CALLSIGN REGISTRATION // CADET PROMOTION TERMINAL</span>
+</div>
+<div class="flex items-center gap-3 text-xs">
+<span class="inline-flex items-center gap-1.5 text-emerald-400 font-bold">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            TRIUMPHANT ADVANCEMENT ACTIVE
+          </span>
+<span class="text-slate-600">|</span>
+<span class="text-circuit-cyan font-bold tracking-wide">BIO-TELEMETRY: STABLE</span>
+</div>
+</div>
+</div>
+<!-- END: Sub-Header Protocol Banner -->
+<!-- BEGIN: Central Main Stage (Two Complementary Interactive Columns) -->
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- LEFT COLUMN: Promotion Ceremony & Operative Dossier (5 cols) -->
+<section class="lg:col-span-5 rgb-border-wrapper rgb-wave-diag h-full" data-purpose="graduation-ceremony-card">
+<div class="glass-surface p-6 flex flex-col justify-between h-full space-y-6">
+<!-- Top Badge & Authoritative Promoted Headline (Significantly Enlarged) -->
+<div>
+<div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div class="flex items-center gap-2 font-mono text-xs text-solar-orange">
+<svg class="w-4 h-4 text-solar-orange animate-spin" fill="none" stroke="currentColor" stroke-width="2" style="animation-duration: 9s;" viewBox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+<span class="tracking-wider uppercase font-bold text-xs">ROOKIE DRILLS RESOLVED</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-mono font-bold border border-emerald-500/50 uppercase tracking-wider">LOCK OVERRIDDEN</span>
+</div>
+<!-- Noticeably Larger Authoritative Headline (text-3xl to text-4xl) -->
+<div class="mt-4">
+<div class="text-[11px] font-mono uppercase tracking-widest text-slate-400 font-semibold">OFFICIAL PROMOTION CREDENTIAL</div>
+<h2 class="text-3xl sm:text-4xl font-black tracking-tight text-white uppercase font-display mt-1">
+                CLEARANCE LEVEL 04
+                <span class="block text-solar-orange text-xl sm:text-2xl font-mono font-black tracking-wider mt-1">CODENAME: OPERATIVE FIELD-READY</span>
+</h2>
+</div>
+</div>
+<!-- Hero Operative Companion Preview with Pristine Armor -->
+<div class="relative rounded-2xl overflow-hidden border border-white/15 bg-black/40 p-4 group">
+  <div class="relative aspect-square max-w-[290px] mx-auto rounded-xl overflow-hidden shadow-2xl border border-cyan-500/40">
+    <img id="main-avatar-img" alt="Operative Echo in Selected Tactical Armor" class="w-full h-full object-cover object-center transition-transform duration-500" src="https://lh3.googleusercontent.com/aida/AEtjO1V0ZpTb4xEGrFDcSFRpfRF3voJCufZucwk7_izVyhLx-sp2BdgHQcQ1xyZ33k2-5JzFzvL0t8Hr-rdBaymK0gONthB9moYHVIhGd6IMKEoMhKl6chv1Dq-RlCVDLZY80XkRhYNnR4e4wE8bj7HmdUf0VGfp3QssxmoWZqQdeltSR4sIwBD1Za1f05O3oO2E2306Cz2H2k-NErZCDBOC8FsVgl7gTsJ_4fd7UzkoeLgJPClvarLiC8rLe8Z5">
+    <div class="absolute bottom-2 left-2 right-2 bg-obsidian/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/15 flex items-center justify-between text-xs font-mono">
+      <span id="avatar-id-badge" class="text-circuit-cyan font-bold tracking-wider">ID: #774-ECHO</span>
+      <span class="text-emerald-400 font-bold flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>SUIT SYNC: 100%</span>
+    </div>
+  </div>
+  <div class="mt-3 text-center">
+    <div id="avatar-title-badge" class="text-sm font-mono font-black text-white tracking-wide">ROBOTIC COMPANION ECHO MK-IV</div>
+    <div id="avatar-subtitle-badge" class="text-[11px] font-mono text-slate-400 tracking-wider mt-0.5">CERAMIC WHITE ARMOR // ORBITAL FREQUENCY OVERDRIVE</div>
+  </div>
+  
+</div>
+<!-- Commendation Dossier Breakdown (Compact & Unobtrusive) -->
+<div class="space-y-3 font-mono" id="avatar-selection-gallery"><div class="flex items-center justify-between border-b border-white/10 pb-2"><div class="flex items-center gap-2 text-xs font-bold text-solar-orange uppercase tracking-wider"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 9h6v6H9z"></path></svg><span class="">TACTICAL ARMOR VARIANTS</span></div><span class="text-[10px] text-circuit-cyan bg-circuit-cyan/15 px-2 py-0.5 rounded border border-circuit-cyan/40 font-bold uppercase tracking-wider">6 PROTOCOLS LOADED</span></div><div class="grid grid-cols-3 gap-2.5"><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1V0ZpTb4xEGrFDcSFRpfRF3voJCufZucwk7_izVyhLx-sp2BdgHQcQ1xyZ33k2-5JzFzvL0t8Hr-rdBaymK0gONthB9moYHVIhGd6IMKEoMhKl6chv1Dq-RlCVDLZY80XkRhYNnR4e4wE8bj7HmdUf0VGfp3QssxmoWZqQdeltSR4sIwBD1Za1f05O3oO2E2306Cz2H2k-NErZCDBOC8FsVgl7gTsJ_4fd7UzkoeLgJPClvarLiC8rLe8Z5'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION ECHO MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='CERAMIC WHITE ARMOR // ORBITAL FREQUENCY OVERDRIVE'; document.getElementById('avatar-id-badge').textContent='ID: #774-ECHO'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border-2 border-solar-orange bg-solar-orange/20 p-2 text-left transition-all hover:scale-105 cursor-pointer shadow-lg shadow-amber-500/30 focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1V0ZpTb4xEGrFDcSFRpfRF3voJCufZucwk7_izVyhLx-sp2BdgHQcQ1xyZ33k2-5JzFzvL0t8Hr-rdBaymK0gONthB9moYHVIhGd6IMKEoMhKl6chv1Dq-RlCVDLZY80XkRhYNnR4e4wE8bj7HmdUf0VGfp3QssxmoWZqQdeltSR4sIwBD1Za1f05O3oO2E2306Cz2H2k-NErZCDBOC8FsVgl7gTsJ_4fd7UzkoeLgJPClvarLiC8rLe8Z5" alt="Ceramic White &amp; Solar Orange" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-solar-orange text-black uppercase">ECHO</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">CERAMIC WHITE</div><div class="text-[9px] text-solar-orange tracking-tight truncate">SOLAR OVERDRIVE</div></div></button><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1WR7oFG31tmIJWNCpxl4BeRNbk6yL_cbp7y92nZog_ufWPZ7euXFFIPUtpyoYRRA3JDfAyppAiWn4RUGkKWQcKscwAd7UFltpELURdI9eLCPCxdme5EIOH16jPhMPNgPlCqZ_8nDmSAHbXXKGTZyHwTfX3BDUN6fsHsECdJ04yLctVZxLYU0BdsJO1eFrlJlq5pA4fYMTxZwdIGhTwp7rA3GywY-PZir0uobiQ63XLGMg4JGX6OjJ9NASU'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION SOLAR MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='NEON SOLAR ORANGE ARMOR // RADIANT THERMAL OVERDRIVE'; document.getElementById('avatar-id-badge').textContent='ID: #440-SOLAR'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border border-white/10 bg-white/5 p-2 text-left transition-all hover:scale-105 cursor-pointer hover:border-amber-400 focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1WR7oFG31tmIJWNCpxl4BeRNbk6yL_cbp7y92nZog_ufWPZ7euXFFIPUtpyoYRRA3JDfAyppAiWn4RUGkKWQcKscwAd7UFltpELURdI9eLCPCxdme5EIOH16jPhMPNgPlCqZ_8nDmSAHbXXKGTZyHwTfX3BDUN6fsHsECdJ04yLctVZxLYU0BdsJO1eFrlJlq5pA4fYMTxZwdIGhTwp7rA3GywY-PZir0uobiQ63XLGMg4JGX6OjJ9NASU" alt="Radiant Neon Solar Orange" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-500/20 text-amber-400 border border-amber-400/40 uppercase">SOLAR</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">SOLAR ORANGE</div><div class="text-[9px] text-amber-400 tracking-tight truncate">THERMAL BLOOM</div></div></button><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1WGQXIURhWS-vq9p5_EYuZt7ryonFkisCGc-jFdhrmlhLlfPj7hk835K_y9oDH0TVq7CNpw7x2poWvJwN7FAo0YrfWG5949Aln3bRXAj7b4lxL71zyuW_jWz55mICf07Fh2v5xSivNcNyAQTi126JA7zVhsHbUvkv0XWTYKio-a-OAALoX7aAF3TevLRRJE4jvUG7P9JYSLQrABMqZol6oZk_jNeIQhvdbpwVTWba88HAdWhS7GObFqingg'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION VECTOR MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='SIGNAL GREEN ARMOR // TRAJECTORY OVERDRIVE'; document.getElementById('avatar-id-badge').textContent='ID: #520-VECTOR'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border border-white/10 bg-white/5 p-2 text-left transition-all hover:scale-105 cursor-pointer hover:border-emerald-400 focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1WGQXIURhWS-vq9p5_EYuZt7ryonFkisCGc-jFdhrmlhLlfPj7hk835K_y9oDH0TVq7CNpw7x2poWvJwN7FAo0YrfWG5949Aln3bRXAj7b4lxL71zyuW_jWz55mICf07Fh2v5xSivNcNyAQTi126JA7zVhsHbUvkv0XWTYKio-a-OAALoX7aAF3TevLRRJE4jvUG7P9JYSLQrABMqZol6oZk_jNeIQhvdbpwVTWba88HAdWhS7GObFqingg" alt="Signal Green Emerald" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 uppercase">VECTOR</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">SIGNAL GREEN</div><div class="text-[9px] text-emerald-400 tracking-tight truncate">TRAJECTORY LOCK</div></div></button><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1Wq5FW7dNTFhXSTM7xvUrFmxi8DeTr-xSgv6CxCeiTTR8vyU9yPS_bs4qzWiJgO--e_RX5ZA-FrxrdwZCvbXe7eab7HO490hhKCkWt4nRDpA-kYDIZteMNJHLbvYnpgbhU6ZkH83gdbb4fN94OtxAdCUXaOK-Gxc7I4riezL2lCgrOVd7xBqI1ENeSJ4f-VqJLeVM1AIID6XNs6xYtpVvpkSLJiFmnVphJDSf4BQfq-8jTrod_ZgwAJczkV'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION BYTE MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='CIRCUIT CYAN ARMOR // SYNTAX CONDUIT SYNC'; document.getElementById('avatar-id-badge').textContent='ID: #585-BYTE'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border border-white/10 bg-white/5 p-2 text-left transition-all hover:scale-105 cursor-pointer hover:border-cyan-400 focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1Wq5FW7dNTFhXSTM7xvUrFmxi8DeTr-xSgv6CxCeiTTR8vyU9yPS_bs4qzWiJgO--e_RX5ZA-FrxrdwZCvbXe7eab7HO490hhKCkWt4nRDpA-kYDIZteMNJHLbvYnpgbhU6ZkH83gdbb4fN94OtxAdCUXaOK-Gxc7I4riezL2lCgrOVd7xBqI1ENeSJ4f-VqJLeVM1AIID6XNs6xYtpVvpkSLJiFmnVphJDSf4BQfq-8jTrod_ZgwAJczkV" alt="Circuit Cyan Blue" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-circuit-cyan/20 text-circuit-cyan border border-circuit-cyan/40 uppercase">BYTE</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">CIRCUIT CYAN</div><div class="text-[9px] text-circuit-cyan tracking-tight truncate">SYNTAX ROUTING</div></div></button><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1Xt2KSMbnSWY7ytK6FbLJnPRWFPZ91daF6TB8Q3Lpc_s54YazuvwDvqxt9rTkIZw5pUG_Pr-Gg2qIWn3U7gsL5kNOzg_3N2Pck-whAe64MmQeEmbdelIxPZzV4d_JxSlu8ccPGdBnru_cdj5xdDA8RGN9I-4yH8dLzW9NUz0mJURk0dg4hwzqW_ONvTp0L_EdS0p2CDan_yu0FpAtoaYj9N4YEXufwakpGAedNMmz7a3Zj9wrz9xJD2pa8'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION NOVA MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='NOVA MAGENTA ARMOR // PULSE STEALTH HARMONIC'; document.getElementById('avatar-id-badge').textContent='ID: #710-NOVA'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border border-white/10 bg-white/5 p-2 text-left transition-all hover:scale-105 cursor-pointer hover:border-pulse-pink/70 focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1Xt2KSMbnSWY7ytK6FbLJnPRWFPZ91daF6TB8Q3Lpc_s54YazuvwDvqxt9rTkIZw5pUG_Pr-Gg2qIWn3U7gsL5kNOzg_3N2Pck-whAe64MmQeEmbdelIxPZzV4d_JxSlu8ccPGdBnru_cdj5xdDA8RGN9I-4yH8dLzW9NUz0mJURk0dg4hwzqW_ONvTp0L_EdS0p2CDan_yu0FpAtoaYj9N4YEXufwakpGAedNMmz7a3Zj9wrz9xJD2pa8" alt="Nova Magenta Purple" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-pulse-pink/20 text-pulse-pink border border-pulse-pink/40 uppercase">NOVA</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">NOVA MAGENTA</div><div class="text-[9px] text-pulse-pink tracking-tight truncate">PULSE STEALTH</div></div></button><button type="button" onclick="document.getElementById('main-avatar-img').src='https://lh3.googleusercontent.com/aida/AEtjO1XqkhZYEgHA0EGpMLA18wBtYRE-JIcbaYU_cH04JHO0NJA8zwLyj8IP_MfjyUe6eKGWitUVOGHzx7YEFjjMG4T33W7DOMf7BozcywymHQsxUjYAtKTE-wimTlH4zRHYMhhB7IAa7Hv1TF_IpFFAcu_heXFr6XmgNA1vTorvDA8-CylAiyhZpvcmDJ-2Lt_A5dx68dHe6RYv0k4DxZvP90SgvA9dDEkMLVZ_5C-ZH42h7pnerB43xE1NaJ-4'; document.getElementById('avatar-title-badge').textContent='ROBOTIC COMPANION GHOST MK-IV'; document.getElementById('avatar-subtitle-badge').textContent='GHOST OBSIDIAN MATTE ARMOR // ULTRAVIOLET CLOAK'; document.getElementById('avatar-id-badge').textContent='ID: #820-GHOST'; document.querySelectorAll('.avatar-gallery-chip').forEach(c =&gt; { c.classList.remove('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30'); c.classList.add('border-white/10', 'bg-white/5'); }); this.classList.remove('border-white/10', 'bg-white/5'); this.classList.add('border-solar-orange', 'bg-solar-orange/20', 'shadow-amber-500/30');" class="avatar-gallery-chip group relative rounded-xl border border-white/10 bg-white/5 p-2 text-left transition-all hover:scale-105 cursor-pointer hover:border-stealth-purple focus:outline-none"><div class="relative aspect-square w-full rounded-lg overflow-hidden border border-white/10"><img src="https://lh3.googleusercontent.com/aida/AEtjO1XqkhZYEgHA0EGpMLA18wBtYRE-JIcbaYU_cH04JHO0NJA8zwLyj8IP_MfjyUe6eKGWitUVOGHzx7YEFjjMG4T33W7DOMf7BozcywymHQsxUjYAtKTE-wimTlH4zRHYMhhB7IAa7Hv1TF_IpFFAcu_heXFr6XmgNA1vTorvDA8-CylAiyhZpvcmDJ-2Lt_A5dx68dHe6RYv0k4DxZvP90SgvA9dDEkMLVZ_5C-ZH42h7pnerB43xE1NaJ-4" alt="Ghost Obsidian Matte Black" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"><div class="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-black bg-stealth-purple/20 text-stealth-purple border border-stealth-purple/40 uppercase">GHOST</div></div><div class="mt-1.5"><div class="text-[11px] font-black text-white font-display truncate">OBSIDIAN GHOST</div><div class="text-[9px] text-stealth-purple tracking-tight truncate">ULTRAVIOLET CLOAK</div></div></button></div></div>
+<!-- Instructor Citation Quote (Muted & Subordinate) -->
+
+</div>
+</section>
+<!-- RIGHT COLUMN: Tactical Callsign Chip Selector (7 cols) -->
+<section class="lg:col-span-7 rgb-border-wrapper rgb-orbit-ccw h-full" data-purpose="callsign-selection-grid">
+<div class="glass-surface p-6 flex flex-col justify-between h-full space-y-6">
+<!-- Callsign Selection Header -->
+<div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+<div>
+<span class="text-xs font-mono text-solar-orange uppercase tracking-widest font-black">IDENTITY PROTOCOL REGISTRATION</span>
+<h3 class="text-2xl sm:text-3xl font-black text-white uppercase font-display mt-0.5">CHOOSE YOUR OPERATIONAL CALLSIGN</h3>
+<p class="text-xs text-slate-400 font-mono mt-1">Select the permanent tactical moniker broadcast across neural relays and mission logs.</p>
+</div>
+<div class="px-3.5 py-1.5 rounded-lg bg-circuit-cyan/15 border border-circuit-cyan/40 text-circuit-cyan font-mono text-xs font-bold tracking-wider">
+              6 CANDIDATES LOADED
+            </div>
+</div>
+<!-- Callsign Chips Grid (6 Interactive Cards with HUGE Bold Titles & Subordinate Details) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="callsign-chip-grid">
+<!-- CHIP 1: ECHO (Flagship / Default Selected) -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border-2 border-solar-orange bg-solar-orange/15 shadow-xl shadow-amber-500/20 relative group" data-callsign="ECHO">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-solar-orange/20 border border-solar-orange flex items-center justify-center text-solar-orange font-bold shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+<path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+<line x1="12" x2="12" y1="19" y2="22"></line>
+</svg>
+</div>
+<span class="active-indicator px-2.5 py-1 rounded text-xs font-mono font-black bg-solar-orange text-black uppercase tracking-wider shadow-sm">FLAGSHIP</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">ECHO</div>
+<div class="text-xs font-mono text-solar-orange mt-0.5 font-bold tracking-wide">480 THZ // RESONANT HARMONIC</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Ghost frequency radar specialist. Emits resonant harmonic pulses that reveal hidden backdoor nodes.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-solar-orange/30 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-solar-orange font-black tracking-wide">+18% SIGNAL LOCK</span>
+</div>
+</div>
+<!-- CHIP 2: NOVA -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-pulse-pink/70 relative group" data-callsign="NOVA">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-pulse-pink/20 border border-pulse-pink/40 flex items-center justify-center text-pulse-pink shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="4"></circle>
+<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+</svg>
+</div>
+<span class="status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider">AVAILABLE</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">NOVA</div>
+<div class="text-xs font-mono text-pulse-pink mt-0.5 font-bold tracking-wide">710 THZ // PULSE STEALTH</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Supernova burst decryptor. Overwhelms firewalls with synchronized energy flurries.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-pulse-pink font-black tracking-wide">+20% BURST DAMAGE</span>
+</div>
+</div>
+<!-- CHIP 3: BYTE -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-circuit-cyan/70 relative group" data-callsign="BYTE">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-circuit-cyan/20 border border-circuit-cyan/40 flex items-center justify-center text-circuit-cyan shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<rect height="16" rx="2" width="16" x="4" y="4"></rect>
+<rect height="6" width="6" x="9" y="9"></rect>
+<line x1="9" x2="9" y1="1" y2="4"></line>
+<line x1="15" x2="15" y1="1" y2="4"></line>
+<line x1="9" x2="9" y1="20" y2="23"></line>
+<line x1="15" x2="15" y1="20" y2="23"></line>
+<line x1="20" x2="23" y1="9" y2="9"></line>
+<line x1="20" x2="23" y1="14" y2="14"></line>
+<line x1="1" x2="4" y1="9" y2="9"></line>
+<line x1="1" x2="4" y1="14" y2="14"></line>
+</svg>
+</div>
+<span class="status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider">AVAILABLE</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">BYTE</div>
+<div class="text-xs font-mono text-circuit-cyan mt-0.5 font-bold tracking-wide">585 THZ // SYNTAX ROUTING</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Micro-kernel infiltrator. Precision binary subversion engineered for rapid sandbox bypass.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-circuit-cyan font-black tracking-wide">+25% RECOMPILE SPEED</span>
+</div>
+</div>
+<!-- CHIP 4: GHOST -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-stealth-purple/70 relative group" data-callsign="GHOST">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-stealth-purple/20 border border-stealth-purple/40 flex items-center justify-center text-stealth-purple shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M12 2a8 8 0 0 0-8 8v12l4-2 4 2 4-2 4 2V10a8 8 0 0 0-8-8z"></path>
+<circle cx="9" cy="10" r="1"></circle>
+<circle cx="15" cy="10" r="1"></circle>
+</svg>
+</div>
+<span class="status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider">AVAILABLE</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">GHOST</div>
+<div class="text-xs font-mono text-stealth-purple mt-0.5 font-bold tracking-wide">820 THZ // CLOAK SPECTRUM</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Silent stealth operative. Zero electromagnetic footprint for covert counter-sigint tasks.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-stealth-purple font-black tracking-wide">-40% TRACE VISIBILITY</span>
+</div>
+</div>
+<!-- CHIP 5: VECTOR -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-signal-green/70 relative group" data-callsign="VECTOR">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-signal-green/20 border border-signal-green/40 flex items-center justify-center text-signal-green shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<line x1="5" x2="19" y1="12" y2="12"></line>
+<polyline points="12 5 19 12 12 19"></polyline>
+</svg>
+</div>
+<span class="status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider">AVAILABLE</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">VECTOR</div>
+<div class="text-xs font-mono text-signal-green mt-0.5 font-bold tracking-wide">520 THZ // TRAJECTORY LOCK</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Orbital trajectory calculator. Hyper-velocity signal routing through crowded satellite relays.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-signal-green font-black tracking-wide">+15% PACKET VELOCITY</span>
+</div>
+</div>
+<!-- CHIP 6: CHRONO -->
+<div class="callsign-card cursor-pointer rounded-xl p-4 sm:p-5 transition-all duration-200 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] hover:border-amber-400/70 relative group" data-callsign="CHRONO">
+<div class="flex items-start justify-between">
+<div class="w-10 h-10 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shadow-md">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+<span class="status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider">AVAILABLE</span>
+</div>
+<div class="mt-3">
+<!-- Prominent Bold High-Contrast Title -->
+<div class="text-2xl sm:text-3xl font-black text-white font-display tracking-wider">CHRONO</div>
+<div class="text-xs font-mono text-amber-400 mt-0.5 font-bold tracking-wide">440 THZ // TIME-DILATION</div>
+<p class="text-[11px] text-zinc-400 font-mono mt-1.5 leading-relaxed">Time-dilation sequence analyzer. Predicts firewall reconfiguration loops with sub-ms accuracy.</p>
+</div>
+<div class="mt-3.5 pt-2.5 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+<span class="text-slate-400 text-[11px]">TACTICAL BONUS:</span>
+<span class="text-amber-400 font-black tracking-wide">+1.2s EXPLOIT WINDOW</span>
+</div>
+</div>
+</div>
+<!-- Active Selection Confirmation Bar (Prominent & Crisp) -->
+<div class="p-3.5 rounded-xl bg-solar-orange/15 border border-solar-orange/50 flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-solar-orange animate-ping"></span>
+<span class="text-slate-200 font-semibold tracking-wider uppercase text-xs">CONFIRMED SELECTION:</span>
+<span class="text-solar-orange font-black font-display tracking-widest text-lg sm:text-xl" id="selected-callsign-display">[ ECHO ]</span>
+</div>
+<span class="text-emerald-400 font-black tracking-widest text-xs uppercase px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30">READY FOR BIOMETRIC IMPRINT</span>
+</div>
+</div>
+</section>
+</main>
+<!-- END: Central Main Stage -->
+<!-- BEGIN: Hardware Sync & Registration Dock -->
+<section class="rgb-border-wrapper rgb-orbit-cw" data-purpose="registration-terminal-dock">
+<div class="glass-surface p-6 space-y-6">
+<!-- Upper Row: Custom Moniker Input + Satellite Validator (Larger, High-Legibility) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+<div class="md:col-span-8 flex flex-col sm:flex-row gap-3">
+<!-- Custom Moniker Input (text-xl to text-2xl font-bold) -->
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none font-mono text-xs sm:text-sm text-solar-orange font-black tracking-wider">
+                [CALLSIGN_OVERRIDE]:
+              </div>
+<input class="w-full pl-48 sm:pl-52 pr-4 py-3.5 rounded-xl bg-black/60 border-2 border-solar-orange/40 text-white font-mono text-xl sm:text-2xl font-black tracking-wider uppercase placeholder-slate-600 focus:outline-none focus:border-solar-orange focus:ring-2 focus:ring-solar-orange/40 shadow-inner" id="custom-callsign-input" placeholder="CUSTOM MONIKER..." type="text" value="ECHO">
+</div>
+<!-- Check Satellite Availability Button (Bolder, Larger) -->
+<button class="px-6 py-3.5 rounded-xl bg-circuit-cyan/15 hover:bg-circuit-cyan/25 border-2 border-circuit-cyan/50 text-circuit-cyan font-mono text-sm font-black tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-cyan-500/15">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+</svg>
+<span class="">CHECK SATELLITE AVAILABILITY</span>
+</button>
+</div>
+<!-- Sandbox Practice Mode Alternative (Larger, Bolder Text) -->
+<div class="md:col-span-4 flex justify-end">
+<button class="w-full h-full py-3.5 px-5 rounded-xl bg-white/5 hover:bg-white/10 border-2 border-white/15 text-slate-200 hover:text-white font-mono text-xs sm:text-sm font-black tracking-wider uppercase transition-all flex items-center justify-center text-center shadow-sm">
+              PRACTICE IN ANONYMOUS SANDBOX
+            </button>
+</div>
+</div>
+<!-- Master Confirmation Button / Biometric Imprint (High-Impact Hero CTA) -->
+<div class="pt-4 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-5">
+<div class="flex items-center gap-3 font-mono text-xs text-slate-400">
+<div class="w-4 h-4 rounded-md bg-emerald-400/20 border border-emerald-400 flex items-center justify-center text-emerald-400 text-xs font-black">✓</div>
+<span class="tracking-wide font-medium">HARDWARE CONDUITS PRIMED &amp; READY FOR SATELLITE BROADCAST</span>
+</div>
+<!-- Tactile Primary Hero Button (Bold, Large, High-Impact) -->
+<button class="w-full lg:w-auto px-8 sm:px-10 py-4 sm:py-5 rounded-xl bg-gradient-to-r from-solar-orange via-amber-500 to-circuit-cyan text-black font-black font-display tracking-widest text-base sm:text-lg shadow-2xl shadow-amber-500/30 hover:shadow-cyan-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 uppercase">
+<svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+<path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11m0 0a8 8 0 00.99 7.132"></path>
+</svg>
+<span class="">IMPRINT IDENTITY &amp; ISSUE FIELD CREDENTIALS [CONFIRM OPERATOR STATUS] →</span>
+</button>
+</div>
+</div>
+</section>
+<!-- END: Hardware Sync & Registration Dock -->
+<!-- BEGIN: Enclave Telemetry Status Strip (Compact, Unobtrusive) -->
+<footer class="glass-surface px-6 py-2.5 rounded-xl border border-white/5 flex flex-wrap items-center justify-between gap-4 font-mono text-[10px] text-slate-500">
+<div class="flex items-center gap-4">
+<span class="text-emerald-400 flex items-center gap-1.5 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          CYBER HERO ENCLAVE PROTOCOL V4.8.2
+        </span>
+<span class="hidden md:inline text-slate-700">|</span>
+<span class="hidden md:inline text-circuit-cyan/80">ENCLAVE CLEARANCE: LEVEL 04 GRANTED</span>
+</div>
+<div class="flex items-center gap-5">
+<span class="">CIPHER: AES-256-GCM [ACTIVE]</span>
+<span class="text-solar-orange/80 font-bold">NODE: SECTOR 00 / ORBITAL</span>
+</div>
+</footer>
+<!-- END: Enclave Telemetry Status Strip -->
+</div>
+<!-- END: Main Outer Layout Container -->
+<!-- BEGIN: Interactive Callsign Selector Script -->
+<script data-purpose="callsign-chip-selection">
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.callsign-card');
+      const display = document.getElementById('selected-callsign-display');
+      const input = document.getElementById('custom-callsign-input');
+
+      cards.forEach(card => {
+        card.addEventListener('click', () => {
+          const callsign = card.getAttribute('data-callsign');
+          
+          // Reset all chips to idle styling
+          cards.forEach(c => {
+            c.classList.remove('border-2', 'border-solar-orange', 'bg-solar-orange/15', 'shadow-xl', 'shadow-amber-500/20');
+            c.classList.add('border', 'border-white/10', 'bg-white/[0.02]');
+            
+            const badge = c.querySelector('.active-indicator');
+            if (badge) {
+              badge.remove();
+              const newBadge = document.createElement('span');
+              newBadge.className = 'status-badge px-2.5 py-1 rounded text-xs font-mono font-bold bg-white/10 text-slate-300 uppercase tracking-wider';
+              newBadge.textContent = 'AVAILABLE';
+              c.querySelector('.flex.items-start.justify-between').appendChild(newBadge);
+            }
+          });
+
+          // Apply selected highlight
+          card.classList.remove('border', 'border-white/10', 'bg-white/[0.02]');
+          card.classList.add('border-2', 'border-solar-orange', 'bg-solar-orange/15', 'shadow-xl', 'shadow-amber-500/20');
+
+          // Replace status badge with active indicator
+          const currentBadge = card.querySelector('.status-badge');
+          if (currentBadge) currentBadge.remove();
+          
+          let activeIndicator = card.querySelector('.active-indicator');
+          if (!activeIndicator) {
+            activeIndicator = document.createElement('span');
+            activeIndicator.className = 'active-indicator px-2.5 py-1 rounded text-xs font-mono font-black bg-solar-orange text-black uppercase tracking-wider shadow-sm';
+            activeIndicator.textContent = 'SELECTED';
+            card.querySelector('.flex.items-start.justify-between').appendChild(activeIndicator);
+          }
+
+          // Update header / display & custom input
+          if (display) display.textContent = `[ ${callsign} ]`;
+          if (input) input.value = callsign;
+        });
+      });
+
+      // Synchronize custom typing input back to the display indicator
+      if (input && display) {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.trim().toUpperCase();
+          display.textContent = val ? `[ ${val} ]` : '[ UNNAMED ]';
+        });
+      }
+    });
+  </script>
+<!-- END: Interactive Callsign Selector Script -->
+
+
+</body></html>

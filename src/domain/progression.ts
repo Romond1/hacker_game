@@ -1,6 +1,7 @@
 import data from '../../shared/economy.json' with { type: 'json' };
 
 export const ECONOMY = data;
+export type ItemAvailability = 'available' | 'future';
 export type ShopItem = typeof data.items[number];
 export type RewardReceipt = { source: string; eventId: string; xp: number; credits: number; totalXP: number; currentCredits: number; creditLimitReached: boolean };
 export type PlayerProgression = {

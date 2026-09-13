@@ -15,28 +15,68 @@ describe('progression experiences', () => {
     expect(screen.getByText('Complete Rookie Training to gain access.')).toBeInTheDocument();
     expect(screen.queryByText('Neon Pointer')).not.toBeInTheDocument();
   });
-  it('purchases then equips an owned badge using saved server state', async () => {
+  it('purchases then equips an owned item using saved server state', async () => {
     const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1,2,3], currentCredits: 70, storyFlags: { shopUnlocked: true } };
-    const saved = { ...state, currentCredits: 30, inventory: ['rookie-badge'] };
+    const saved = { ...state, currentCredits: 30, inventory: ['hero-wolf-standard'] };
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, data: { progression: saved } }))));
     const onUpdate = vi.fn();
     const view = render(<HackerShop user={user} progression={state} onUpdate={onUpdate} onBack={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: /Buy Rookie Hacker/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Buy Cyber Wolf Cadet/ }));
     expect(screen.getByText('PROCESSING PURCHASE…')).toBeInTheDocument();
     await waitFor(() => expect(onUpdate).toHaveBeenCalledWith(saved));
     expect(await screen.findByText('ITEM ACQUIRED')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Equip now/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Return to shop/i }));
     view.rerender(<HackerShop user={user} progression={saved} onUpdate={onUpdate} onBack={vi.fn()} />);
-    expect(screen.getByRole('button', { name: /Equip Rookie Hacker/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Infiltrator required/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Equip Cyber Wolf Cadet/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Future campaign unlock for Cyber Wolf Centurion/ })).toBeDisabled();
+  });
+  it('toggles in-shop ephemeral trials for pointers and assistants without altering inventory', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1,2,3], currentCredits: 70, storyFlags: { shopUnlocked: true } };
+    render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+    
+    // Switch to Pointers department
+    fireEvent.click(screen.getByRole('button', { name: /02\. POINTERS/i }));
+    expect(screen.getByText(/POINTER CALIBRATION PAD/i)).toBeInTheDocument();
+    
+    // Click TRY IN SHOP on Tactical Crosshair
+    const tryBtn = screen.getByRole('button', { name: /Try Tactical Crosshair in shop/i });
+    fireEvent.click(tryBtn);
+    expect(screen.getByText(/TRIAL MODE ACTIVE/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Tactical Crosshair/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /Stop testing Tactical Crosshair/i })).toBeInTheDocument();
+    
+    // Test clear all trials button
+    fireEvent.click(screen.getByRole('button', { name: /CLEAR ALL TRIALS/i }));
+    expect(screen.queryByText(/TRIAL MODE ACTIVE/i)).not.toBeInTheDocument();
+  });
+  it('enables god mode for test.hacker with unlimited credits, catalog access without shopUnlocked, and bypassed rank locks', () => {
+    const godUser: SessionUser = { ...user, username: 'test.hacker', canTestShop: true };
+    // Even when shopUnlocked is false, god mode can access shop catalog
+    const state = { ...emptyProgression(), playerRank: 'rookie', completedMissions: [1], currentCredits: 20, storyFlags: { shopUnlocked: false } };
+    render(<HackerShop user={godUser} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+    
+    expect(screen.getByText(/GOD MODE/i)).toBeInTheDocument();
+    expect(screen.getByText('99,999')).toBeInTheDocument();
+    // Future/Legendary hero (Cyber Wolf Imperator) should NOT be disabled in God Mode even at rookie rank
+    expect(screen.getByRole('button', { name: /Buy Cyber Wolf Imperator/i })).not.toBeDisabled();
+  });
+  it('locks future heroes for normal accounts with dedicated lock notice', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1,2,3], currentCredits: 9999, storyFlags: { shopUnlocked: true } };
+    render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+    expect(screen.getAllByText(/Reserved for future campaign operations/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('button', { name: /Future campaign unlock for Cyber Wolf Centurion/i })).toBeDisabled();
   });
   it('shows affordability progress and remaining Credits for aspirational items', () => {
     const state = { ...emptyProgression(), completedMissions: [1,2,3], currentCredits: 70, storyFlags: { shopUnlocked: true } };
     render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
     expect(screen.getByText('30 CREDITS REMAINING')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: /Cyber Wolf Vanguard affordability/i })).toHaveAttribute('aria-valuenow', '70');
+    expect(screen.getAllByText(/Requires Infiltrator rank/i).length).toBeGreaterThan(0);
+
+    // Switch to Themes department
+    fireEvent.click(screen.getByRole('button', { name: /03\. THEMES/i }));
     expect(screen.getByRole('progressbar', { name: /Matrix Terminal affordability/i })).toHaveAttribute('aria-valuenow', '70');
-    expect(screen.getByText(/Requires Infiltrator rank/i)).toBeInTheDocument();
   });
   it('holds reward navigation for three seconds and shows the confirmed receipt', () => {
     vi.useFakeTimers();

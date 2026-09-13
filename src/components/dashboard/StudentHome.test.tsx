@@ -1,9 +1,11 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { MissionProgress, SessionUser, StudentDashboard, TrainingProgress } from '../../api/client';
+import { emptyProgression } from '../../domain/progression';
 import { StudentHome } from './StudentHome';
 
 const mirko: SessionUser = { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' };
+const testHacker: SessionUser = { ...mirko, id: 'dev-test-hacker', username: 'test.hacker', displayName: 'Test Hacker', supportLanguage: 'ja' };
 
 function mission(missionNumber: number, state: Partial<MissionProgress> = {}): MissionProgress {
   return { missionId: `mission-${missionNumber}`, missionNumber, unlocked: missionNumber === 1, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0, ...state };
@@ -14,6 +16,64 @@ function dashboard(missions: MissionProgress[]): StudentDashboard {
 }
 
 describe('StudentHome', () => {
+  it('offers each robot training directly below its completed mission', () => {
+    const onRobotDefense = vi.fn();
+    const view = render(<StudentHome user={mirko} dashboard={dashboard([mission(1, { completed: true }), mission(2, { unlocked: true }), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} onRobotDefense={onRobotDefense} />);
+    const first = screen.getByRole('article', { name: /Mission 1:/i });
+    fireEvent.click(within(first).getByRole('button', { name: /Train Base Defense/i }));
+    expect(onRobotDefense).toHaveBeenCalledWith('base_defense');
+    expect(within(screen.getByRole('article', { name: /Mission 2:/i })).queryByRole('button', { name: /Train Reinforcements/i })).not.toBeInTheDocument();
+    view.rerender(<StudentHome user={mirko} dashboard={dashboard([mission(1, { completed: true }), mission(2, { completed: true }), mission(3, { unlocked: true })])} onMission={vi.fn()} onSettings={vi.fn()} onRobotDefense={onRobotDefense} />);
+    expect(within(screen.getByRole('article', { name: /Mission 2:/i })).getByRole('button', { name: /Train Reinforcements/i })).toBeInTheDocument();
+    expect(within(screen.getByRole('article', { name: /Mission 3:/i })).queryByRole('button', { name: /Train Robot Override/i })).not.toBeInTheDocument();
+  });
+  it('uses the Screen 2 command deck with Echo and asynchronous RGB glass panels', () => {
+    const identity = { ...emptyProgression(), hackerIdentityUnlocked: true, hackerCodename: 'ECHO', completedMissions: [1, 2, 3] };
+    const view = render(<StudentHome user={testHacker} dashboard={{ ...dashboard([
+      mission(1, { unlocked: true, completed: true }),
+      mission(2, { unlocked: true }),
+      mission(3),
+      mission(4),
+    ]), progression: identity }} onMission={vi.fn()} onSettings={vi.fn()} />);
+
+    expect(screen.getByRole('main', { name: /Cyber Hero Home Base/i })).toHaveClass('cyber-home');
+    expect(screen.getByRole('img', { name: /Echo cyber-wolf operative/i })).toHaveAttribute('src', expect.stringContaining('echo-cyber-wolf.png'));
+    expect(screen.getByRole('heading', { level: 1, name: 'ECHO' })).toBeInTheDocument();
+    expect(screen.getByText('CAMPAIGN PROGRESSION NETWORK')).toBeInTheDocument();
+    expect(view.container.querySelectorAll('[data-rgb-pattern]')).toHaveLength(7);
+    expect([...view.container.querySelectorAll('[data-rgb-pattern]')].map((node) => node.getAttribute('data-rgb-pattern'))).toEqual([
+      'echo-orbit', 'mission-wave', 'launch-reverse', 'campaign-diagonal', 'training-orbit', 'supply-reverse', 'system-wave',
+    ]);
+  });
+
+  it('uses the anonymous cadet portrait without revealing a student identity', () => {
+    render(<StudentHome user={mirko} dashboard={{
+      ...dashboard([mission(1), mission(2), mission(3)]),
+      progression: emptyProgression(),
+    }} onMission={vi.fn()} onSettings={vi.fn()} />);
+
+    expect(screen.getByRole('img', { name: /Anonymous cadet/i })).toHaveAttribute('src', expect.stringContaining('anonymous-cadet.png'));
+    expect(screen.queryByRole('img', { name: /cyber-wolf operative/i })).not.toBeInTheDocument();
+    expect(screen.queryByText('ECHO')).not.toBeInTheDocument();
+    expect(screen.queryByText('ANONYMOUS')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Welcome back, (Rookie|Mirko)/i)).not.toBeInTheDocument();
+    expect(screen.getByText('IDENTITY PENDING')).toBeInTheDocument();
+    expect(screen.getByText('Complete three Rookie Missions to create your hacker identity.')).toBeInTheDocument();
+  });
+
+  it('launches the current available operation from the Screen 2 hero action', () => {
+    const onMission = vi.fn();
+    render(<StudentHome user={testHacker} dashboard={dashboard([
+      mission(1, { unlocked: true, completed: true }),
+      mission(2, { unlocked: true }),
+      mission(3),
+      mission(4),
+    ])} onMission={onMission} onSettings={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Begin Operation/i }));
+    expect(onMission).toHaveBeenCalledWith('mission-2');
+  });
+
   it('shows one available mission and three locked missions for a new student', () => {
     render(<StudentHome user={mirko} dashboard={dashboard([mission(1), mission(2), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} />);
     expect(screen.getAllByRole('article')).toHaveLength(4);
@@ -55,12 +115,21 @@ describe('StudentHome', () => {
     const view = render(<StudentHome user={mirko} dashboard={{ ...locked, training: [training({ unlocked: false })] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
     expect(screen.queryByRole('button', { name: /Open Training Center/i })).not.toBeInTheDocument();
     view.rerender(<StudentHome user={mirko} dashboard={{ ...locked, completedMissions: [1,2,3], training: [training({ unlocked: true, creditsEarned: 7 })] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
-    expect(screen.getByText('1 module available')).toBeInTheDocument();
-    expect(screen.getByText('1 modulo disponibile')).toHaveAttribute('lang', 'it');
+    expect(screen.getByText('4 modules available')).toBeInTheDocument();
+    expect(screen.getByText('4 moduli disponibili')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('Mantieni efficienti i tuoi sistemi.')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('Apri il Centro di addestramento')).toHaveAttribute('lang', 'it');
     expect(screen.getByText('7 / 20 Credits')).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: /Training Credits/i })).toHaveAttribute('aria-valuenow', '7');
+    fireEvent.click(screen.getByRole('button', { name: /Open Training Center/i }));
+    expect(onTraining).toHaveBeenCalledOnce();
+  });
+
+  it('opens the Training Center for Base Defense immediately after Mission 1', () => {
+    const onTraining = vi.fn();
+    const state = dashboard([mission(1, { unlocked: true, completed: true }), mission(2, { unlocked: true }), mission(3)]);
+    render(<StudentHome user={mirko} dashboard={{ ...state, completedMissions: [1], training: [] }} onMission={vi.fn()} onSettings={vi.fn()} onTraining={onTraining} />);
+    expect(screen.getByText('1 READY')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Open Training Center/i }));
     expect(onTraining).toHaveBeenCalledOnce();
   });

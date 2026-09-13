@@ -1,6 +1,8 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { emptyProgression, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
-import { awardMission, createIdentity, purchaseItem, equipItem, ProgressionError } from './progressionCore.ts';
+import { awardMission, awardReward, createIdentity, purchaseItem, equipItem, ProgressionError } from './progressionCore.ts';
+import { ECONOMY } from '../src/domain/progression.ts';
+import { robotDefenseModes, type RobotDefenseModeId } from '../src/training/robot-defense.ts';
 import { emptyTrainingStore, finishTraining as finishTrainingAttempt, startTraining as startTrainingAttempt, type DevTrainingStore } from './trainingCore.ts';
 import { TRAINING_MODULES } from '../src/training/catalog.ts';
 import type { TrainingEvidence } from '../src/training/catalog.ts';
@@ -24,7 +26,7 @@ type DevProfile = {
   themeColor: ThemeName;
 };
 
-type PublicUser = DevProfile & { csrfToken: string };
+export type PublicUser = DevProfile & { csrfToken: string; canTestShop: boolean };
 
 type Attempt = {
   id: string;
@@ -51,6 +53,7 @@ type MissionProgressState = {
   totalPoints: number;
   attemptCount: number;
 };
+type RobotRun = { id: string; userId: string; mode: RobotDefenseModeId; startedAt: string; completion?: { reward: RewardReceipt; progression: PlayerProgression } };
 
 const DEV_MISSIONS = [
   { missionId: 'mission-1', missionNumber: 1 },
@@ -79,13 +82,14 @@ function verifySecret(secret: string, credential: { salt: string; hash: string }
 }
 
 export type DevSnapshot = {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   attempts: [string, Attempt][];
   themes: [string, ThemeName][];
   progress: [string, MissionProgressState[]][];
   progression: [string, PlayerProgression][];
   receipts: [string, RewardReceipt][];
   training?: [string, DevTrainingStore][];
+  robotRuns?: [string, RobotRun][];
 };
 
 export function createDevAuthService(credentials: DevCredentialFile, saved?: DevSnapshot) {
@@ -96,13 +100,21 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
   const progressionByUser = new Map<string, PlayerProgression>(saved?.progression);
   const receipts = new Map<string, RewardReceipt>(saved?.receipts);
   const trainingByUser = new Map<string, DevTrainingStore>(saved?.training);
+  const robotRuns = new Map<string, RobotRun>(saved?.robotRuns);
   function progressionFor(userId: string) {
     if (!progressionByUser.has(userId)) progressionByUser.set(userId, emptyProgression());
     return progressionByUser.get(userId)!;
   }
 
   function profileById(id: string) { return STANDARD_DEV_PROFILES.find((profile) => profile.id === id); }
-  function publicUser(profile: DevProfile, csrfToken: string): PublicUser { return { ...profile, themeColor: profileThemes.get(profile.id) ?? profile.themeColor, csrfToken }; }
+  function publicUser(profile: DevProfile, csrfToken: string): PublicUser {
+    return {
+      ...profile,
+      themeColor: profileThemes.get(profile.id) ?? profile.themeColor,
+      csrfToken,
+      canTestShop: profile.username.toLowerCase() === 'test.hacker',
+    };
+  }
   function attemptsFor(userId: string) { return [...attempts.values()].filter((attempt) => attempt.userId === userId).reverse(); }
   function progressFor(userId: string) {
     let progress = progressByUser.get(userId);
@@ -172,10 +184,16 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
   }
 
   return {
-    snapshot(): DevSnapshot { return structuredClone({ version: 2, attempts: [...attempts], themes: [...profileThemes], progress: [...progressByUser], progression: [...progressionByUser], receipts: [...receipts], training: [...trainingByUser] }); },
+    snapshot(): DevSnapshot { return structuredClone({ version: 3, attempts: [...attempts], themes: [...profileThemes], progress: [...progressByUser], progression: [...progressionByUser], receipts: [...receipts], training: [...trainingByUser], robotRuns: [...robotRuns] }); },
     rewardReceipt(userId: string, attemptId: string) { return attempts.get(attemptId)?.userId === userId ? receipts.get(`${userId}:${attemptId}`) : undefined; },
     identity(userId: string, codename: string) { createIdentity(progressionFor(userId), codename); return { progression: structuredClone(progressionFor(userId)) }; },
-    purchase(userId: string, itemId: string) { purchaseItem(progressionFor(userId), itemId); return { progression: structuredClone(progressionFor(userId)) }; },
+    purchase(userId: string, itemId: string, isGodMode = false) {
+      purchaseItem(progressionFor(userId), itemId, isGodMode);
+      if (isGodMode) {
+        progressionFor(userId).currentCredits = 99999;
+      }
+      return { progression: structuredClone(progressionFor(userId)) };
+    },
     equip(userId: string, itemId: string, category: string) { equipItem(progressionFor(userId), itemId, category); return { progression: structuredClone(progressionFor(userId)) }; },
     story(userId: string, flag: string) {
       const state = progressionFor(userId);
@@ -210,6 +228,15 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       Object.assign(mission, { completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 });
       return { missionId };
     },
+    setBalances(actorId: string, studentId: string, balances: { lifetimeXP?: number; currentCredits?: number }) {
+      if (profileById(actorId)?.role !== 'teacher') throw new DevApiError('forbidden');
+      if (profileById(studentId)?.role !== 'student') throw new DevApiError('student_not_found');
+      if (Object.keys(balances).length === 0 || Object.entries(balances).some(([key, value]) => !['lifetimeXP', 'currentCredits'].includes(key) || !Number.isInteger(value) || value! < 0 || value! > (key === 'lifetimeXP' ? 1_000_000 : 10_000))) throw new ProgressionError('validation_failed', 'Enter valid XP and Credits balances.');
+      const state = progressionFor(studentId);
+      if (balances.lifetimeXP !== undefined) state.lifetimeXP = balances.lifetimeXP;
+      if (balances.currentCredits !== undefined) state.currentCredits = balances.currentCredits;
+      return { progression: structuredClone(state) };
+    },
     settings(userId: string, themeColor: ThemeName) { profileThemes.set(userId, themeColor); return { themeColor }; },
     startAttempt(userId: string, missionId: string) {
       const mission = progressFor(userId).find((candidate) => candidate.missionId === missionId);
@@ -222,6 +249,28 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     startTraining(userId: string, trainingId: string, seed?: number) {
       if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');
       return startTrainingAttempt(progressionFor(userId), trainingStoreFor(userId), trainingId, seed);
+    },
+    startRobotTraining(userId: string, modeId: string) {
+      const mode = robotDefenseModes.find(item => item.id === modeId);
+      if (!mode || !progressFor(userId).some(item => item.missionNumber === mode.requiredMission && item.completed)) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
+      const run: RobotRun = { id: randomUUID(), userId, mode: mode.id, startedAt: new Date().toISOString() };
+      robotRuns.set(run.id, run);
+      return { runId: run.id, mode: run.mode };
+    },
+    finishRobotTraining(userId: string, runId: string, result: { mode?: string; victory?: boolean; wavesCompleted?: number; robotsDestroyed?: number }) {
+      const run = robotRuns.get(runId);
+      if (!run || run.userId !== userId) throw new ProgressionError('training_attempt_not_found', 'Training run not found.');
+      if (run.completion) return structuredClone(run.completion);
+      const requiredMission = robotDefenseModes.find(item => item.id === run.mode)!.requiredMission;
+      if (!progressFor(userId).some(item => item.missionNumber === requiredMission && item.completed)) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
+      if (result.mode !== run.mode || result.victory !== true || !Number.isInteger(result.wavesCompleted) || result.wavesCompleted! < 3 || !Number.isInteger(result.robotsDestroyed) || result.robotsDestroyed! < 1 || Date.now() - Date.parse(run.startedAt) < 8_000) throw new ProgressionError('invalid_training_result', 'Training run is not complete.');
+      const state = progressionFor(userId);
+      const source = 'robot-training';
+      const completed = [...robotRuns.values()].filter(item => item.userId === userId && item.completion);
+      const reward = awardReward(state, source, run.id, 0, ECONOMY.robotTraining, { attempts: completed.length, activity: completed.reduce((sum, item) => sum + (item.completion?.reward.credits ?? 0), 0) });
+      state.missionAttempts[source] = (state.missionAttempts[source] ?? 0) + 1;
+      run.completion = { reward, progression: structuredClone(state) };
+      return structuredClone(run.completion);
     },
     finishTraining(userId: string, attemptId: string, evidence: TrainingEvidence[], durationSeconds: number) {
       if (profileById(userId)?.role !== 'student') throw new DevApiError('forbidden');

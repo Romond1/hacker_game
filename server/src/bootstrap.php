@@ -111,6 +111,7 @@ function public_user(array $user): array
         'supportLanguage' => $user['support_language'],
         'themeColor' => $user['theme_color'],
         'csrfToken' => $_SESSION['csrf'],
+        'canTestShop' => strtolower(trim((string)($user['username'] ?? ''))) === 'test.hacker',
     ];
 }
 

@@ -1,0 +1,537 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.tactical-grid-bg{background-image:radial-gradient(#2d3732 1px,transparent 1px),radial-gradient(#18221d 1px,#07100c 1px);background-size:40px 40px;background-position:0 0,20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary-fixed":"#7df4ff","on-primary-fixed-variant":"#6e3900","surface-container-highest":"#2d3732","on-tertiary":"#003911","on-secondary-fixed-variant":"#004f54","surface-tint":"#ffb77d","on-surface":"#dae5de","inverse-on-surface":"#28332e","on-primary-fixed":"#2f1500","on-secondary-container":"#00686f","surface-dim":"#0b1511","error-container":"#93000a","background":"#0b1511","tertiary-fixed":"#6bff83","primary-fixed":"#ffdcc3","tertiary-fixed-dim":"#00e55b","inverse-primary":"#904d00","on-primary":"#4d2600","outline-variant":"#564334","surface-container-lowest":"#07100c","on-tertiary-fixed-variant":"#00531b","tertiary":"#00e55b","surface-container":"#18221d","error":"#ffb4ab","on-tertiary-container":"#004917","tertiary-container":"#00c44c","secondary-container":"#00eefc","secondary":"#d3fbff","surface-bright":"#313b36","on-primary-container":"#623200","surface-container-low":"#141e19","primary-fixed-dim":"#ffb77d","on-background":"#dae5de","on-secondary-fixed":"#002022","on-error-container":"#ffdad6","secondary-fixed-dim":"#00dbe9","surface":"#0b1511","on-surface-variant":"#ddc1ae","surface-variant":"#2d3732","on-error":"#690005","primary":"#ffb77d","on-tertiary-fixed":"#002107","primary-container":"#ff8c00","inverse-surface":"#dae5de","on-secondary":"#00363a","outline":"#a48c7a","surface-container-high":"#222c27"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"hud-margin":"24px","hud-gap-md":"16px","hud-col-gutter":"16px","hud-hairline":"1px","hud-gap-xs":"4px","hud-gap-lg":"24px","hud-gap-sm":"8px","hud-gap-xl":"32px"},"fontFamily":{"telemetry-label":["Space Mono"],"subtext-intel":["JetBrains Mono"],"headline-md":["Space Grotesk"],"headline-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-code-sm":["JetBrains Mono"],"body-code-md":["JetBrains Mono"],"body-code-lg":["JetBrains Mono"]},"fontSize":{"telemetry-label":["11px",{"lineHeight":"14px","letterSpacing":"0.2em","fontWeight":"700"}],"subtext-intel":["9px",{"lineHeight":"12px","letterSpacing":"0.25em","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"0.1em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"0.12em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"0.08em","fontWeight":"600"}],"body-code-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.03em","fontWeight":"400"}],"body-code-md":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"400"}],"body-code-lg":["16px",{"lineHeight":"24px","letterSpacing":"0.02em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface tactical-grid-bg min-h-screen flex items-center justify-center p-hud-margin"><main class="w-full flex items-center justify-center"><div class="flex flex-col w-full max-w-[1880px] mx-auto select-none font-body-code-sm text-on-surface">
+<!-- TOP BAR / ACTION DOCK -->
+<header class="w-full bg-surface-container-low/90 backdrop-blur-md rounded-lg p-hud-gap-md mb-hud-gap-md shadow-xl flex flex-wrap items-center justify-between gap-hud-gap-md">
+<!-- Left: Identity & Core Sandbox Indicator -->
+<div class="flex items-center gap-hud-gap-md">
+<div class="flex items-center gap-hud-gap-sm bg-surface-container-lowest px-hud-gap-md py-hud-gap-xs rounded">
+<img alt="Cyber Hero Tactical Wolf Emblem" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMwXvWU-L2n8Fou65aIRoj30aODZTTOeGqpL9hUrDI9XXqfBXVZYNkgxlxdWhs9BJKL08CQv41XC_ij9RMrhPTep7Dput7l0MxPcWlSjGJqV4Gz8EL0fz32-2DdVKhasbBwxCzGNyWVtTngkcdY7VwX9pU0USYMKRYkrAf5EWlHjoy-IDGNCvfyJ5yFi03sUzOzTCqF97MQ59rXon4PV-oUKasPGqPloT0XnsCG64uHsO-_xZGoj1-InHS4BMReX4fCes">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm tracking-wider text-primary font-bold">CYBER HERO</span>
+<span class="font-subtext-intel text-subtext-intel text-outline tracking-widest">DRILL SIMULATOR // VER 4.8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-hud-gap-sm bg-surface-container-highest/60 px-hud-gap-md py-1.5 rounded">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed animate-ping"></span>
+<span class="font-telemetry-label text-telemetry-label text-secondary-fixed uppercase tracking-wider">
+          MODE: INTERACTIVE SANDBOX // TUTORIAL PROTOCOL
+        </span>
+</div>
+<div class="hidden xl:flex items-center gap-hud-gap-sm text-outline font-telemetry-label text-telemetry-label">
+<span class="px-2 py-0.5 bg-surface-container rounded text-tertiary">ENV: ISOLATED</span>
+<span class="">•</span>
+<span class="text-on-surface-variant">LEVEL: ROOKIE CLEARANCE</span>
+<span class="">•</span>
+<span class="text-primary font-mono" id="realtime-clock">UTC 22:15:45.5</span>
+</div>
+</div>
+<!-- Right: Operational Controls -->
+<div class="flex items-center gap-hud-gap-sm">
+<button class="bg-surface-container hover:bg-surface-bright text-on-surface px-hud-gap-md py-2 rounded font-telemetry-label text-telemetry-label transition flex items-center gap-1.5 active:scale-95" id="btn-lang">
+<span class="material-symbols-outlined text-sm text-primary">translate</span>
+<span class="">LANG: 日本語 / IT</span>
+</button>
+<button class="bg-surface-container hover:bg-surface-bright text-on-surface px-hud-gap-md py-2 rounded font-telemetry-label text-telemetry-label transition flex items-center gap-1.5 active:scale-95" id="btn-reset">
+<span class="material-symbols-outlined text-sm text-secondary-fixed">refresh</span>
+<span class="">RESET SIMULATOR</span>
+</button>
+<button class="bg-surface-container-high hover:bg-surface-bright text-secondary-fixed px-hud-gap-md py-2 rounded font-telemetry-label text-telemetry-label transition flex items-center gap-1.5 active:scale-95" id="btn-next">
+<span class="">NEXT DRILL</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm px-hud-gap-lg py-2 rounded font-bold shadow-lg shadow-primary/20 transition flex items-center gap-2 active:scale-95">
+<span class="material-symbols-outlined text-base">bolt</span>
+<span class="">BEGIN ACTIVE MISSION</span>
+</button>
+</div>
+</header>
+<!-- MAIN COCKPIT: TRI-PANE LAYOUT -->
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-hud-gap-md items-start">
+<!-- LEFT PANEL: TUTORIAL DIRECTIVE & COACHING SUITE (approx 340px / 3 cols) -->
+<section class="lg:col-span-3 flex flex-col gap-hud-gap-md">
+<!-- Status Badges Bar -->
+<div class="grid grid-cols-2 gap-hud-gap-xs bg-surface-container-low p-2 rounded">
+<div class="bg-surface-container-lowest px-2 py-1 rounded text-center font-subtext-intel text-subtext-intel text-tertiary">
+          [PRACTICE MODE]
+        </div>
+<div class="bg-surface-container-lowest px-2 py-1 rounded text-center font-subtext-intel text-subtext-intel text-secondary">
+          [NOT SCORED]
+        </div>
+<div class="bg-surface-container-lowest px-2 py-1 rounded text-center font-subtext-intel text-subtext-intel text-primary">
+          [NO TIMER LIMIT]
+        </div>
+<div class="bg-surface-container-lowest px-2 py-1 rounded text-center font-subtext-intel text-subtext-intel text-on-surface">
+          [ZERO RISK // FREELY TRY]
+        </div>
+</div>
+<!-- Directive Card -->
+<div class="bg-surface-container-low rounded-lg p-hud-gap-md flex flex-col gap-hud-gap-md shadow-md">
+<div class="flex items-center justify-between">
+<span class="font-telemetry-label text-telemetry-label text-primary">DRILL 04 // 訓練セクター</span>
+<span class="bg-tertiary-container/30 text-tertiary font-telemetry-label text-telemetry-label px-1.5 py-0.5 rounded">STEP 1/3 ACTIVE</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-wide uppercase leading-tight font-bold">
+          Directory Traversal &amp; Payload Extraction
+        </h2>
+<!-- Progress Pips -->
+<div class="flex items-center gap-2 py-1">
+<div class="h-2 flex-1 rounded bg-secondary-fixed shadow-[0_0_8px_rgba(0,238,252,0.6)] transition-all" id="pip-1"></div>
+<div class="h-2 flex-1 rounded bg-surface-container-highest transition-all" id="pip-2"></div>
+<div class="h-2 flex-1 rounded bg-surface-container-highest transition-all" id="pip-3"></div>
+<div class="h-2 flex-1 rounded bg-surface-container-highest transition-all" id="pip-4"></div>
+</div>
+<!-- Student Instructions (Large, Readable & Uncluttered) -->
+<div class="flex flex-col gap-hud-gap-sm mt-1">
+<!-- Step 1 -->
+<div class="p-3 bg-surface-container rounded transition-all duration-300" id="step-box-1">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary-fixed text-lg" id="check-1">radio_button_checked</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-secondary-fixed font-semibold">Step 1: Open Folder</span>
+<p class="font-body-code-md text-body-code-md text-on-surface mt-0.5">
+<span class="text-primary font-bold">Double-click</span> the folder named <span class="bg-surface-container-highest px-1 py-0.5 rounded text-secondary font-mono">Downloads</span> to explore incoming transmissions.
+                </p>
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="p-3 bg-surface-container/40 rounded transition-all duration-300 opacity-60" id="step-box-2">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-outline text-lg" id="check-2">radio_button_unchecked</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface-variant font-semibold">Step 2: Inspect Payload</span>
+<p class="font-body-code-md text-body-code-md text-on-surface-variant mt-0.5">
+<span class="text-primary font-bold">Single-click</span> <span class="bg-surface-container-highest px-1 py-0.5 rounded text-on-surface font-mono">INTERCEPTED_SIGNAL.txt</span> to read hex telemetry.
+                </p>
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="p-3 bg-surface-container/40 rounded transition-all duration-300 opacity-60" id="step-box-3">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-outline text-lg" id="check-3">radio_button_unchecked</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface-variant font-semibold">Step 3: Extract Decryption Key</span>
+<p class="font-body-code-md text-body-code-md text-on-surface-variant mt-0.5">
+                  Highlight or <span class="text-primary font-bold">Right-click</span> the key code and choose <span class="text-secondary font-bold">Copy Key</span> to arm defense grid.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Success Toast Indicator -->
+<div class="hidden p-3 bg-tertiary-container/20 rounded text-tertiary font-body-code-sm text-center" id="tutorial-complete-toast">
+<div class="flex items-center justify-center gap-1.5 font-bold mb-0.5">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="">OBJECTIVES CLEARED // タスク完了</span>
+</div>
+<p class="text-on-surface text-[11px]">Ready to enter simulated production mission pipeline.</p>
+</div>
+</div>
+<!-- Cyber Guide CG Presence Hologram -->
+
+<div class="bg-surface-container-low rounded-lg p-hud-gap-md flex flex-col gap-hud-gap-sm shadow-md" id="fs-tree-relocated"><div class="flex items-center justify-between"><span class="font-telemetry-label text-telemetry-label text-primary">FS DIRECTORY TREE // 階層</span><span class="material-symbols-outlined text-sm text-outline">account_tree</span></div><div class="bg-surface-container-lowest p-2.5 rounded font-mono text-[11px] leading-5 text-outline"><div class="text-on-surface-variant">📁 / (ROOT)</div><div class="pl-3 text-on-surface-variant">└── 📁 USERS</div><div class="pl-6 text-secondary font-bold">└── 📁 ECHO</div><div class="pl-9 text-primary font-bold flex items-center gap-1"><span class="">└── 📂 DOWNLOADS</span><span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span></div><div class="pl-12 text-on-surface">├── 📄 INTERCEPTED_SIGNAL.txt</div><div class="pl-12 text-outline">├── 🔊 briefing_audio.wav</div><div class="pl-12 text-outline">└── 📁 System_Archive</div></div></div></section>
+<!-- CENTER AREA: THE SIMULATED TRAINING COMPUTER (Core Educational Workstation, 6 cols) -->
+<main class="flex flex-col lg:col-span-9">
+<!-- Outer Shell Window Frame -->
+<div class="w-full bg-[#f8fafc] border border-[#cbd5e1] rounded-xl shadow-2xl flex flex-col overflow-hidden text-[#0f172a]">
+<!-- OS Window Chrome Header -->
+<div class="w-full bg-[#f1f5f9] border-b border-[#e2e8f0] px-hud-gap-md py-2.5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Mac/Unix-like Traffic Lights -->
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-[#ef4444] cursor-pointer hover:opacity-80 transition"></span>
+<span class="w-3 h-3 rounded-full bg-[#f59e0b] cursor-pointer hover:opacity-80 transition"></span>
+<span class="w-3 h-3 rounded-full bg-[#10b981] cursor-pointer hover:opacity-80 transition"></span>
+</div>
+<div class="h-4 w-[1px] bg-[#cbd5e1] mx-1"></div>
+<!-- OS Title -->
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-[#0284c7]">terminal</span>
+<span class="font-telemetry-label text-telemetry-label text-[#0f172a] tracking-wider font-bold">CYBER-OS // FILE EXPLORER v2.4</span>
+</div>
+</div>
+<div class="flex items-center gap-2 font-telemetry-label text-telemetry-label text-[#64748b]">
+<span class="bg-[#e2e8f0] border border-[#cbd5e1] px-2 py-0.5 rounded text-[#0369a1] font-mono font-bold">NODE: ECHO-7</span>
+<span class="material-symbols-outlined text-sm text-[#64748b]">shield</span>
+</div>
+</div>
+<!-- Navigation, Breadcrumbs & Search Bar -->
+<div class="w-full bg-[#ffffff] border-b border-[#e2e8f0] px-hud-gap-md py-2 flex flex-wrap items-center justify-between gap-hud-gap-sm">
+<!-- Back/Forward/Up buttons -->
+<div class="flex items-center gap-1">
+<button class="w-7 h-7 rounded border border-[#cbd5e1] bg-[#f8fafc] flex items-center justify-center text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a] transition shadow-sm" id="nav-back">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+</button>
+<button class="w-7 h-7 rounded border border-[#cbd5e1] bg-[#f8fafc] flex items-center justify-center text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a] transition shadow-sm" id="nav-fwd">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+<button class="px-2.5 h-7 rounded border border-[#cbd5e1] bg-[#f8fafc] flex items-center gap-1 text-[#1e293b] font-telemetry-label text-telemetry-label font-bold hover:bg-[#e2e8f0] transition shadow-sm" id="nav-root">
+<span class="material-symbols-outlined text-sm text-[#64748b]">home</span>
+<span class="">ROOT</span>
+</button>
+</div>
+<!-- Path Breadcrumb -->
+<div class="flex-1 min-w-[200px] bg-[#f1f5f9] border border-[#e2e8f0] px-3 py-1 rounded flex items-center gap-1.5 font-mono text-[12px] text-[#1e293b]">
+<span class="text-[#64748b]">VOL_01</span>
+<span class="text-[#94a3b8]">/</span>
+<span class="text-[#64748b]">USERS</span>
+<span class="text-[#94a3b8]">/</span>
+<span class="text-[#0284c7] font-semibold">ECHO</span>
+<span class="text-[#94a3b8]">/</span>
+<span class="text-[#d97706] font-bold bg-[#fef3c7] px-1.5 py-0.2 rounded border border-[#fde68a]" id="breadcrumb-current">DOWNLOADS</span>
+</div>
+<!-- Search Input -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-sm text-[#94a3b8]">search</span>
+<input class="bg-[#ffffff] text-[#0f172a] placeholder-[#94a3b8] border border-[#cbd5e1] pl-7 pr-3 py-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#0284c7] focus:border-[#0284c7] w-32 focus:w-40 transition-all font-body-code-sm shadow-sm" placeholder="Filter files..." type="text">
+</div>
+</div>
+<!-- Computer Content Canvas: Sidebar + File Area -->
+<div class="grid grid-cols-12 min-h-[460px] bg-[#ffffff]">
+<!-- Left Mini-Sidebar inside computer (3 cols) -->
+<nav class="col-span-3 bg-[#f8fafc] border-r border-[#e2e8f0] p-hud-gap-sm flex flex-col gap-hud-gap-xs">
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] px-2 py-1 tracking-widest font-bold">QUICK ACCESS</span>
+<button class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left font-body-code-sm text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a] transition font-medium">
+<span class="material-symbols-outlined text-base text-[#64748b]">desktop_windows</span>
+<span class="">Desktop</span>
+</button>
+<button class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left font-body-code-sm text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a] transition font-medium">
+<span class="material-symbols-outlined text-base text-[#64748b]">folder_open</span>
+<span class="">Documents</span>
+</button>
+<button class="w-full flex items-center justify-between px-2 py-1.5 rounded text-left font-body-code-sm bg-[#e0f2fe] text-[#0369a1] font-bold transition border border-[#bae6fd] shadow-sm" id="sidebar-downloads">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-[#0284c7]">download</span>
+<span class="">Downloads</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+</button>
+<button class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left font-body-code-sm text-[#475569] hover:bg-[#e2e8f0] hover:text-[#0f172a] transition font-medium">
+<span class="material-symbols-outlined text-base text-[#64748b]">hub</span>
+<span class="">Network Shares</span>
+</button>
+<div class="mt-auto pt-4">
+<button class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left font-body-code-sm text-[#64748b] hover:bg-[#fee2e2] hover:text-[#dc2626] transition font-medium">
+<span class="material-symbols-outlined text-base">delete</span>
+<span class="">Trash Bin</span>
+</button>
+</div>
+</nav>
+<!-- Main Desktop File Canvas & Grid (9 cols) -->
+<div class="col-span-9 p-hud-gap-md flex flex-col justify-between relative bg-[#ffffff]" id="file-system-area">
+<!-- Interactive File & Folder Grid -->
+<div>
+<div class="grid grid-cols-2 gap-hud-gap-md grid-cols-5" id="desktop-grid">
+<!-- Folder 1: Downloads (Target for Step 1) -->
+<div class="group flex flex-col items-center p-3 rounded-lg cursor-pointer bg-[#f8fafc] border border-[#e2e8f0] hover:border-[#f59e0b] hover:bg-[#fffbeb] hover:scale-105 transition-all text-center relative select-none shadow-sm hover:shadow-md" id="item-folder-downloads">
+<div class="relative mb-2">
+<span class="material-symbols-outlined text-4xl text-[#f59e0b] group-hover:drop-shadow-[0_2px_8px_rgba(245,158,11,0.4)]">folder</span>
+<span class="absolute -top-1 -right-1 w-3 h-3 bg-[#0284c7] rounded-full animate-ping"></span>
+<span class="absolute -top-1 -right-1 w-3 h-3 bg-[#0284c7] rounded-full"></span>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-[#0f172a] font-bold group-hover:text-[#b45309]">Downloads</span>
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] mt-0.5 font-semibold">3 ITEMS // DIR</span>
+<span class="text-[10px] text-[#0284c7] font-mono mt-1 font-bold bg-[#e0f2fe] px-1.5 py-0.5 rounded">[DOUBLE-CLICK]</span>
+</div>
+<!-- File 2: Signal Payload (Target for Step 2) -->
+<div class="group flex flex-col items-center p-3 rounded-lg cursor-pointer bg-[#f8fafc] border border-[#e2e8f0] hover:border-[#0284c7] hover:bg-[#f0f9ff] hover:scale-105 transition-all text-center relative select-none shadow-sm hover:shadow-md" id="item-file-payload">
+<div class="mb-2">
+<span class="material-symbols-outlined text-4xl text-[#0284c7] group-hover:drop-shadow-[0_2px_8px_rgba(2,132,199,0.4)]">description</span>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-[#0f172a] font-bold group-hover:text-[#0369a1] truncate max-w-[130px]">INTERCEPTED_SIGNAL.txt</span>
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] mt-0.5 font-semibold">4.2 KB // RAW TEXT</span>
+<span class="text-[10px] text-[#475569] group-hover:text-[#0369a1] font-mono mt-1 font-medium bg-[#f1f5f9] px-1.5 py-0.5 rounded">[CLICK TO VIEW]</span>
+</div>
+<!-- File 3: Briefing Audio -->
+<div class="group flex flex-col items-center p-3 rounded-lg cursor-pointer bg-[#f8fafc] border border-[#e2e8f0] hover:bg-[#f1f5f9] transition-all text-center select-none shadow-sm">
+<div class="mb-2">
+<span class="material-symbols-outlined text-4xl text-[#059669]">audio_file</span>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-[#0f172a] font-semibold truncate max-w-[130px]">briefing_audio.wav</span>
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] mt-0.5 font-medium">1.8 MB // PCM AUDIO</span>
+</div>
+<!-- File 4: Network Diagnostics -->
+<div class="group flex flex-col items-center p-3 rounded-lg cursor-pointer bg-[#f8fafc] border border-[#e2e8f0] hover:bg-[#f1f5f9] transition-all text-center select-none shadow-sm">
+<div class="mb-2">
+<span class="material-symbols-outlined text-4xl text-[#64748b]">data_object</span>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-[#0f172a] font-semibold truncate max-w-[130px]">diagnostics.log</span>
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] mt-0.5 font-medium">820 B // LOG</span>
+</div>
+<!-- Folder 5: System Archive -->
+<div class="group flex flex-col items-center p-3 rounded-lg cursor-pointer bg-[#f8fafc] border border-[#e2e8f0] hover:bg-[#f1f5f9] transition-all text-center select-none shadow-sm">
+<div class="mb-2">
+<span class="material-symbols-outlined text-4xl text-[#7c3aed]">folder_zip</span>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-[#0f172a] font-semibold">System_Archive</span>
+<span class="font-subtext-intel text-subtext-intel text-[#64748b] mt-0.5 font-medium">FOLDER // ENCRYPTED</span>
+</div>
+</div>
+</div>
+<!-- Contextual File Preview Panel (Activates on Click/Selection) -->
+<div class="mt-4 bg-[#f8fafc] border border-[#cbd5e1] p-3 rounded-lg flex flex-col gap-2 transition-all shadow-sm" id="file-preview-card">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#0284c7] text-sm">visibility</span>
+<span class="font-telemetry-label text-telemetry-label text-[#0f172a] font-bold">PAYLOAD INSPECTION: INTERCEPTED_SIGNAL.txt</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-[#059669] font-bold bg-[#d1fae5] border border-[#a7f3d0] px-2 py-0.5 rounded">STATUS: DECRYPTABLE</span>
+</div>
+<!-- Content Code Snippet With Highlightable Key -->
+<div class="bg-[#ffffff] border border-[#e2e8f0] p-2.5 rounded font-mono text-xs text-[#0f172a] flex flex-col gap-1.5 shadow-inner">
+<div class="text-[#64748b] text-[11px] font-subtext-intel font-semibold">0x0001 // SECURE DATA BROADCAST // TIMESTAMP 14:28:09</div>
+<div class="flex items-center justify-between flex-wrap gap-2 py-1">
+<span class="text-[#475569] font-bold">EXTRACTION KEY:</span>
+<span class="bg-[#ffedd5] border border-[#fdba74] text-[#c2410c] px-2 py-1 rounded font-bold tracking-widest cursor-pointer select-all hover:bg-[#ea580c] hover:text-[#ffffff] transition shadow-sm" id="target-key" title="Click or Right-Click to extract key">
+                    VX-4821-OMEGA [HEX: 0x7F4A92B1]
+                  </span>
+</div>
+<div class="text-[#64748b] text-[10px] font-mono font-semibold">PARITY CHECKSUM: OK // SHA-256 MATCHED</div>
+</div>
+<!-- Contextual Helper Callout -->
+<div class="flex items-center justify-between text-xs text-[#0369a1] bg-[#f0f9ff] border border-[#bae6fd] px-2.5 py-1.5 rounded">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-[#0284c7]">mouse</span>
+<span class=""><strong>Tip:</strong> Right-click or drag-select key to copy hash code into buffer.</span>
+</div>
+<button class="px-3 py-1 bg-[#ea580c] hover:bg-[#c2410c] text-white rounded text-[11px] font-bold shadow transition active:scale-95" id="btn-quick-copy">
+                  COPY KEY
+                </button>
+</div>
+</div>
+<!-- Custom Right-Click Context Menu -->
+<div class="hidden absolute z-30 bg-[#ffffff] border border-[#cbd5e1] rounded-lg shadow-2xl py-1 w-44 font-body-code-sm text-body-code-sm text-[#0f172a]" id="custom-context-menu">
+<button class="w-full text-left px-3 py-1.5 hover:bg-[#ea580c] hover:text-white flex items-center justify-between transition group font-medium" id="ctx-copy">
+<span class="">Copy Key</span>
+<span class="text-xs text-[#64748b] group-hover:text-white">Ctrl+C</span>
+</button>
+<button class="w-full text-left px-3 py-1.5 hover:bg-[#f1f5f9] flex items-center justify-between text-[#475569] font-medium">
+<span class="">Inspect Hex</span>
+<span class="text-xs text-[#94a3b8]">F12</span>
+</button>
+<button class="w-full text-left px-3 py-1.5 hover:bg-[#f1f5f9] flex items-center justify-between text-[#475569] font-medium">
+<span class="">Properties</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Computer Statusbar -->
+<div class="w-full bg-[#f1f5f9] border-t border-[#e2e8f0] px-hud-gap-md py-1.5 flex items-center justify-between font-subtext-intel text-subtext-intel text-[#64748b] font-medium">
+<div class="flex items-center gap-3">
+<span class="font-bold text-[#334155]">READY // 5 ITEMS DISPLAYED</span>
+<span class="text-[#cbd5e1]">•</span>
+<span class="text-[#059669] font-bold">FREE SPACE: 420.8 GB</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs text-[#0284c7]">wifi</span>
+<span class="text-[#334155] font-mono font-bold">VIRTUAL_LAN: 10.0.4.15</span>
+</div>
+</div>
+</div>
+</main>
+<!-- RIGHT FLANK: SURROUNDING CYBER INSTRUMENTATION (3 cols) -->
+
+</div>
+<!-- Interactive Sandbox Vanilla JavaScript -->
+<script>
+    (function() {
+      // Elements
+      const folderDownloads = document.getElementById('item-folder-downloads');
+      const filePayload = document.getElementById('item-file-payload');
+      const targetKey = document.getElementById('target-key');
+      const quickCopyBtn = document.getElementById('btn-quick-copy');
+      const customMenu = document.getElementById('custom-context-menu');
+      const ctxCopy = document.getElementById('ctx-copy');
+      const eventLog = document.getElementById('event-log');
+      const mouseCoords = document.getElementById('mouse-coords');
+      const cgDialogue = document.getElementById('cg-dialogue');
+      
+      // Step Elements
+      const step1Box = document.getElementById('step-box-1');
+      const step2Box = document.getElementById('step-box-2');
+      const step3Box = document.getElementById('step-box-3');
+      const check1 = document.getElementById('check-1');
+      const check2 = document.getElementById('check-2');
+      const check3 = document.getElementById('check-3');
+      const pip1 = document.getElementById('pip-1');
+      const pip2 = document.getElementById('pip-2');
+      const pip3 = document.getElementById('pip-3');
+      const toast = document.getElementById('tutorial-complete-toast');
+
+      // Key monitor elements
+      const keyLmb = document.getElementById('key-lmb');
+      const keyRmb = document.getElementById('key-rmb');
+      const keyCtrl = document.getElementById('key-ctrl');
+      const keyC = document.getElementById('key-c');
+
+      let currentStep = 1;
+
+      function logEvent(msg, colorClass = 'text-on-surface') {
+        const div = document.createElement('div');
+        div.className = colorClass;
+        div.textContent = `> ${msg}`;
+        eventLog.appendChild(div);
+        if (eventLog.children.length > 5) {
+          eventLog.removeChild(eventLog.children[0]);
+        }
+      }
+
+      function flashKey(el) {
+        if (!el) return;
+        el.classList.remove('text-outline', 'bg-surface-container');
+        el.classList.add('bg-primary', 'text-on-primary');
+        setTimeout(() => {
+          el.classList.remove('bg-primary', 'text-on-primary');
+          el.classList.add('text-outline', 'bg-surface-container');
+        }, 300);
+      }
+
+      // Step 1: Double click folder
+      folderDownloads.addEventListener('dblclick', () => {
+        flashKey(keyLmb);
+        logEvent("DOUBLE_CLICK -> 'Downloads' opened", 'text-secondary-fixed');
+        if (currentStep === 1) {
+          currentStep = 2;
+          // Visual updates for step 1
+          step1Box.classList.add('opacity-60', 'bg-surface-container/40');
+          check1.textContent = 'check_circle';
+          check1.classList.remove('text-secondary-fixed');
+          check1.classList.add('text-tertiary');
+
+          // Visual updates for step 2
+          step2Box.classList.remove('opacity-60', 'bg-surface-container/40');
+          step2Box.classList.add('bg-surface-container');
+          check2.textContent = 'radio_button_checked';
+          check2.classList.remove('text-outline');
+          check2.classList.add('text-secondary-fixed');
+          pip2.classList.remove('bg-surface-container-highest');
+          pip2.classList.add('bg-secondary-fixed', 'shadow-[0_0_8px_rgba(0,238,252,0.6)]');
+
+          // CG Feedback
+          cgDialogue.innerHTML = `<span class="text-primary font-bold">CG ADVISORY:</span> &ldquo;Excellent double-click cadence! Now single-click <span class="text-secondary font-bold">INTERCEPTED_SIGNAL.txt</span> to read its decoded packet contents.&rdquo;`;
+        }
+      });
+
+      // Step 2: Single click payload file
+      filePayload.addEventListener('click', () => {
+        flashKey(keyLmb);
+        logEvent("SINGLE_CLICK -> 'INTERCEPTED_SIGNAL.txt' selected", 'text-secondary');
+        filePayload.classList.add('bg-surface-container', 'shadow-[0_0_12px_rgba(0,238,252,0.3)]');
+        
+        if (currentStep === 2) {
+          currentStep = 3;
+          // Visual updates for step 2
+          step2Box.classList.add('opacity-60', 'bg-surface-container/40');
+          check2.textContent = 'check_circle';
+          check2.classList.remove('text-secondary-fixed');
+          check2.classList.add('text-tertiary');
+
+          // Visual updates for step 3
+          step3Box.classList.remove('opacity-60', 'bg-surface-container/40');
+          step3Box.classList.add('bg-surface-container');
+          check3.textContent = 'radio_button_checked';
+          check3.classList.remove('text-outline');
+          check3.classList.add('text-secondary-fixed');
+          pip3.classList.remove('bg-surface-container-highest');
+          pip3.classList.add('bg-secondary-fixed', 'shadow-[0_0_8px_rgba(0,238,252,0.6)]');
+
+          // Highlight target key in preview
+          targetKey.classList.add('animate-pulse', 'bg-primary-container', 'text-on-primary');
+
+          // CG Feedback
+          cgDialogue.innerHTML = `<span class="text-primary font-bold">CG ADVISORY:</span> &ldquo;Look at that preview window! That hex payload is the decryption cipher. Select or right-click to copy it to your operative clipboard!&rdquo;`;
+        }
+      });
+
+      // Step 3: Copy Action
+      function completeStep3() {
+        flashKey(keyCtrl);
+        flashKey(keyC);
+        logEvent("BUFFER_COPY -> Key stored in clipboard", 'text-tertiary');
+        
+        if (currentStep === 3) {
+          currentStep = 4;
+          step3Box.classList.add('opacity-60', 'bg-surface-container/40');
+          check3.textContent = 'check_circle';
+          check3.classList.remove('text-secondary-fixed');
+          check3.classList.add('text-tertiary');
+          pip3.classList.add('bg-tertiary');
+          toast.classList.remove('hidden');
+
+          cgDialogue.innerHTML = `<span class="text-tertiary font-bold">CG SUCCESS:</span> &ldquo;Outstanding work, operative! You mastered directory traversal and hash extraction. You are fully ready for the active battlefield mission.&rdquo;`;
+        }
+        customMenu.classList.add('hidden');
+      }
+
+      quickCopyBtn.addEventListener('click', completeStep3);
+      ctxCopy.addEventListener('click', completeStep3);
+      targetKey.addEventListener('click', completeStep3);
+
+      // Context Menu handling
+      const fileSystemArea = document.getElementById('file-system-area');
+      fileSystemArea.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        flashKey(keyRmb);
+        logEvent(`RIGHT_CLICK at (${e.offsetX}, ${e.offsetY})`, 'text-primary');
+        customMenu.style.left = `${Math.min(e.offsetX, 340)}px`;
+        customMenu.style.top = `${Math.min(e.offsetY, 280)}px`;
+        customMenu.classList.remove('hidden');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!customMenu.contains(e.target)) {
+          customMenu.classList.add('hidden');
+        }
+      });
+
+      // Keyboard Listeners
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Control' || e.key === 'Meta') flashKey(keyCtrl);
+        if (e.key.toLowerCase() === 'c') {
+          flashKey(keyC);
+          if (currentStep === 3) completeStep3();
+        }
+      });
+
+      // Mouse tracker
+      window.addEventListener('mousemove', (e) => {
+        mouseCoords.textContent = `X: ${e.clientX} // Y: ${e.clientY}`;
+      });
+
+      // Realtime Clock Tick
+      function updateClock() {
+        const now = new Date();
+        const timeStr = 'UTC ' + now.toTimeString().split(' ')[0] + '.' + Math.floor(now.getMilliseconds() / 100);
+        const clockEl = document.getElementById('realtime-clock');
+        if (clockEl) clockEl.textContent = timeStr;
+      }
+      setInterval(updateClock, 200);
+
+      // Reset Button Handler
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        currentStep = 1;
+        check1.textContent = 'radio_button_checked';
+        check1.className = 'material-symbols-outlined text-secondary-fixed text-lg';
+        check2.textContent = 'radio_button_unchecked';
+        check2.className = 'material-symbols-outlined text-outline text-lg';
+        check3.textContent = 'radio_button_unchecked';
+        check3.className = 'material-symbols-outlined text-outline text-lg';
+
+        step1Box.className = 'p-3 bg-surface-container rounded transition-all duration-300';
+        step2Box.className = 'p-3 bg-surface-container/40 rounded transition-all duration-300 opacity-60';
+        step3Box.className = 'p-3 bg-surface-container/40 rounded transition-all duration-300 opacity-60';
+
+        pip1.className = 'h-2 flex-1 rounded bg-secondary-fixed shadow-[0_0_8px_rgba(0,238,252,0.6)] transition-all';
+        pip2.className = 'h-2 flex-1 rounded bg-surface-container-highest transition-all';
+        pip3.className = 'h-2 flex-1 rounded bg-surface-container-highest transition-all';
+        toast.classList.add('hidden');
+
+        cgDialogue.innerHTML = `<span class="text-primary font-bold">CG ADVISORY:</span> &ldquo;Take your time, operative! File systems are organized like tree branches. Let's practice double-clicking to explore folders.&rdquo;`;
+        logEvent('SIMULATOR REINITIALIZED', 'text-error');
+      });
+    })();
+  </script>
+</div></main>
+
+</body></html>

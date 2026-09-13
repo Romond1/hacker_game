@@ -64,16 +64,19 @@ export function createIdentity(state: PlayerProgression, value: string) {
   state.storyFlags.identityCreated = true;
 }
 
-export function purchaseItem(state: PlayerProgression, itemId: string) {
+export function purchaseItem(state: PlayerProgression, itemId: string, canTestShop = false) {
   const item = ECONOMY.items.find(item => item.itemId === itemId);
-  if (!state.storyFlags.shopUnlocked) throw new ProgressionError('shop_locked', 'Complete Rookie Training to gain access.');
   if (!item?.purchasable) throw new ProgressionError('item_unavailable', 'This item is unavailable.');
-  const rank = rankFor(state.completedMissions);
-  if (ECONOMY.ranks.findIndex(entry => entry.id === rank.id) < ECONOMY.ranks.findIndex(entry => entry.id === item.requiredRank)) throw new ProgressionError('rank_locked', 'Reach the required rank first.');
   if (state.inventory.includes(itemId)) throw new ProgressionError('already_owned', 'You already own this item.');
-  if (state.currentCredits < item.price) throw new ProgressionError('insufficient_credits', 'You need more Credits for this item.');
-  if (state.lifetimeCreditsSpent + item.price > rank.spendingCap) throw new ProgressionError('spending_cap', 'Reach the next rank to increase your spending allowance.');
-  state.currentCredits -= item.price;
+  if (!canTestShop) {
+    if ((item.availability ?? 'available') === 'future') throw new ProgressionError('item_future', 'This item is reserved for future campaign operations.');
+    if (!state.storyFlags.shopUnlocked) throw new ProgressionError('shop_locked', 'Complete Rookie Training to gain access.');
+    const rank = rankFor(state.completedMissions);
+    if (ECONOMY.ranks.findIndex(entry => entry.id === rank.id) < ECONOMY.ranks.findIndex(entry => entry.id === item.requiredRank)) throw new ProgressionError('rank_locked', 'Reach the required rank first.');
+    if (state.currentCredits < item.price) throw new ProgressionError('insufficient_credits', 'You need more Credits for this item.');
+    if (state.lifetimeCreditsSpent + item.price > rank.spendingCap) throw new ProgressionError('spending_cap', 'Reach the next rank to increase your spending allowance.');
+  }
+  state.currentCredits = Math.max(0, state.currentCredits - item.price);
   state.lifetimeCreditsSpent += item.price;
   state.inventory.push(itemId);
   if (item.category === 'companion') state.storyFlags.firstCompanionPurchased = true;

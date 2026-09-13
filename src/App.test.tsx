@@ -5,6 +5,20 @@ import { emptyProgression } from './domain/progression';
 import type { TrainingCompletion } from './domain/training';
 
 describe('application shell', () => {
+  it('opens unlocked robot training through the application shell', async () => {
+    const user = { id: 'test', username: 'test.hacker', displayName: 'Test', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' };
+    const dashboard = { totalPoints: 100, rank: 'Rookie Agent', currentMission: 2, completedMissions: [1], bestScore: null, bestTimeSeconds: null, attempts: [], missions: [1, 2, 3].map(number => ({ missionId: `mission-${number}`, missionNumber: number, unlocked: number <= 2, completed: number === 1, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 })), progression: emptyProgression(), training: [{ trainingId: 'systems-calibration', unlocked: true, completedRuns: 0, rewardedRuns: 0, creditsEarned: 0, creditCap: 20, bestScore: null, bestTimeSeconds: null, bestAccuracy: null, longestStreak: 0, highestRank: null, lastCompletedAt: null }] };
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      const action = JSON.parse(String(init?.body)).action;
+      return new Response(JSON.stringify({ ok: true, data: action === 'auth.session' ? { user } : dashboard }), { headers: { 'Content-Type': 'application/json' } });
+    }));
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: /Open Training Center/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Train Base Defense/i }));
+    expect(screen.getByTitle('Base Defense training')).toHaveAttribute('src', '/robot-defense/GAME/index.html?mode=base_defense');
+    fireEvent.click(screen.getByRole('button', { name: /Training Center/i }));
+    expect(screen.getByRole('button', { name: /Train Base Defense/i })).toBeInTheDocument();
+  });
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(
       JSON.stringify({ ok: false, error: { code: 'unauthenticated', message: 'Sign in required.' } }),
@@ -42,16 +56,23 @@ describe('application shell', () => {
     expect(screen.queryByText(/開発プレビュー/)).not.toBeInTheDocument();
   });
 
+  it('gives every major login container its own visible RGB motion pattern', async () => {
+    const { container } = render(<App />);
+    await screen.findByRole('heading', { name: /Hacker Training/i });
+    const patterns = [...container.querySelectorAll<HTMLElement>('[data-rgb-pattern]')].map(element => element.dataset.rgbPattern);
+    expect(patterns).toEqual(['ribbon', 'clockwise', 'diagonal', 'portal-wave', 'radar-orbit', 'counter-clockwise', 'footer-wave']);
+  });
+
   it.each([
     {
       user: { id: 'dev-mirko', username: 'mirko.hacker', displayName: 'Mirko', role: 'student', supportLanguage: 'it', themeColor: 'blue', csrfToken: 'token' },
-      supportWelcome: 'Bentornato, Mirko.', supportCurrent: 'Missione attuale', supportPoints: 'Punti totali', absent: '現在のミッション',
+      supportPending: 'Completa tre Missioni Rookie per creare la tua identità hacker.', supportCurrent: 'Missione attuale', supportPoints: 'Punti totali', absent: '現在のミッション',
     },
     {
       user: { id: 'dev-himari', username: 'himari.hacker', displayName: 'Himari', role: 'student', supportLanguage: 'ja', themeColor: 'cyan', csrfToken: 'token' },
-      supportWelcome: 'おかえりなさい、Himari。', supportCurrent: '現在のミッション', supportPoints: '合計ポイント', absent: 'Missione attuale',
+      supportPending: '3つのルーキーミッションを完了して、ハッカーとしての自分を作成しましょう。', supportCurrent: '現在のミッション', supportPoints: '合計ポイント', absent: 'Missione attuale',
     },
-  ])('uses the authenticated profile language for $user.username', async ({ user, supportWelcome, supportCurrent, supportPoints, absent }) => {
+  ])('uses the authenticated profile language for $user.username', async ({ user, supportPending, supportCurrent, supportPoints, absent }) => {
     const dashboard = {
       totalPoints: 0, rank: 'Rookie Agent', currentMission: 1, completedMissions: [], bestScore: null, bestTimeSeconds: null, attempts: [],
       missions: [
@@ -67,8 +88,9 @@ describe('application shell', () => {
     }));
 
     render(<App />);
-    expect(await screen.findByText(`Welcome back, ${user.displayName}.`)).toBeInTheDocument();
-    expect(screen.getByText(supportWelcome)).toHaveAttribute('lang', user.supportLanguage);
+    expect(await screen.findByText('IDENTITY PENDING')).toBeInTheDocument();
+    expect(screen.queryByText(user.displayName)).not.toBeInTheDocument();
+    expect(screen.getByText(supportPending)).toHaveAttribute('lang', user.supportLanguage);
     expect(screen.getByText(supportCurrent)).toBeInTheDocument();
     expect(screen.getByText(supportPoints)).toBeInTheDocument();
     expect(screen.queryByText(absent)).not.toBeInTheDocument();

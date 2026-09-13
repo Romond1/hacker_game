@@ -10,6 +10,13 @@ function setup() {
 }
 
 describe('permanent progression economy', () => {
+  it('lets teachers correct XP and Credit balances without altering purchases or mission history', () => {
+    const { service, graduate } = setup(); graduate(); service.purchase('dev-test', 'rookie-badge');
+    expect(() => service.setBalances('dev-test', 'dev-test', { lifetimeXP: 0 })).toThrow();
+    service.setBalances('dev-teacher', 'dev-test', { lifetimeXP: 0, currentCredits: 0 });
+    expect(service.dashboard('dev-test')).toMatchObject({ completedMissions: [1, 2, 3], progression: { lifetimeXP: 0, currentCredits: 0, inventory: ['rookie-badge'] } });
+    expect(() => service.setBalances('dev-teacher', 'dev-test', { currentCredits: -1 })).toThrow();
+  });
   it('pays credits twice per mission while subsequent replays keep earning XP', () => {
     const { service, complete } = setup();
     complete(); complete(); const id = complete();
@@ -68,5 +75,14 @@ describe('permanent progression economy', () => {
       },
       training: expect.arrayContaining([expect.objectContaining({ trainingId: 'data-transfer', unlocked: true })]),
     });
+  });
+
+  it('enforces item availability rejecting future items for normal progression while privileged mode bypasses', () => {
+    const { service, graduate } = setup();
+    graduate();
+    service.setBalances('dev-teacher', 'dev-test', { currentCredits: 2000 });
+    expect(() => service.purchase('dev-test', 'hero-wolf-elite')).toThrowError(/future campaign operations/);
+    service.purchase('dev-test', 'hero-wolf-elite', true);
+    expect(service.dashboard('dev-test').progression.inventory).toContain('hero-wolf-elite');
   });
 });

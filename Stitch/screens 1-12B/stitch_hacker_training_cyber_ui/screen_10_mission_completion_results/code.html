@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.tactical-grid-bg{background-image:radial-gradient(#2d3732 1px,transparent 1px),radial-gradient(#18221d 1px,#07100c 1px);background-size:40px 40px;background-position:0 0,20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary-fixed":"#7df4ff","on-primary-fixed-variant":"#6e3900","surface-container-highest":"#2d3732","on-tertiary":"#003911","on-secondary-fixed-variant":"#004f54","surface-tint":"#ffb77d","on-surface":"#dae5de","inverse-on-surface":"#28332e","on-primary-fixed":"#2f1500","on-secondary-container":"#00686f","surface-dim":"#0b1511","error-container":"#93000a","background":"#0b1511","tertiary-fixed":"#6bff83","primary-fixed":"#ffdcc3","tertiary-fixed-dim":"#00e55b","inverse-primary":"#904d00","on-primary":"#4d2600","outline-variant":"#564334","surface-container-lowest":"#07100c","on-tertiary-fixed-variant":"#00531b","tertiary":"#00e55b","surface-container":"#18221d","error":"#ffb4ab","on-tertiary-container":"#004917","tertiary-container":"#00c44c","secondary-container":"#00eefc","secondary":"#d3fbff","surface-bright":"#313b36","on-primary-container":"#623200","surface-container-low":"#141e19","primary-fixed-dim":"#ffb77d","on-background":"#dae5de","on-secondary-fixed":"#002022","on-error-container":"#ffdad6","secondary-fixed-dim":"#00dbe9","surface":"#0b1511","on-surface-variant":"#ddc1ae","surface-variant":"#2d3732","on-error":"#690005","primary":"#ffb77d","on-tertiary-fixed":"#002107","primary-container":"#ff8c00","inverse-surface":"#dae5de","on-secondary":"#00363a","outline":"#a48c7a","surface-container-high":"#222c27"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"hud-margin":"24px","hud-gap-md":"16px","hud-col-gutter":"16px","hud-hairline":"1px","hud-gap-xs":"4px","hud-gap-lg":"24px","hud-gap-sm":"8px","hud-gap-xl":"32px"},"fontFamily":{"telemetry-label":["Space Mono"],"subtext-intel":["JetBrains Mono"],"headline-md":["Space Grotesk"],"headline-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-code-sm":["JetBrains Mono"],"body-code-md":["JetBrains Mono"],"body-code-lg":["JetBrains Mono"]},"fontSize":{"telemetry-label":["11px",{"lineHeight":"14px","letterSpacing":"0.2em","fontWeight":"700"}],"subtext-intel":["9px",{"lineHeight":"12px","letterSpacing":"0.25em","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"0.1em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"0.12em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"0.08em","fontWeight":"600"}],"body-code-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.03em","fontWeight":"400"}],"body-code-md":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"400"}],"body-code-lg":["16px",{"lineHeight":"24px","letterSpacing":"0.02em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface tactical-grid-bg min-h-screen flex items-center justify-center p-hud-margin"><main class="w-full flex items-center justify-center"><div class="flex flex-col w-full max-w-[1720px] mx-auto space-y-hud-gap-lg">
+<!-- =========================================================================
+       1. TOP COMMAND BAR WITH PRIMARY ACTION BUTTONS (DIRECT CADET DIRECTIVES)
+       ========================================================================= -->
+<header class="w-full bg-surface-container-low rounded-xl p-hud-gap-md shadow-xl flex flex-wrap items-center justify-between gap-4">
+<!-- Breadcrumb & System Station Telemetry -->
+<div class="flex items-center gap-hud-gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-md">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-telemetry-label text-telemetry-label text-primary uppercase">CYBER HERO // DEBRIEF TERMINAL</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+<span class="font-subtext-intel text-subtext-intel text-tertiary">SECTOR_09 // LIVE_STREAM</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface">MISSION 04: POST-ACTION INTEL REPORT</p>
+</div>
+</div>
+<!-- PRIMARY ACTION BUTTONS (TOP OF PAGE PLACEMENT MANDATE) -->
+<div class="flex items-center flex-wrap gap-hud-gap-sm">
+<!-- Return Home Button -->
+<a class="group flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm shadow-lg transition-all duration-200 hover:scale-105 active:scale-95" href="#home">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>RETURN HOME</span>
+</a>
+<!-- Replay Mission Button -->
+<button class="group flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-high hover:bg-secondary text-secondary hover:text-on-secondary font-headline-sm text-headline-sm shadow-md transition-all duration-200" onclick="window.location.reload()">
+<span class="material-symbols-outlined text-headline-sm transition-transform duration-500 group-hover:rotate-180">replay</span>
+<span>REPLAY MISSION</span>
+</button>
+<!-- Next Mission Button -->
+<a class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-tertiary-container text-on-tertiary-container font-headline-sm text-headline-sm shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-tertiary/40" href="#mission-05">
+<span>NEXT MISSION</span>
+<span class="material-symbols-outlined text-headline-sm">arrow_forward</span>
+</a>
+<!-- Print Credential Button -->
+<button class="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-highest text-on-surface-variant font-subtext-intel text-subtext-intel shadow-sm transition-colors" onclick="window.print()" title="Print Cadet Certificate">
+<span class="material-symbols-outlined text-body-code-lg">print</span>
+<span class="hidden xl:inline">PRINT CREDENTIAL</span>
+</button>
+</div>
+</header>
+<!-- =========================================================================
+       2. CELEBRATION & VICTORY BANNER (STAGED PROTOCOL + REWARD ACCUMULATOR)
+       ========================================================================= -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container p-hud-gap-lg shadow-xl">
+<!-- Ambient Sci-Fi Glow Backdrop -->
+<div class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-tertiary/10 blur-3xl pointer-events-none"></div>
+<div class="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-hud-gap-lg">
+<!-- Stage Indicator Pipeline & Triumph Title -->
+<div class="space-y-3 max-w-3xl">
+<!-- 3-Stage Tactical Pipeline -->
+<div class="flex items-center flex-wrap gap-2">
+<!-- Stage 1 -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-high text-tertiary font-telemetry-label text-telemetry-label shadow-inner">
+<span class="material-symbols-outlined text-body-code-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>STAGE 1: PACKET SIGNATURES SHA-256 [VERIFIED]</span>
+</div>
+<span class="text-outline-variant font-telemetry-label text-telemetry-label">►</span>
+<!-- Stage 2 -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container-high text-tertiary font-telemetry-label text-telemetry-label shadow-inner">
+<span class="material-symbols-outlined text-body-code-sm" style="font-variation-settings: 'FILL' 1;">lock_open</span>
+<span>STAGE 2: ACCESS GRANTED</span>
+</div>
+<span class="text-outline-variant font-telemetry-label text-telemetry-label">►</span>
+<!-- Stage 3 (Active) -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-tertiary text-on-tertiary font-telemetry-label text-telemetry-label shadow-md animate-pulse">
+<span class="material-symbols-outlined text-body-code-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>STAGE 3: MISSION COMPLETE // 100%</span>
+</div>
+</div>
+<!-- Huge Hero Header -->
+<h1 class="font-display-hero text-display-hero tracking-wide text-on-surface uppercase">
+          MISSION COMPLETE <span class="text-tertiary">//</span> <span class="text-primary">OPERATION SECURED</span>
+</h1>
+<p class="font-body-code-md text-body-code-md text-on-surface-variant max-w-2xl">
+          Outstanding work, Cadet! The tactical relay breach has been neutralised. Core nodes have synchronized with Cyber Command Central Defense.
+        </p>
+</div>
+<!-- Live Upward-Counting Reward Trophies -->
+<div class="grid grid-cols-3 gap-3 w-full xl:w-auto">
+<!-- XP Gained -->
+<div class="bg-surface-container-lowest rounded-lg p-3.5 flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-telemetry-label text-telemetry-label">EXP RECEIVED</span>
+<span class="material-symbols-outlined text-headline-sm">bolt</span>
+</div>
+<div class="my-2 font-headline-lg text-headline-lg text-secondary" id="counter-xp">+850 XP</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-1000 ease-out" style="width: 82%;"></div>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant mt-1.5">CADET LVL 04 ➔ LVL 05</span>
+</div>
+<!-- Credits Earned -->
+<div class="bg-surface-container-lowest rounded-lg p-3.5 flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between text-primary">
+<span class="font-telemetry-label text-telemetry-label">CREDITS EARNED</span>
+<span class="material-symbols-outlined text-headline-sm">toll</span>
+</div>
+<div class="my-2 font-headline-lg text-headline-lg text-primary" id="counter-credits">+1,200 CR</div>
+<div class="flex items-center gap-1">
+<span class="font-subtext-intel text-subtext-intel text-tertiary">+250 CLEAN RUN BONUS</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant mt-1.5">VAULT SYNCED</span>
+</div>
+<!-- Rank Commendation -->
+<div class="bg-surface-container-lowest rounded-lg p-3.5 flex flex-col justify-between shadow-md">
+<div class="flex items-center justify-between text-tertiary">
+<span class="font-telemetry-label text-telemetry-label">AWARD CITATION</span>
+<span class="material-symbols-outlined text-headline-sm">military_tech</span>
+</div>
+<div class="my-2 font-headline-md text-headline-md text-tertiary truncate">GOLD STAR</div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">CYBER COMMAND MERIT</span>
+<span class="font-subtext-intel text-subtext-intel text-tertiary mt-1.5">TOP 5% NATIONWIDE</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       3. MISSION 4 NARRATIVE STORY RESULT (TACTICAL INTEL DOSSIER BANNER)
+       ========================================================================= -->
+<section class="bg-surface-container-low rounded-xl p-hud-gap-md shadow-md grid grid-cols-1 md:grid-cols-3 gap-hud-gap-md">
+<!-- Node Status -->
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-lg">
+<div class="w-10 h-10 rounded bg-tertiary/10 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-headline-sm">cell_tower</span>
+</div>
+<div>
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">RELAY COMMS LINK</span>
+<p class="font-headline-sm text-headline-sm text-tertiary">COMMUNICATION NODE SECURED</p>
+</div>
+</div>
+<!-- Source Origin -->
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-lg">
+<div class="w-10 h-10 rounded bg-secondary/10 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-headline-sm">satellite_alt</span>
+</div>
+<div>
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">SOURCE IDENTIFIED</span>
+<p class="font-headline-sm text-headline-sm text-secondary truncate">ORBITAL SAT-RELAY 09-OMEGA</p>
+</div>
+</div>
+<!-- Cliffhanger Threat Alert -->
+<div class="flex items-center gap-3 bg-surface-container p-3 rounded-lg">
+<div class="w-10 h-10 rounded bg-error/10 text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-headline-sm animate-pulse">warning</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-telemetry-label text-telemetry-label text-error">INTERCEPT FORESHADOW</span>
+<span class="inline-block w-2 h-2 rounded-full bg-error"></span>
+</div>
+<p class="font-subtext-intel text-subtext-intel text-error truncate font-bold">ALERT: UNKNOWN FREQUENCY IN SECTOR 7</p>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       4. MAIN 2-COLUMN DEBRIEF LAYOUT
+       LEFT: CADET ID CARD & REWARDS TRAY
+       RIGHT: PERFORMANCE SCORECARD & DRILL METRICS
+       ========================================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-hud-gap-lg">
+<!-- ==================== LEFT COLUMN (5 COLS) ==================== -->
+<div class="lg:col-span-5 space-y-hud-gap-lg">
+<!-- Student Cyber Agent Identity Card -->
+<div class="bg-surface-container rounded-xl p-hud-gap-md shadow-xl relative overflow-hidden">
+<!-- Header Ribbon -->
+<div class="flex items-center justify-between pb-3 mb-4 bg-surface-container-high -mx-4 -mt-4 px-4 pt-3">
+<div class="flex items-center gap-2">
+<span class="font-telemetry-label text-telemetry-label text-primary">ID PASS // CADET CREDENTIAL</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel px-2 py-0.5 rounded bg-tertiary/20 text-tertiary">
+            OFFICIALLY VERIFIED
+          </span>
+</div>
+<div class="flex flex-col sm:flex-row gap-hud-gap-md items-center sm:items-start">
+<!-- Cyber Wolf Avatar Badge with Detailed Prompt -->
+<div class="relative w-36 h-36 flex-shrink-0 rounded-xl overflow-hidden bg-surface-container-lowest shadow-lg">
+<img class="w-full h-full object-cover" data-alt="Futuristic cybernetic white wolf mascot emblem inside a high-tech metallic carbon shield badge, glowing neon orange power symbol on forehead, luminous cyan electrical circuits trailing down cyber fur, clean 3D mechanical armor styling, dark carbon-fiber tactical military cyberpunk academy motif, dramatic studio photon lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVEiwqwNzAfvOkBZPV7hr3_LOWk-S8Tdl7l7YENlfHdNNNy_DXPJVFFtKNEA6xCFR9WkYiBu3DWnin_ePb4yo2ZuC-Ik82SSi1GhmZ-Ht9tYrBBvIZwJbMnbz9fgiDacuKLgYr1XsOTjtCLNPAyMlMQh-xJXbcb4-sS6aumSxl5VMI-vNxtmuNgxv31ln5dx3iQA8qsjPhII-u2ccXDFA8yDstdzSSjjeOvY-2AC3trL3W-zHTrcivhg"/>
+<div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-surface-container-lowest text-tertiary font-telemetry-label text-telemetry-label">
+              ECHO-04
+            </div>
+</div>
+<!-- Operative Identification Details -->
+<div class="space-y-2 text-center sm:text-left min-w-0 flex-1">
+<div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">CALLSIGN / CODENAME</span>
+<p class="font-headline-md text-headline-md text-on-surface truncate">OPERATIVE: ECHO</p>
+</div>
+<div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">RANK &amp; QUALIFICATION</span>
+<p class="font-body-code-md text-body-code-md text-primary font-bold">LEVEL 04 FIELD SPECIALIST</p>
+</div>
+<div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">ASSIGNED TACTICAL SQUAD</span>
+<p class="font-body-code-sm text-body-code-sm text-secondary truncate">SIGNAL DECRYPTOR // NETWORK INFILTRATOR</p>
+</div>
+</div>
+</div>
+<!-- Biometric Signature Validation Footer -->
+<div class="mt-4 pt-3 bg-surface-container-low rounded-lg p-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-headline-sm" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<div>
+<p class="font-telemetry-label text-telemetry-label text-tertiary">BIOMETRIC IMPRINT SYNCED</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">KEY: 0x9AF8-22B-MISSION-CLEARED</p>
+</div>
+</div>
+<span class="font-telemetry-label text-telemetry-label text-on-surface px-2 py-1 bg-surface-container-highest rounded">
+            PASS
+          </span>
+</div>
+</div>
+<!-- Unlocked Rewards Tray -->
+<div class="bg-surface-container rounded-xl p-hud-gap-md shadow-xl space-y-hud-gap-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-headline-sm">card_giftcard</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface uppercase">UNLOCKED CADET REWARDS</h2>
+</div>
+<span class="font-telemetry-label text-telemetry-label text-primary bg-primary/10 px-2 py-0.5 rounded">
+            3 NEW ITEMS
+          </span>
+</div>
+<div class="space-y-2.5">
+<!-- Item 1: Gear -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-surface-container-high">
+<div class="w-12 h-12 rounded-lg bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-headline-md">shield</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-subtext-intel text-subtext-intel text-primary uppercase">TACTICAL RIG GEAR</span>
+<p class="font-body-code-md text-body-code-md text-on-surface font-bold truncate">MK-IV CERAMIC OVERDRIVE PLATING</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">+15% Buffer Resilience Against Rogue Ping Floods</p>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container text-tertiary font-telemetry-label text-telemetry-label">
+              EQUIPPED
+            </span>
+</div>
+<!-- Item 2: Software Tool -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-surface-container-high">
+<div class="w-12 h-12 rounded-lg bg-secondary/20 text-secondary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-headline-md">terminal</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-subtext-intel text-subtext-intel text-secondary uppercase">DIAGNOSTIC EXPLOIT TOOL</span>
+<p class="font-body-code-md text-body-code-md text-on-surface font-bold truncate">DEEP PACKET INSPECTOR v2.0</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Auto-highlights spoofed routing packet headers</p>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container text-secondary font-telemetry-label text-telemetry-label">
+              UNLOCKED
+            </span>
+</div>
+<!-- Item 3: Accolade Ribbon -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center gap-3 transition-colors hover:bg-surface-container-high">
+<div class="w-12 h-12 rounded-lg bg-tertiary/20 text-tertiary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-headline-md">speed</span>
+</div>
+<div class="flex-1 min-w-0">
+<span class="font-subtext-intel text-subtext-intel text-tertiary uppercase">SPECIAL COMMENDATION</span>
+<p class="font-body-code-md text-body-code-md text-on-surface font-bold truncate">SPEED RUNNER MEDAL</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Completed operational drills in under 3 minutes!</p>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container text-tertiary font-telemetry-label text-telemetry-label">
+              BADGE
+            </span>
+</div>
+</div>
+<!-- Companion Robot Tip -->
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold font-headline-sm">
+            AI
+          </div>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant flex-1">
+<span class="text-secondary font-bold">COMPANION ECHO SAYS:</span> "Cadet, your defensive typing cadence matched standard operative benchmarks. You're ready for high-level subnet trials!"
+          </p>
+</div>
+</div>
+</div>
+<!-- ==================== RIGHT COLUMN (7 COLS) ==================== -->
+<div class="lg:col-span-7 space-y-hud-gap-lg">
+<!-- Big Hero Score Card & Precision HUD -->
+<div class="bg-surface-container rounded-xl p-hud-gap-lg shadow-xl relative overflow-hidden">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 bg-surface-container-high -mx-6 -mt-6 px-6 pt-5">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-telemetry-label text-telemetry-label text-tertiary">PERFORMANCE MATRIX</span>
+<span class="px-2 py-0.5 rounded bg-tertiary text-on-tertiary font-telemetry-label text-telemetry-label">
+                ★ NEW PERSONAL BEST! ★
+              </span>
+</div>
+<p class="font-headline-sm text-headline-sm text-on-surface mt-0.5">COMPREHENSIVE CADET EVALUATION</p>
+</div>
+<!-- Target Grade Indicator -->
+<div class="text-right">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">DEFENSE GRADE</span>
+<p class="font-headline-lg text-headline-lg text-tertiary font-bold leading-none">RANK S+</p>
+</div>
+</div>
+<!-- Massive Hero Score Visual -->
+<div class="my-6 flex flex-col md:flex-row items-center justify-between gap-6 p-4 rounded-xl bg-surface-container-lowest">
+<div>
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">TOTAL DRILL COMPOSITE SCORE</span>
+<div class="flex items-baseline gap-3 mt-1">
+<span class="font-display-hero text-display-hero text-tertiary font-bold tracking-tight">940</span>
+<span class="font-headline-md text-headline-md text-on-surface-variant">/ 1,000 PTS</span>
+</div>
+<p class="font-body-code-sm text-body-code-sm text-secondary mt-1">
+              Surpassed minimum required qualification threshold (750 PTS) by +190 points.
+            </p>
+</div>
+<!-- Circular Metric Graphic (SVG) -->
+<div class="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-high fill-none" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-tertiary fill-none" cx="50" cy="50" r="42" stroke="currentColor" stroke-dasharray="264" stroke-dashoffset="15.8" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center text-center">
+<span class="font-headline-sm text-headline-sm text-tertiary leading-none">94%</span>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">MASTERY</span>
+</div>
+</div>
+</div>
+<!-- Time & Precision HUD Stats -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+<!-- Stat 1: Time -->
+<div class="bg-surface-container-low p-3 rounded-lg">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">TIME DURATION</span>
+<p class="font-headline-md text-headline-md text-on-surface font-mono">02:21.3</p>
+<span class="font-subtext-intel text-subtext-intel text-tertiary">-1m 23s FASTER</span>
+</div>
+<!-- Stat 2: Accuracy -->
+<div class="bg-surface-container-low p-3 rounded-lg">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">CLICK ACCURACY</span>
+<p class="font-headline-md text-headline-md text-tertiary font-mono">98.4%</p>
+<span class="font-subtext-intel text-subtext-intel text-tertiary">HIGH PRECISION</span>
+</div>
+<!-- Stat 3: Errors -->
+<div class="bg-surface-container-low p-3 rounded-lg">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">ACTION ERRORS</span>
+<p class="font-headline-md text-headline-md text-on-surface font-mono">0 ERRORS</p>
+<span class="font-subtext-intel text-subtext-intel text-tertiary">CLEAN PROTOCOL</span>
+</div>
+<!-- Stat 4: Commands -->
+<div class="bg-surface-container-low p-3 rounded-lg">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">CMDS EXECUTED</span>
+<p class="font-headline-md text-headline-md text-secondary font-mono">14 / 14</p>
+<span class="font-subtext-intel text-subtext-intel text-secondary">PERFECT RUN</span>
+</div>
+</div>
+</div>
+<!-- Student Computer Literacy & Independence Drill Highlights -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-hud-gap-md">
+<!-- Highlight 1: English Independence Bonus (Language Learning Reward) -->
+<div class="bg-surface-container rounded-xl p-4 shadow-lg flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-headline-md">translate</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-telemetry-label text-telemetry-label text-primary">CHILD LITERACY BADGE</span>
+<span class="font-headline-sm text-headline-sm text-primary">+100 PTS</span>
+</div>
+<p class="font-body-code-md text-body-code-md text-on-surface font-bold truncate">ENGLISH INDEPENDENCE</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">
+              Zero translation assistance requested. All prompts parsed directly in target language!
+            </p>
+</div>
+</div>
+<!-- Highlight 2: Cyber Guide Independence (Problem Solving Confidence) -->
+<div class="bg-surface-container rounded-xl p-4 shadow-lg flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-tertiary/10 text-tertiary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-headline-md">psychology</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-telemetry-label text-telemetry-label text-tertiary">CRITICAL THINKING</span>
+<span class="font-headline-sm text-headline-sm text-tertiary">+80 PTS</span>
+</div>
+<p class="font-body-code-md text-body-code-md text-on-surface font-bold truncate">GUIDE INDEPENDENCE</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">
+              Only 1 / 3 hints used during encryption decryption sequence. Self-driven victory!
+            </p>
+</div>
+</div>
+</div>
+<!-- Granular Score Breakdown Table -->
+<div class="bg-surface-container rounded-xl p-hud-gap-md shadow-xl space-y-3">
+<div class="flex items-center justify-between pb-2 bg-surface-container-high -mx-4 -mt-4 px-4 pt-3 rounded-t-xl">
+<span class="font-telemetry-label text-telemetry-label text-on-surface">SCORING AUDIT TRAIL // SYSTEM LOG</span>
+<span class="font-subtext-intel text-subtext-intel text-tertiary">CHECKSUM VALIDATED</span>
+</div>
+<div class="space-y-1.5 font-body-code-sm text-body-code-sm">
+<!-- Row 1 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-low transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">01</span>
+<div>
+<p class="text-on-surface font-medium">Mission Core Completion</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Neutralized hostile payload &amp; re-established uplink</p>
+</div>
+</div>
+<span class="font-mono text-tertiary font-bold">400 / 400 pts</span>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-lowest transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">02</span>
+<div>
+<p class="text-on-surface font-medium">Core Objectives (Infiltration &amp; Key Extraction)</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Decoded hex encryption cipher on terminal port 22</p>
+</div>
+</div>
+<span class="font-mono text-tertiary font-bold">200 / 200 pts</span>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-low transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">03</span>
+<div>
+<p class="text-on-surface font-medium">Navigation Accuracy</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Flawless file directory traversal without misclicks</p>
+</div>
+</div>
+<span class="font-mono text-tertiary font-bold">150 / 150 pts</span>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-lowest transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">04</span>
+<div>
+<p class="text-on-surface font-medium">Cyber Guide Independence</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Low hint reliance during decryption phase</p>
+</div>
+</div>
+<span class="font-mono text-secondary font-bold">80 / 100 pts</span>
+</div>
+<!-- Row 5 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-low transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">05</span>
+<div>
+<p class="text-on-surface font-medium">English Language Independence</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Instructional directives completed without translator</p>
+</div>
+</div>
+<span class="font-mono text-primary font-bold">100 / 100 pts</span>
+</div>
+<!-- Row 6 -->
+<div class="flex items-center justify-between p-2.5 rounded bg-surface-container-lowest transition-colors hover:bg-surface-container-high">
+<div class="flex items-center gap-3">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant font-mono">06</span>
+<div>
+<p class="text-on-surface font-medium">Time Optimization Bonus</p>
+<p class="font-subtext-intel text-subtext-intel text-on-surface-variant">Rapid execution buffer margin</p>
+</div>
+</div>
+<span class="font-mono text-on-surface-variant font-bold">10 / 50 pts</span>
+</div>
+</div>
+<!-- Total Sum Bar -->
+<div class="mt-4 p-3 bg-surface-container-highest rounded-lg flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">TOTAL AGENT SCORE:</span>
+<span class="font-headline-lg text-headline-lg text-tertiary font-bold font-mono">940 PTS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+    // Smooth upward counter effect for XP and credits
+    (function() {
+      const animateValue = (id, start, end, duration, prefix = '', suffix = '') => {
+        const obj = document.getElementById(id);
+        if (!obj) return;
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const current = Math.floor(progress * (end - start) + start);
+          obj.innerHTML = `${prefix}${current.toLocaleString()}${suffix}`;
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
+      };
+
+      // Trigger counters upon entry
+      setTimeout(() => {
+        animateValue('counter-xp', 0, 850, 1200, '+', ' XP');
+        animateValue('counter-credits', 0, 1200, 1400, '+', ' CR');
+      }, 250);
+    })();
+  </script>
+</div></main></body></html>

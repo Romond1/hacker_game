@@ -14,6 +14,18 @@ function progress(overrides: Partial<TrainingProgress> = {}): TrainingProgress {
 }
 
 describe('TrainingCenter', () => {
+  it('shows one reusable robot game with three campaign-gated modes', () => {
+    const onRobotDefense = vi.fn();
+    const view = render(<TrainingCenter language="it" modules={TRAINING_MODULES} progress={[]} completedMissions={[1]} onStart={vi.fn()} onRobotDefense={onRobotDefense} onBack={vi.fn()} />);
+    expect(screen.getByRole('button', { name: /Train Base Defense/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Train Reinforcements/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Train Robot Override/i })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Train Base Defense/i }));
+    expect(onRobotDefense).toHaveBeenCalledWith('base_defense');
+    view.rerender(<TrainingCenter language="it" modules={TRAINING_MODULES} progress={[]} completedMissions={[1, 2, 3]} onStart={vi.fn()} onRobotDefense={onRobotDefense} onBack={vi.fn()} />);
+    expect(screen.getByRole('button', { name: /Train Reinforcements/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Train Robot Override/i })).toBeInTheDocument();
+  });
   it('renders catalog data, performance, and starts the selected module', () => {
     const onStart = vi.fn();
     render(<TrainingCenter language="ja" modules={TRAINING_MODULES} progress={[progress()]} onStart={onStart} onBack={vi.fn()} />);

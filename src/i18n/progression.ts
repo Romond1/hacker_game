@@ -4,7 +4,7 @@ export const PROGRESSION_COPY = {
   training: ['Rookie Training', 'Addestramento reclute', 'ルーキートレーニング'],
   anonymous: ['ANONYMOUS', 'ANONIMO', '匿名'],
   introduction: ['You are operating anonymously. Complete three Rookie Missions to unlock your hacker identity, the shop, and the larger network.', 'Operi in anonimato. Completa le tre missioni per sbloccare la tua identità hacker, il negozio e la rete.', '今は匿名で活動中。3つのミッションを完了すると、ハッカー名、ショップ、そして新たなネットワークが開放されます。'],
-  shop: ['Hacker Shop', 'Negozio Hacker', 'ハッカーショップ'],
+  shop: ['Cyber Shop', 'Cyber Shop', 'サイバーショップ'],
   locked: ['LOCKED', 'BLOCCATO', 'ロック中'],
   lockedHelp: ['Complete Rookie Training to gain access.', 'Completa l’addestramento per accedere.', 'ルーキートレーニングを完了すると利用できます。'],
   balance: ['Credits', 'Crediti', 'クレジット'],

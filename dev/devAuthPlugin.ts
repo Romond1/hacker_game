@@ -68,7 +68,10 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
           if (['student.identity', 'student.purchase', 'student.equip', 'student.story', 'student.sound'].includes(action)) {
             if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
             if (action === 'student.identity') return savedResponse(res, service.identity(user.id, String(body.codename ?? '')));
-            if (action === 'student.purchase') return savedResponse(res, service.purchase(user.id, String(body.itemId ?? '')));
+            if (action === 'student.purchase') {
+              const isGod = user.username.toLowerCase() === 'test.hacker';
+              return savedResponse(res, service.purchase(user.id, String(body.itemId ?? ''), isGod));
+            }
             if (action === 'student.equip') return savedResponse(res, service.equip(user.id, String(body.itemId ?? ''), String(body.category ?? '')));
             if (action === 'student.story') return savedResponse(res, service.story(user.id, String(body.flag ?? '')));
             if (typeof body.muted !== 'boolean') return failure(res, 'validation_failed', 'Choose a sound preference.', 422);
@@ -111,6 +114,19 @@ export function devAuthPlugin(root = process.cwd()): Plugin {
           if (action === 'teacher.resetMission') {
             if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);
             return savedResponse(res, service.resetMission(user.id, String(body.studentId ?? ''), String(body.missionId ?? '')));
+          }
+          if (action === 'robot.start') {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            return savedResponse(res, service.startRobotTraining(user.id, String(body.mode ?? '')), 201);
+          }
+          if (action === 'robot.finish') {
+            if (user.role !== 'student') return failure(res, 'forbidden', 'Student access required.', 403);
+            return savedResponse(res, service.finishRobotTraining(user.id, String(body.runId ?? ''), (body.result ?? {}) as { mode?: string; victory?: boolean; wavesCompleted?: number; robotsDestroyed?: number }));
+          }
+          if (action === 'teacher.setBalances') {
+            if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);
+            const balances = Object.fromEntries(['lifetimeXP', 'currentCredits'].filter(key => Object.hasOwn(body, key)).map(key => [key, body[key]]));
+            return savedResponse(res, service.setBalances(user.id, String(body.studentId ?? ''), balances));
           }
           if (action === 'teacher.student') {
             if (user.role !== 'teacher') return failure(res, 'forbidden', 'Teacher access required.', 403);

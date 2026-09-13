@@ -13,6 +13,7 @@ export type SessionUser = {
   supportLanguage: SupportLanguage;
   themeColor: ThemeName;
   csrfToken: string;
+  canTestShop?: boolean;
 };
 
 export type ThemeName = 'green' | 'blue' | 'pink' | 'purple' | 'orange' | 'cyan';

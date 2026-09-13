@@ -1,0 +1,363 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.tactical-grid-bg{background-image:radial-gradient(#2d3732 1px,transparent 1px),radial-gradient(#18221d 1px,#07100c 1px);background-size:40px 40px;background-position:0 0,20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary-fixed":"#7df4ff","on-primary-fixed-variant":"#6e3900","surface-container-highest":"#2d3732","on-tertiary":"#003911","on-secondary-fixed-variant":"#004f54","surface-tint":"#ffb77d","on-surface":"#dae5de","inverse-on-surface":"#28332e","on-primary-fixed":"#2f1500","on-secondary-container":"#00686f","surface-dim":"#0b1511","error-container":"#93000a","background":"#0b1511","tertiary-fixed":"#6bff83","primary-fixed":"#ffdcc3","tertiary-fixed-dim":"#00e55b","inverse-primary":"#904d00","on-primary":"#4d2600","outline-variant":"#564334","surface-container-lowest":"#07100c","on-tertiary-fixed-variant":"#00531b","tertiary":"#00e55b","surface-container":"#18221d","error":"#ffb4ab","on-tertiary-container":"#004917","tertiary-container":"#00c44c","secondary-container":"#00eefc","secondary":"#d3fbff","surface-bright":"#313b36","on-primary-container":"#623200","surface-container-low":"#141e19","primary-fixed-dim":"#ffb77d","on-background":"#dae5de","on-secondary-fixed":"#002022","on-error-container":"#ffdad6","secondary-fixed-dim":"#00dbe9","surface":"#0b1511","on-surface-variant":"#ddc1ae","surface-variant":"#2d3732","on-error":"#690005","primary":"#ffb77d","on-tertiary-fixed":"#002107","primary-container":"#ff8c00","inverse-surface":"#dae5de","on-secondary":"#00363a","outline":"#a48c7a","surface-container-high":"#222c27"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"hud-margin":"24px","hud-gap-md":"16px","hud-col-gutter":"16px","hud-hairline":"1px","hud-gap-xs":"4px","hud-gap-lg":"24px","hud-gap-sm":"8px","hud-gap-xl":"32px"},"fontFamily":{"telemetry-label":["Space Mono"],"subtext-intel":["JetBrains Mono"],"headline-md":["Space Grotesk"],"headline-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-code-sm":["JetBrains Mono"],"body-code-md":["JetBrains Mono"],"body-code-lg":["JetBrains Mono"]},"fontSize":{"telemetry-label":["11px",{"lineHeight":"14px","letterSpacing":"0.2em","fontWeight":"700"}],"subtext-intel":["9px",{"lineHeight":"12px","letterSpacing":"0.25em","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"0.1em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"0.12em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"0.08em","fontWeight":"600"}],"body-code-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.03em","fontWeight":"400"}],"body-code-md":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"400"}],"body-code-lg":["16px",{"lineHeight":"24px","letterSpacing":"0.02em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface tactical-grid-bg min-h-screen flex items-center justify-center p-hud-margin"><main class="w-full flex items-center justify-center"><div class="flex flex-col w-full text-on-surface select-none font-body-code-md">
+<!-- TOP COMMAND & STATUS BAR -->
+<header class="w-full bg-surface-container-lowest/90 backdrop-blur-md px-hud-gap-lg py-hud-gap-sm flex items-center justify-between shadow-md mb-hud-gap-md rounded-lg">
+<!-- Brand & Operative Meta -->
+<div class="flex items-center gap-hud-gap-md">
+<div class="flex items-center gap-hud-gap-sm">
+<span class="material-symbols-outlined text-primary-container text-headline-md leading-none" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider text-primary font-bold leading-none">Cyber Hero</span>
+<span class="font-telemetry-label text-subtext-intel text-tertiary-fixed-dim uppercase tracking-widest mt-1">Academy Defense Rig</span>
+</div>
+</div>
+<div class="h-6 w-px bg-surface-variant mx-2"></div>
+<!-- Operative Badge -->
+<div class="flex items-center gap-hud-gap-sm bg-surface-container px-3 py-1.5 rounded">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary shadow-[0_0_8px_#00e55b] animate-pulse"></span>
+<div class="flex flex-col leading-none">
+<span class="font-headline-sm text-body-code-sm text-on-surface font-semibold">AGENT ECHO</span>
+<span class="font-subtext-intel text-subtext-intel text-outline tracking-wider uppercase">LVL 04 SPECIALIST</span>
+</div>
+</div>
+<!-- Clearance -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded">
+<span class="font-telemetry-label text-subtext-intel text-secondary-fixed uppercase">CLEARANCE:</span>
+<span class="font-body-code-sm text-body-code-sm text-secondary font-bold">ALPHA-4</span>
+</div>
+</div>
+<!-- Active Mission Pill & Controls -->
+<div class="flex items-center gap-hud-gap-lg">
+<div class="flex items-center gap-hud-gap-sm bg-surface-container-high px-4 py-1.5 rounded shadow-[0_0_12px_rgba(255,140,0,0.15)]">
+<span class="material-symbols-outlined text-primary-container text-body-code-lg animate-spin" style="animation-duration: 6s;">shield</span>
+<span class="font-telemetry-label text-telemetry-label text-primary-fixed uppercase tracking-wider">MISSION 04 // BRIEFING PROTOCOL</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-tertiary font-telemetry-label text-subtext-intel bg-surface-container px-2.5 py-1 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="">NET: STABLE [14ms]</span>
+</div>
+<button class="flex items-center gap-1 text-outline hover:text-error transition-colors px-2 py-1 text-body-code-sm uppercase font-headline-sm" type="button">
+<span class="material-symbols-outlined text-body-code-md">power_settings_new</span>
+<span class="">ABORT</span>
+</button>
+</div>
+</div>
+</header>
+<!-- MAIN BRIEFING STAGE (TRI-PANE TACTICAL GRID) -->
+<div class="w-full bg-surface-container-low/95 backdrop-blur-md px-hud-gap-lg py-hud-gap-md rounded-lg mb-hud-gap-md flex flex-wrap items-center justify-between gap-hud-gap-md shadow-2xl">
+<div class="flex items-center gap-hud-gap-sm">
+<button class="flex items-center gap-2 bg-surface-container px-4 py-2.5 rounded text-body-code-sm font-headline-sm font-bold text-on-surface hover:bg-surface-container-high transition-all active:scale-95 shadow-sm" id="replayAudioBtn" type="button">
+<span class="material-symbols-outlined text-secondary-fixed text-body-code-lg">volume_up</span>
+<span class="">AUDIO BRIEFING [REPLAY]</span>
+</button>
+<button class="flex items-center gap-2 bg-surface-container px-4 py-2.5 rounded text-body-code-sm font-headline-sm font-bold text-outline hover:text-on-surface hover:bg-surface-container-high transition-all active:scale-95 shadow-sm" id="translateBtn" type="button">
+<span class="material-symbols-outlined text-body-code-lg">translate</span>
+<span id="langLabel" class="">TRANSLATE [日本語 / IT]</span>
+</button>
+</div>
+<div class="flex items-center gap-hud-gap-md">
+<button class="flex items-center gap-2 bg-surface-container-high hover:bg-surface-bright text-on-surface px-5 py-3 rounded font-headline-sm text-body-code-md font-bold uppercase tracking-wider transition-all active:scale-95 shadow-md" type="button">
+<span class="material-symbols-outlined text-secondary text-headline-sm">science</span>
+<span class="">PRACTICE IN SANDBOX</span>
+</button>
+<button class="group relative flex items-center gap-3 bg-primary-container hover:bg-primary text-on-primary-container px-8 py-3.5 rounded font-headline-md text-headline-sm font-bold uppercase tracking-wider transition-all shadow-[0_0_24px_rgba(255,140,0,0.45)] hover:shadow-[0_0_36px_rgba(255,140,0,0.65)] active:scale-95" type="button">
+<span class="material-symbols-outlined text-headline-md leading-none transition-transform group-hover:translate-x-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span class="">BEGIN OPERATION [DEPLOY]</span>
+<span class="font-telemetry-label text-subtext-intel bg-black/30 px-2 py-0.5 rounded text-primary-fixed ml-1">MISSION 04</span>
+</button>
+</div>
+</div><div class="w-full grid grid-cols-12 gap-hud-gap-md items-start">
+<!-- ==============================================
+         LEFT FLANK: HOLOGRAPHIC CYBER GUIDE (CG) (3 COLS)
+         ============================================== -->
+<section class="col-span-12 lg:col-span-3 flex flex-col gap-hud-gap-md">
+<!-- AI Guide Aperture Card -->
+<div class="bg-surface-container-low rounded-lg p-hud-gap-md relative overflow-hidden shadow-xl">
+<!-- Accent Glow Backdrop -->
+<div class="absolute -top-16 -left-16 w-48 h-48 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Header Telemetry -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed text-headline-sm">smart_toy</span>
+<span class="font-telemetry-label text-telemetry-label text-secondary-fixed uppercase tracking-widest">TACTICAL INTEL AI</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-tertiary bg-surface-container-highest px-1.5 py-0.5 rounded uppercase">ACTV // 04</span>
+</div>
+<!-- CG Hologram Asset Frame -->
+<div class="relative w-full aspect-square rounded-lg overflow-hidden bg-surface-container-lowest flex items-center justify-center group mb-hud-gap-md shadow-inner">
+<img alt="CG Cyber Guide Holographic Interface" class="w-full h-full object-cover object-center filter contrast-125 saturate-150 transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPKFKgwuG7YHG9vYifArQEcs7Hx1xgoaCkBRmYdiBE_xwsLcmMDzHGR64DYUic5HQ2Nu4ahaXa_rug_loyVEjB6zauRXHTt903t9tuguzdbI-vys7W7-PLcGgYXw_XI2qOAxQ9aCZ8JOhmcmTbnM-4LPQnsD0V4FkRAJZzXrcIcxLLmYMayzNocekeJhcpl-JWXhmCGCTuPSpE1geKq59AyILa-8_sm8A4E66J-TCZ6bnYaDJRdg56lw">
+<!-- Holographic Scanline Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-secondary-container/10 to-transparent pointer-events-none opacity-60"></div>
+<!-- Corner Tick Marks -->
+<div class="absolute top-2 left-2 text-secondary-fixed font-telemetry-label text-subtext-intel pointer-events-none">⌜ 0x99A</div>
+<div class="absolute bottom-2 right-2 text-secondary-fixed font-telemetry-label text-subtext-intel pointer-events-none">0x99B ⌟</div>
+</div>
+<!-- Voice Feed Telemetry Ribbon -->
+<div class="flex items-center justify-between bg-surface-container-high px-3 py-2 rounded mb-hud-gap-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-ping"></span>
+<span class="font-telemetry-label text-telemetry-label text-secondary uppercase tracking-wider">VOICE FEED ONLINE</span>
+</div>
+<!-- Audio Waveform Visualizer -->
+<div class="flex items-end gap-0.5 h-3">
+<span class="w-1 bg-secondary-fixed h-2 animate-pulse"></span>
+<span class="w-1 bg-secondary h-3 animate-pulse" style="animation-delay: 150ms;"></span>
+<span class="w-1 bg-secondary-fixed-dim h-1.5 animate-pulse" style="animation-delay: 300ms;"></span>
+<span class="w-1 bg-secondary h-2.5 animate-pulse" style="animation-delay: 75ms;"></span>
+<span class="w-1 bg-secondary-fixed h-3 animate-pulse" style="animation-delay: 220ms;"></span>
+</div>
+</div>
+<!-- Dialogue Box -->
+<div class="bg-surface-container-highest/80 p-hud-gap-md rounded-lg shadow-md">
+<div class="flex items-center justify-between text-subtext-intel font-subtext-intel text-outline mb-1.5">
+<span class="uppercase tracking-widest font-bold text-primary-fixed-dim">CG ADVISORY // 助言</span>
+<span class="">FREQ: 142.9 MHz</span>
+</div>
+<p class="font-body-code-md text-body-code-md text-on-surface leading-relaxed italic">
+            “Greetings, Operative Echo! This operation tests your precision with directory traversal and secure clipboard buffer transfer. Remember: right-click is your strongest weapon in the field. Stay focused.”
+          </p>
+</div>
+</div>
+<!-- Quick Tips Card for Young Learners -->
+<div class="bg-surface-container-low p-hud-gap-md rounded-lg shadow-md">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-headline-sm">tips_and_updates</span>
+<span class="font-headline-sm text-body-code-lg font-bold uppercase tracking-wider">HACKER KEYBIND TIPS</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between bg-surface-container px-3 py-2 rounded">
+<span class="text-body-code-sm text-on-surface">Select Text</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded font-telemetry-label text-subtext-intel text-primary-container font-bold">DRAG CLICK</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container px-3 py-2 rounded">
+<span class="text-body-code-sm text-on-surface">Copy Payload</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded font-telemetry-label text-subtext-intel text-tertiary-fixed-dim font-bold">CTRL + C</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container px-3 py-2 rounded">
+<span class="text-body-code-sm text-on-surface">Inject Payload</span>
+<span class="bg-surface-container-high px-2 py-0.5 rounded font-telemetry-label text-subtext-intel text-secondary-fixed font-bold">CTRL + V</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+         CENTER MISSION VIEWPORT: BRIEFING DOSSIER (6 COLS)
+         ============================================== -->
+<main class="col-span-12 lg:col-span-6 flex flex-col gap-hud-gap-md">
+<!-- Mission Briefing Master Dossier Card -->
+<div class="bg-surface-container-low rounded-lg p-hud-gap-lg shadow-2xl relative">
+<!-- Header / Breadcrumb Tag -->
+<div class="flex items-center gap-2 mb-2">
+<span class="bg-primary-container/20 text-primary-container px-2.5 py-0.5 rounded font-telemetry-label text-telemetry-label uppercase tracking-widest font-bold">
+            MISSION 04 / BRIEFING // 作戦訓令
+          </span>
+<span class="text-outline font-telemetry-label text-subtext-intel tracking-widest">DOSSIER #774-GHOST</span>
+</div>
+<!-- Prominent Hero Title -->
+<h1 class="font-headline-lg text-headline-lg uppercase font-bold text-on-surface tracking-wide leading-tight mb-1 text-shadow-sm">
+          OPERATION 04: GHOST CARRIER INFILTRATION
+        </h1>
+<p class="font-body-code-md text-body-code-md text-primary-fixed-dim mb-hud-gap-lg">
+          Target: <span class="font-bold text-secondary">Intercepted Carrier Signal VX-4821-OMEGA</span> | Node: <span class="text-on-surface font-semibold">Relay-7 Orbital Platform</span>
+</p>
+<!-- Intelligence Narrative Block -->
+<div class="bg-surface-container p-hud-gap-md rounded-lg mb-hud-gap-lg shadow-inner">
+<div class="flex items-center gap-2 text-secondary-fixed-dim mb-2">
+<span class="material-symbols-outlined text-headline-sm">radar</span>
+<span class="font-headline-sm text-headline-sm font-bold uppercase tracking-wider">Mission Intel &amp; Story</span>
+</div>
+<p class="font-body-code-lg text-body-code-lg text-on-surface leading-relaxed">
+            Sensors on orbital Relay-7 detected an anomalous encrypted transmission leaking from an unknown node signature. Operative Echo must initialize workstation tools, copy the intercepted payload, and transmit to high command without triggering defensive firewalls.
+          </p>
+</div>
+<!-- Primary Operational Objective (High Contrast Callout) -->
+<div class="bg-surface-container-high p-hud-gap-md rounded-lg mb-hud-gap-lg shadow-md">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2 text-primary-container">
+<span class="material-symbols-outlined text-headline-sm">flag</span>
+<span class="font-headline-sm text-headline-sm font-bold uppercase tracking-wider">Primary Objective</span>
+</div>
+<span class="font-telemetry-label text-subtext-intel text-tertiary uppercase bg-surface-container-lowest px-2 py-0.5 rounded">REQUIRED</span>
+</div>
+<p class="font-body-code-lg text-body-code-lg font-semibold text-primary-fixed leading-relaxed">
+            Isolate intercepted carrier packet <span class="text-secondary bg-surface-container-lowest px-1.5 py-0.5 rounded font-mono">VX-4821-OMEGA</span>, extract its encrypted hex payload from the Downloads directory, and relay it to the <span class="text-tertiary">SECURE CHANNEL</span> before signal purge.
+          </p>
+</div>
+<!-- Step-by-Step Tactical Steps (Actionable & Clean) -->
+<div class="flex flex-col gap-hud-gap-sm mb-hud-gap-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-body-code-lg text-on-surface font-bold uppercase tracking-wider">Tactical Action Protocol (4 Steps)</span>
+<span class="font-telemetry-label text-subtext-intel text-outline">SEQUENTIAL EXECUTION</span>
+</div>
+<!-- Step 1 -->
+<div class="flex items-start gap-3 bg-surface-container px-4 py-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="w-7 h-7 rounded bg-surface-container-highest flex items-center justify-center font-headline-sm text-body-code-md text-primary font-bold shrink-0">
+              01
+            </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-code-md text-on-surface font-bold">Open Simulated Downloads Directory</span>
+<span class="font-body-code-sm text-body-code-sm text-outline">Access file explorer and navigate to your terminal storage bay.</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-3 bg-surface-container px-4 py-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="w-7 h-7 rounded bg-surface-container-highest flex items-center justify-center font-headline-sm text-body-code-md text-primary font-bold shrink-0">
+              02
+            </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-code-md text-on-surface font-bold">Locate and Open INTERCEPTED_SIGNAL.txt</span>
+<span class="font-body-code-sm text-body-code-sm text-outline">Inspect the raw incoming log file with the tactical text reader.</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-3 bg-surface-container px-4 py-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="w-7 h-7 rounded bg-surface-container-highest flex items-center justify-center font-headline-sm text-body-code-md text-primary font-bold shrink-0">
+              03
+            </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-code-md text-on-surface font-bold">Highlight &amp; Copy Target Code VX-4821-OMEGA</span>
+<span class="font-body-code-sm text-body-code-sm text-outline">Store the exact alphanumeric payload hash in your clipboard buffer.</span>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex items-start gap-3 bg-surface-container px-4 py-3 rounded hover:bg-surface-container-high transition-colors">
+<div class="w-7 h-7 rounded bg-surface-container-highest flex items-center justify-center font-headline-sm text-body-code-md text-primary font-bold shrink-0">
+              04
+            </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-code-md text-on-surface font-bold">Open SECURE CHANNEL &amp; Paste Payload</span>
+<span class="font-body-code-sm text-body-code-sm text-outline">Verify transmission integrity and finalize the encrypted uplink.</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ==============================================
+         RIGHT FLANK: ROUTE VECTOR & TELEMETRY (3 COLS)
+         ============================================== -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-hud-gap-md">
+<!-- Network Transmission Route Vector Card -->
+<div class="bg-surface-container-low rounded-lg p-hud-gap-md shadow-xl">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-headline-sm">hub</span>
+<span class="font-telemetry-label text-telemetry-label text-secondary uppercase tracking-wider">NETWORK VECTOR</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-outline">HOP 3/3</span>
+</div>
+<!-- SVG Vector Route Topology -->
+<div class="bg-surface-container-lowest p-3 rounded-lg mb-hud-gap-md">
+<svg class="w-full h-auto text-outline-variant" fill="none" stroke="currentColor" viewBox="0 0 300 130">
+<!-- Grid Lines -->
+<path class="opacity-30" d="M 10 30 H 290 M 10 65 H 290 M 10 100 H 290" stroke-dasharray="3,3" stroke-width="0.5"></path>
+<!-- Connection Line -->
+<path class="stroke-secondary/40" d="M 45 65 L 150 65 L 255 65" stroke-width="2"></path>
+<path class="stroke-primary-container" d="M 45 65 L 150 65" stroke-dasharray="6,4" stroke-width="3"></path>
+<!-- Node 1: Orbital Relay -->
+<g transform="translate(45, 65)">
+<circle class="fill-surface-container-high stroke-primary-container" r="16" stroke-width="2"></circle>
+<circle class="fill-primary-container animate-ping" r="6"></circle>
+<text class="fill-on-surface font-telemetry-label text-[9px] uppercase tracking-wider" text-anchor="middle" y="28">Relay-7</text>
+</g>
+<!-- Node 2: Buffer -->
+<g transform="translate(150, 65)">
+<circle class="fill-surface-container stroke-secondary" r="14" stroke-width="2"></circle>
+<circle class="fill-secondary" r="4"></circle>
+<text class="fill-secondary font-telemetry-label text-[9px] uppercase tracking-wider" text-anchor="middle" y="28">Buffer Bay</text>
+</g>
+<!-- Node 3: Gateway -->
+<g transform="translate(255, 65)">
+<circle class="fill-surface-container stroke-tertiary" r="14" stroke-width="2"></circle>
+<circle class="fill-tertiary" r="4"></circle>
+<text class="fill-tertiary font-telemetry-label text-[9px] uppercase tracking-wider" text-anchor="middle" y="28">Gateway</text>
+</g>
+</svg>
+</div>
+<!-- Threat & Mission Parameters -->
+<div class="grid grid-cols-2 gap-2 mb-hud-gap-sm">
+<div class="bg-surface-container p-2.5 rounded">
+<span class="font-subtext-intel text-subtext-intel text-outline uppercase block mb-1">Threat Level</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-headline-sm text-body-code-sm font-bold text-primary">SEVERE 04</span>
+</div>
+</div>
+<div class="bg-surface-container p-2.5 rounded">
+<span class="font-subtext-intel text-subtext-intel text-outline uppercase block mb-1">Time Limit</span>
+<span class="font-headline-sm text-body-code-sm font-bold text-secondary">120 SECONDS</span>
+</div>
+</div>
+<div class="bg-surface-container p-2.5 rounded mb-hud-gap-md">
+<div class="flex items-center justify-between text-subtext-intel font-subtext-intel text-outline mb-1">
+<span class="">NETWORK BUFFER INTEGRITY</span>
+<span class="text-tertiary font-bold">100% SECURE</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden flex gap-0.5">
+<span class="h-full w-1/4 bg-tertiary"></span>
+<span class="h-full w-1/4 bg-tertiary"></span>
+<span class="h-full w-1/4 bg-tertiary"></span>
+<span class="h-full w-1/4 bg-tertiary"></span>
+</div>
+</div>
+</div>
+<!-- Competency & Skills Mastered Card -->
+<div class="bg-surface-container-low rounded-lg p-hud-gap-md shadow-xl flex flex-col gap-2">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-tertiary text-headline-sm">military_tech</span>
+<span class="font-headline-sm text-body-code-lg font-bold uppercase tracking-wider text-on-surface">Skills You Will Practice</span>
+</div>
+<ul class="flex flex-col gap-2 text-body-code-sm">
+<li class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded text-on-surface">
+<span class="material-symbols-outlined text-tertiary text-body-code-md">folder_open</span>
+<span class="">Folder Navigation &amp; File Discovery</span>
+</li>
+<li class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded text-on-surface">
+<span class="material-symbols-outlined text-secondary text-body-code-md">highlight</span>
+<span class="">Text Selection &amp; Buffer Retention</span>
+</li>
+<li class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded text-on-surface">
+<span class="material-symbols-outlined text-primary text-body-code-md">content_copy</span>
+<span class="">Right-Click Copy &amp; Paste Protocols</span>
+</li>
+<li class="flex items-center gap-2 bg-surface-container px-3 py-2 rounded text-on-surface">
+<span class="material-symbols-outlined text-tertiary text-body-code-md">verified</span>
+<span class="">Secure Transmission Verification</span>
+</li>
+</ul>
+</div>
+</aside>
+</div>
+<!-- ==============================================
+       BOTTOM COMMAND ACTIONS (HIGH-IMPACT HERO CTA)
+       ============================================== -->
+
+<!-- Micro-Interactions Script -->
+<script>
+    const replayBtn = document.getElementById('replayAudioBtn');
+    if (replayBtn) {
+      replayBtn.addEventListener('click', () => {
+        replayBtn.classList.add('bg-primary-container/20');
+        const originalText = replayBtn.innerHTML;
+        replayBtn.innerHTML = '<span class="material-symbols-outlined text-tertiary animate-spin text-body-code-lg">sync</span><span>TRANSMITTING AUDIO...</span>';
+        setTimeout(() => {
+          replayBtn.innerHTML = originalText;
+          replayBtn.classList.remove('bg-primary-container/20');
+        }, 1800);
+      });
+    }
+
+    const translateBtn = document.getElementById('translateBtn');
+    const langLabel = document.getElementById('langLabel');
+    let isTranslated = false;
+    if (translateBtn && langLabel) {
+      translateBtn.addEventListener('click', () => {
+        isTranslated = !isTranslated;
+        langLabel.textContent = isTranslated ? 'ORIGINAL [EN-US]' : 'TRANSLATE [日本語 / IT]';
+        translateBtn.classList.toggle('text-secondary-fixed');
+      });
+    }
+  </script>
+</div></main>
+
+</body></html>

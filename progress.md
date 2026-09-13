@@ -95,3 +95,76 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
 - Hacker Shop now shows rarity, ownership/equipped state, visible locked aspirational items, rank requirements, affordability bars and remaining Credits, processing anticipation, and a full Item Acquired reveal with Equip Now and Return to Shop. Purchases and equips remain server-authoritative.
 - The reusable story system now drives the incoming transmission and identity-protocol beats. Motion uses transform/opacity/CSS gradients, tap/focus states supplement hover, overlays adapt to narrow screens, and `prefers-reduced-motion` removes travel/count-up effects while keeping final states.
 - Automated verification currently passes 243 frontend/domain/component tests plus 28 development service/API tests, TypeScript, production build/deploy packaging, server contracts, and the complete authenticated browser progression journey. Missions 1–4, both training modules, reward caps/replay, purchases/equipment persistence, profile, mobile layouts, and the teacher aggregate were exercised. PHP is not currently present on this Windows shell's PATH, and no isolated MySQL/MariaDB fixture is configured, so those environment-dependent rechecks remain unavailable; Phase 2.3 does not modify PHP or the database schema.
+
+## Stitch UI adoption — Screen 1
+- Began a one-screen validation pass using the supplied Stitch Network Access reference. The login is being restyled as a cyber cockpit/HUD while retaining the real username/password authentication contract, bilingual first-screen copy, and no preview or clearance-tier bypasses.
+- Added the supplied Cyber Hero logo as a local application asset and reproduced Stitch's asynchronous RGB system: independently timed ribbon, telemetry orbit, diagonal status, center portal, radar orbit, reverse rules, and footer border animations. After live visual review, the RGB treatment was reduced to crisp outline-only bands with no glow and slowed to calm 22–38 second cycles. The login regression suite (8 tests), TypeScript check, and production build pass.
+
+## Stitch UI adoption — Screen 2
+- Rebuilt the authenticated student dashboard from the supplied Stitch Screen 2 direction while preserving the real mission, training, progression, profile, shop, equipment, achievement, sound, and settings behavior.
+- Added the supplied friendly robotic cyber-wolf as Echo's dashboard portrait. The command deck uses the shared Screen 1 background, substantially more transparent frosted-glass panels, and seven independently timed outline-only RGB paths running at calm 25–42 second cycles.
+- Added a current-operation hero action driven by canonical mission state, a compact four-node campaign network, Training Center and Supply Depot status panels, and bilingual English-first Italian/Japanese labels. Locked server state remains authoritative and cannot be bypassed by the new presentation.
+- Added focused Screen 2 structure and launch-action regressions, restored exact bilingual dashboard labels, and updated the disposable browser journey to recognize the redesigned login control.
+- Final verification passes 246 frontend/domain/component tests plus 28 development-service/API tests, the production TypeScript/Vite build and deploy packaging, server contracts, and the complete authenticated browser progression journey. Desktop, mobile, and `test.hacker` dashboard screenshots were visually reviewed; the logo and Echo assets load correctly, and no horizontal overflow was detected.
+- Corrected the identity gate after visual review: students without both an unlocked identity and saved codename now receive the supplied Anonymous Cadet portrait, `IDENTITY PENDING` guidance, and no account/display/codename in the dashboard or top bar. The Echo wolf remains the explicitly assigned portrait for `test.hacker` after identity creation; personalized names and profile controls render only after the server-backed identity is saved.
+- Reverified the anonymous-to-established transition through the complete browser journey and inspected both dashboard captures. Final checks pass 247 frontend/domain/component tests, 28 development API tests, production build/deploy packaging, and server contracts.
+
+## Robot Defense Training Center integration — 2026-09-13
+- Integrated the supplied Gemini game as one unchanged standalone `index.html` in a sandboxed Training Center frame. Source and copy SHA-256 hashes match. Copied only the 37 referenced art assets; original archives and source remain untouched.
+- Added campaign-gated mode entries: Base Defense after Mission 1, Reinforcements after Mission 2, Robot Override after Mission 3. Home Base now opens Training Center as soon as the first mode unlocks, even if the original training modules remain locked.
+- The embedded game is currently arcade-only: its client-calculated XP/Credit display does not update canonical Hacker Game account balances, achievements, or teacher records. Its own debug mode toggle also permits changing modes inside the iframe; the host launch controls remain gated. These limitations follow from preserving the supplied internal code and not trusting client-calculated rewards as server-authoritative data.
+- The game retains its own English-default language selector; the host provides English plus profile-language instructions and explicitly tells players to choose Japanese/Italian inside the game. Automatic language preselection would require a supported interface in the supplied game, which is not present.
+- Final tests pass 252 frontend/domain/component tests, 28 development API tests, production build, and server contract checks. The full authenticated browser journey covers gate matrices, navigation/return, iframe start-screen loading for each mode, Missions 1–4, original training, shop/inventory, and teacher records; three embedded-mode screenshots were visually reviewed. Full robot gameplay rounds were not automated. The game is not deployed or committed in this turn.
+- Reviewed `Stitch/SHOP/HERO` as future source material: five species directories (bird, panda, rabbit, tiger, wolf), six colors, four tiers each. Red panda is not a separate species directory. Orange has one extra candidate image; `PANDA/WHITE/LEGENDARY` depicts a red panda and needs relabeling/replacement before automatic cataloging. The user is replacing orange with cobalt blue for playable heroes.
+
+## Cyber Shop Transformation — 2026-09-13
+- Renamed the store and all entry points strictly to **Cyber Shop** (replacing "Hacker Shop" and "Supply Depot").
+- Replaced flat single-list presentation with a 4-department matrix:
+  1. **HEROES:** 5 operative species (Cyber Wolf, Cyber Panda, Neon Tiger, Mecha Bird, Quantum Rabbit) across 4 progression tiers (Standard, Rare, Elite, Legendary).
+     - Standard: Baseline reconnaissance suit in team-cyan telemetry.
+     - Rare: Carbon-fiber tactical suit with integrated HUD visor optics.
+     - Elite: Historic and cultural warrior armors (Roman Centurion, Chinese Dynasty warrior, Japanese Ronin, Crested Tengu, Shadow Shinobi) reimagined as cybernetic chassis.
+     - Legendary: Mythic warrior armor in dynamic sci-fi hero poses with energy weapons.
+     - Campaign pacing: Elite and Legendary tiers are clearance-locked (requiring Infiltrator rank / Mission 10+) as aspirational previews to motivate progression during early missions.
+  2. **POINTERS:** Precision reticles and cursors (`neon-pointer`, `tactical-crosshair`, `plasma-arrow`) paired with an interactive Pointer Precision Calibration Pad featuring corner HUD crosshairs, sensor telemetry, single-click sonar ripples, and double-click shockwaves for mouse dexterity warmup.
+  3. **THEMES:** Cockpit environments and terminal colorways (`matrix-terminal`, `orbit-blue-theme`, `solar-amber-theme`).
+  4. **ASSISTANTS:** Autonomous robotic cyber companions (`mini-drone`, `cyber-pup`).
+- Assets: Extracted and standardized 20 hero images from `Stitch/SHOP/HERO/{species}/CYAN/{tier}` into `public/heroes/{species}/{tier}.{png,jpg}`.
+- Dashboard & Profile integration: Updated Student Home cards and buttons to CYBER SHOP (`HEROES · POINTERS · THEMES · ASSISTANTS`), implemented dynamic hero portraits reflecting the equipped operative, and added the `hero` category to the Hacker Profile loadout equipment slots.
+- Verification: All 263 frontend tests (50 test files) and all 33 dev tests (5 test files) pass (total 296 tests passing), zero TypeScript errors (`tsc --noEmit`), and production build succeeded.
+
+## Cyber Shop Iteration & Polish — 2026-09-13
+- **Heroes Department Hygiene:** Excluded badges from the Heroes department catalog so the 4 hero tiers (Standard, Rare, Elite, Legendary) display in a clean, neatly stacked layout without the owned Rookie Hacker card disrupting the grid.
+- **Local Hero Detail Inspection Overlay:** Replaced detached popup with an on-card tactical zoom overlay (`.hero-zoom-overlay`) positioned directly over the hero image with crosshairs, scanline sweep, tier badge, and armor lore. Viewport-clamping and split-panel inspection adaptations are tracked for Stage 2.
+- **In-Shop Ephemeral Trial System:**
+  - Added `[⚡ TRY IN SHOP]` button underneath pointers, cockpit themes, and assistant companions.
+  - Pointers: Live cursor preview within the Cyber Shop, accompanied by reticle indicators and interactive ripples on the Pointer Calibration Pad.
+  - Themes: Dynamic ambient cockpit styling and background scanlines applied live inside the Cyber Shop.
+  - Assistants: Live floating Mini Drone and Cyber Pup companion previews rendered inside the shop viewport.
+  - Strict Ephemeral Guarantee: Trial items are managed entirely in local component state. They do not persist to server equipment and are never active outside the Cyber Shop. Includes a top HUD banner with an instant "CLEAR ALL TRIALS" action.
+- **Frictionless God Mode for `test.hacker`:**
+  - Complete bypass of rank locks, credit caps, and balance limits for `test.hacker` across dev auth (`authCore.ts`), dev plugin (`devAuthPlugin.ts`), and PHP production backend (`server/src/progression.php`).
+  - Unlimited credits (99,999) and a glowing `⚡ GOD MODE` status pill rendered in the shop header.
+  - Unit tests retain standard student progression checks by default while specifically validating God Mode for the test account.
+- **Verification:** All 50 frontend test files (263 tests) and all 5 dev test files (33 tests) pass (296 tests passing in total), `npx tsc --noEmit` reports 0 errors, and `npm run build` succeeds cleanly.
+
+
+## Cyber Shop Stage 1 — Explicit Behavior Contracts — 2026-09-13
+- **Explicit Catalog Availability:** Added `availability: "available" | "future"` to all 29 items in `shared/economy.json` and exported `ItemAvailability` in `src/domain/progression.ts`. All 10 Standard and Rare heroes are marked `"available"`, and all 10 Elite and Legendary heroes are marked `"future"` for the 10-mission pilot baseline. Non-hero catalog items remain `"available"`.
+- **Trusted `canTestShop` Capability:**
+  - Added `canTestShop: boolean` to `PublicUser` in `dev/authCore.ts` and `SessionUser` in `src/api/client.ts`.
+  - Added server-side capability derivation in PHP `public_user` (`server/src/bootstrap.php`) and dev auth service (`dev/authCore.ts`), strictly checking `username.toLowerCase() === 'test.hacker'`.
+  - In `dev/devAuthPlugin.ts` and `server/src/progression.php`, privilege is derived strictly from authenticated user identity; client request bodies attempting to send `canTestShop: true` are ignored. Removed implicit privilege for generic IDs (`http-test`, `dev-test`).
+- **Strict Purchase Validation Parity:**
+  - In `dev/progressionCore.ts` and `server/src/progression.php`, normal students attempting to purchase `future` items are rejected with `item_future` (HTTP 422). Locked shops reject with `shop_locked`, low ranks reject with `rank_locked` / `rank_required`, and zero/low credits reject with `insufficient_credits`.
+  - Privileged test accounts (`test.hacker`) bypass shop locks, rank locks, credit caps, and future item restrictions, while duplicate ownership (`already_owned`) and non-existent items (`item_unavailable`) remain strictly enforced for all accounts.
+  - Test balance consistency: 99,999 credits modeled as a server-returned test allowance for `test.hacker`, preserved across shop views and replenished upon purchase.
+- **Shop UI Guarding:** `HackerShop.tsx` derives `isGodMode` from `Boolean(user.canTestShop)`, permits test catalog access even when `shopUnlocked` is false, displays a dedicated `Reserved for future campaign operations` notice on future cards, and disables purchase actions for normal students.
+- **Product Decisions Preserved:** The proposed Rookie → Trainee → Operator rank schedule and multi-color suit purchase decisions are kept completely unchanged and deferred for product agreement.
+- **Verification Suite:**
+  - Created `dev/shopApi.test.ts` implementing full authenticated route-level test matrix (capability derivation, tamper rejection, normal student lock/future rejections, test account allowance/bypass, duplicate prevention, and invalid item handling).
+  - Updated unit tests in `dev/authCore.test.ts`, `dev/progression.test.ts`, and `src/components/progression/Progression.test.tsx`.
+  - `npm test`: 51 frontend test files (270 tests) and 6 dev test files (39 tests) passed (total 309 tests passing).
+  - `npm run check`: TypeScript compile check passed with 0 errors.
+  - `npm run check:server-contract`: Security, session, CSRF, and schema contracts passed.
+  - `npm run build`: Production client build and deployment packaging passed cleanly.

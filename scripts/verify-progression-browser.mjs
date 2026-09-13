@@ -37,11 +37,11 @@ async function trainingShot(name) { await page.screenshot({ path: join(trainingO
 async function login(username = 'test.hacker') {
   await page.locator('input[autocomplete="username"]').fill(username);
   await page.locator('input[type="password"]').fill('browser-fixture-password');
-  await page.locator('.login-panel button[type="submit"], .login-panel .primary-button').click();
+  await page.locator('.cyber-login-form .cyber-connect-button, .login-panel button[type="submit"], .login-panel .primary-button').click();
   await page.waitForFunction(() => window.render_game_to_text && JSON.parse(window.render_game_to_text()).screen !== 'login');
 }
 async function begin(number) {
-  await page.locator('.mission-card').nth(number - 1).locator('button').click();
+  await page.locator('.mission-card').nth(number - 1).locator('.mission-action .primary-button').click();
   await page.getByRole('button', { name: /Open briefing/ }).click();
   await page.getByRole('button', { name: /Start tutorial/ }).click();
   for (let i = 0; i < 10; i++) {
@@ -105,10 +105,31 @@ try {
   });
   await page.goto(url); await login(); await shot('rookie-home');
   assert.equal((await state()).progression.currentCredits, 0);
-  await page.getByRole('button', { name: /Hacker Shop/ }).click();
+  await page.getByRole('button', { name: /Open Supply Matrix/i }).click();
   assert.equal(await page.locator('.shop-item').count(), 0); await home();
   await play(1); await home(); assert.equal((await state()).progression.currentCredits, 20);
+  const firstMissionTraining = page.getByRole('article', { name: /Mission 1: Computer Training/i });
+  await firstMissionTraining.getByRole('button', { name: 'Train Base Defense' }).click();
+  await page.frameLocator('iframe.robot-defense-frame').locator('#start-play-btn').waitFor();
+  await page.getByRole('button', { name: /Home Base/i }).click();
+  await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByRole('button', { name: 'Train Base Defense' }).count(), 1);
+  assert.equal(await page.getByRole('button', { name: 'Train Reinforcements' }).count(), 0);
+  await page.getByRole('button', { name: 'Train Base Defense' }).click();
+  assert.match(await page.locator('iframe.robot-defense-frame').getAttribute('src'), /mode=base_defense$/);
+  await page.frameLocator('iframe.robot-defense-frame').locator('#debug-mode-toggle').waitFor();
+  await shot('robot-defense-base');
+  await page.getByRole('button', { name: /Training Center/i }).click();
+  await page.getByRole('button', { name: /Home Base/i }).click();
   await play(2); await home(); assert.equal((await state()).progression.currentCredits, 40);
+  await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByRole('button', { name: 'Train Reinforcements' }).count(), 1);
+  await page.getByRole('button', { name: 'Train Reinforcements' }).click();
+  assert.match(await page.locator('iframe.robot-defense-frame').getAttribute('src'), /mode=reinforcements$/);
+  await page.frameLocator('iframe.robot-defense-frame').locator('#debug-mode-toggle').waitFor();
+  await shot('robot-defense-reinforcements');
+  await page.getByRole('button', { name: /Training Center/i }).click();
+  await page.getByRole('button', { name: /Home Base/i }).click();
   await play(3); await shot('graduation-breach');
   await page.getByRole('button', { name: /Activate identity/ }).click(); await shot('identity');
   await page.getByRole('button', { name: 'NOVA', exact: true }).click();
@@ -116,6 +137,12 @@ try {
   await page.getByRole('button', { name: /Enter home base/ }).click(); await page.locator('.hacker-profile').waitFor();
   assert.equal((await state()).progression.currentCredits, 70);
   await page.getByRole('button', { name: /Open Training Center/i }).click();
+  assert.equal(await page.getByRole('button', { name: 'Train Robot Override' }).count(), 1);
+  await page.getByRole('button', { name: 'Train Robot Override' }).click();
+  assert.match(await page.locator('iframe.robot-defense-frame').getAttribute('src'), /mode=robot_override$/);
+  await page.frameLocator('iframe.robot-defense-frame').locator('#debug-mode-toggle').waitFor();
+  await shot('robot-defense-override');
+  await page.getByRole('button', { name: /Training Center/i }).click();
   assert.equal(await page.getByRole('button', { name: /Begin Data Transfer/i }).count(), 0);
   await page.getByRole('button', { name: /Home Base/i }).click();
   await play(4);

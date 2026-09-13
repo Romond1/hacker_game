@@ -76,7 +76,7 @@ export function HackerProfile({
           detail={`${state.completedMissions.length} / ${MISSIONS.length} missions`}
         />
         <div className="equipment-slots" aria-label="Equipped loadout">
-          {["badge", "cursor", "terminalTheme", "companion"].map((category) => {
+          {["hero", "badge", "cursor", "terminalTheme", "companion"].map((category) => {
             const equipped = ECONOMY.items.find(
               (item) => item.itemId === state.equippedItems[category],
             );

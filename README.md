@@ -60,6 +60,8 @@ mysql -u root -p beahero_hacker < server/migrations/002_three_missions.sql
 mysql -u root -p beahero_hacker < server/migrations/003_progression_economy.sql
 mysql -u root -p beahero_hacker < server/migrations/004_training_framework.sql
 mysql -u root -p beahero_hacker < server/migrations/005_mission_4_data_transfer.sql
+mysql -u root -p beahero_hacker < server/migrations/006_teacher_economy_adjustments.sql
+mysql -u root -p beahero_hacker < server/migrations/007_robot_training_runs.sql
 ```
 
 3. Copy `server/config.example.php` to `server/config.php` and fill in the local PDO DSN, database username, and database password. Set `production` to `false` so the session cookie works over local HTTP. `server/config.php` is gitignored.
@@ -152,7 +154,7 @@ Open a student record in Mission Control and choose **Reset Mission 1/2/3**. Con
 
 `test.hacker` is available locally with the shared local student password. After `npm run deploy`, run `npm run setup:test-student` once from this computer to create it on XServer. This copies the password hash from `himari.hacker`, whose password is the shared live student password, into a new independent student record. It never changes existing student accounts. If test.hacker already exists, it leaves its password and progress unchanged. The test account uses Italian support and an orange theme, and appears as **Test Student** in Mission Control. If students later have different passwords, choose a source explicitly over SSH with `php bin/create_test_student.php SOURCE_USERNAME`.
 
-The progression upgrade requires migration 003, skill training requires migration 004, and Mission 4/Data Transfer requires migration 005 before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
+The progression upgrade requires migration 003, skill training requires migration 004, Mission 4/Data Transfer requires migration 005, teacher balance auditing requires migration 006, and robot training rewards require migration 007 before this version is published. Deployment runs `bin/check_reset.php` on XServer before copying application files, using empty connection-local temporary tables that shadow all affected tables. This checks mission reset SQL without changing live records and requires CREATE TEMPORARY TABLES permission. If the check fails, deployment stops before copying the new game. Local preview does not execute PHP/database checks.
 
 ### Publishing updates from this Windows computer
 

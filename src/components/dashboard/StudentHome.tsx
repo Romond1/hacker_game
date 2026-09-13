@@ -1,13 +1,14 @@
 import type { SessionUser, StudentDashboard } from "../../api/client";
 import { getStudentHomeCopy } from "../../i18n/student";
 import { MISSIONS } from "../../missions/catalog";
-import type { PlayerProgression } from "../../domain/progression";
+import { ECONOMY, type PlayerProgression } from "../../domain/progression";
 import { HackerProfile } from "../progression/HackerProfile";
-import { Copy } from "../progression/Copy";
 import { trainingAvailableModules, trainingCopy } from "../../i18n/training";
 import { TrainingCopy } from "../training/TrainingCopy";
 import { AmbientLayer } from "../gamefeel/AmbientLayer";
 import { ProgressMeter } from "../gamefeel/ProgressMeter";
+import { robotDefenseModes, robotDefenseUnlocked } from "../../training/robot-defense";
+import type { RobotDefenseModeId } from "../../training/robot-defense";
 import { playEffect } from "../../effects/gameEffects";
 
 function formatTime(seconds: number | null): string {
@@ -27,6 +28,41 @@ const labels = {
   },
 } as const;
 
+const dashboardLabels = {
+  it: {
+    homeBase: "Base operativa",
+    echoOnline: "Guida cyber online",
+    currentOperation: "Operazione attuale",
+    beginOperation: "Inizia operazione",
+    campaignNetwork: "Rete di avanzamento della campagna",
+    secured: "protetti",
+    trainingCenter: "Centro di addestramento",
+    trainingLocked: "Completa una missione per sbloccare l'addestramento.",
+    supplyDepot: "Cyber Shop",
+    openSupply: "Apri il Cyber Shop",
+    systemReady: "Sistema pronto",
+    identityPending: "Identità in attesa",
+    identityHelp: "Completa tre Missioni Rookie per creare la tua identità hacker.",
+    profileEncrypted: "Profilo operativo crittografato",
+  },
+  ja: {
+    homeBase: "ホームベース",
+    echoOnline: "サイバーガイド・オンライン",
+    currentOperation: "現在の作戦",
+    beginOperation: "作戦開始",
+    campaignNetwork: "キャンペーン進行ネットワーク",
+    secured: "確保済み",
+    trainingCenter: "トレーニングセンター",
+    trainingLocked: "ミッションを完了するとトレーニングが解除されます。",
+    supplyDepot: "サイバーショップ",
+    openSupply: "サイバーショップを開く",
+    systemReady: "システム準備完了",
+    identityPending: "アイデンティティ保留中",
+    identityHelp: "3つのルーキーミッションを完了して、ハッカーとしての自分を作成しましょう。",
+    profileEncrypted: "オペレータープロフィール暗号化中",
+  },
+} as const;
+
 export function StudentHome({
   user,
   dashboard,
@@ -35,6 +71,7 @@ export function StudentHome({
   onShop,
   onProgression,
   onTraining,
+  onRobotDefense,
 }: {
   user: SessionUser;
   dashboard: StudentDashboard;
@@ -43,6 +80,7 @@ export function StudentHome({
   onShop?: () => void;
   onProgression?: (state: PlayerProgression) => void;
   onTraining?: () => void;
+  onRobotDefense?: (mode: RobotDefenseModeId) => void;
 }) {
   const copy = getStudentHomeCopy(
     user.supportLanguage,
@@ -53,6 +91,8 @@ export function StudentHome({
   const unlockedTraining = (dashboard.training ?? []).filter(
     (item) => item.unlocked,
   );
+  const availableRobotModes = robotDefenseModes.filter(mode => robotDefenseUnlocked(mode, dashboard.completedMissions));
+  const availableTrainingCount = unlockedTraining.length + availableRobotModes.length;
   const trainingCredits = unlockedTraining.reduce(
     (sum, item) => sum + item.creditsEarned,
     0,
@@ -61,119 +101,125 @@ export function StudentHome({
     (sum, item) => sum + item.creditCap,
     0,
   );
+  const activeMission = MISSIONS.find(
+    (mission) => mission.number === dashboard.currentMission,
+  ) ?? MISSIONS[0];
+  const activeProgress = dashboard.missions.find(
+    (item) => item.missionId === activeMission.id,
+  );
+  const support = dashboardLabels[user.supportLanguage];
+  const progression = dashboard.progression;
+  const hasIdentity = Boolean(
+    progression?.hackerIdentityUnlocked && progression.hackerCodename,
+  );
+  const operativeName = hasIdentity ? progression?.hackerCodename : null;
+  const equippedHero = progression?.equippedItems?.hero
+    ? ECONOMY.items.find((item) => item.itemId === progression.equippedItems.hero)
+    : undefined;
+  const heroImgSrc =
+    equippedHero?.asset && "image" in equippedHero.asset
+      ? `${import.meta.env.BASE_URL}${equippedHero.asset.image}`
+      : `${import.meta.env.BASE_URL}echo-cyber-wolf.png`;
+  const heroLabel = equippedHero
+    ? `◉ ${equippedHero.name.toUpperCase()} // ONLINE`
+    : "◉ OPERATIVE_ECHO // ONLINE";
+  const hasEchoPortrait = hasIdentity && (user.username.toLowerCase() === "test.hacker" || Boolean(equippedHero));
+  const hasAnonymousPortrait = !hasIdentity;
+  const hasPortrait = hasEchoPortrait || hasAnonymousPortrait;
+  const launchCurrentMission = () => {
+    if (!activeProgress?.unlocked) return;
+    playEffect("click", progression?.settings.muted ?? true);
+    onMission(activeMission.id);
+  };
   return (
-    <main className="page home-page">
+    <main className="page home-page cyber-home" aria-label="Cyber Hero Home Base">
+      <div className="cyber-home-background" aria-hidden="true">
+        <div className="cyber-login-grid" />
+        <div className="cyber-login-floor" />
+        <div className="cyber-login-scan" />
+        <div className="cyber-login-glow glow-one" />
+        <div className="cyber-login-glow glow-two" />
+        <div className="cyber-login-shape shape-one" />
+        <div className="cyber-login-shape shape-two" />
+      </div>
       <AmbientLayer variant="grid" />
-      <section className="welcome-strip">
-        <div>
-          <p className="eyebrow">
-            {dashboard.progression
-              ? dashboard.progression.storyFlags.rookieTrainingCompleted
-                ? "HOME BASE / MISSION"
-                : "ROOKIE TRAINING / MISSION"
-              : "AGENT HOME / LEVEL"}{" "}
-            {String(dashboard.currentMission).padStart(2, "0")}
-          </p>
-          <h1>{copy.welcome.en}</h1>
-          <small className="home-support-heading" lang={copy.welcome.lang}>
-            {copy.welcome.support}
-          </small>
-          <div className="bilingual">
-            <div>{copy.nextSkill.en}</div>
-            <small lang={copy.nextSkill.lang}>{copy.nextSkill.support}</small>
+
+      <header className="cyber-home-status">
+        <div><i /><strong>NEURAL LINK: SYNCHRONIZED</strong></div>
+        <span>{operativeName ? `◇ ${operativeName} ONLINE · QUANTUM UPLINK ESTABLISHED` : "◇ IDENTITY PROTOCOL PENDING · SECURE CHANNEL ACTIVE"}</span>
+        <b>FIREWALL: ARMED</b>
+      </header>
+
+      <section className={`cyber-home-echo cyber-glass spectral-border ${hasPortrait ? "" : "no-portrait"}`} data-rgb-pattern="echo-orbit">
+        {hasEchoPortrait && (
+          <div className="echo-portrait">
+            <img src={heroImgSrc} alt={equippedHero?.name ?? "Echo cyber-wolf operative"} />
+            <span>{heroLabel}</span>
           </div>
-        </div>
-        <div className="rank-badge">
-          <span>{copy.currentMission.en}</span>
-          <small lang={copy.currentMission.lang}>
-            {copy.currentMission.support}
-          </small>
-          <strong>Mission {dashboard.currentMission}</strong>
-          <span>
-            {dashboard.progression ? "Lifetime XP" : copy.totalPoints.en}
-          </span>
-          <small lang={copy.totalPoints.lang}>{copy.totalPoints.support}</small>
-          <strong>
-            {dashboard.progression?.lifetimeXP ?? dashboard.totalPoints}
-          </strong>
+        )}
+        {hasAnonymousPortrait && (
+          <div className="echo-portrait anonymous-portrait">
+            <img src={`${import.meta.env.BASE_URL}anonymous-cadet.png`} alt="Anonymous cadet awaiting identity selection" />
+            <span>◉ IDENTITY FILE // ENCRYPTED</span>
+          </div>
+        )}
+        <div className="echo-command">
+          <p className="eyebrow">{hasIdentity ? "CYBER GUIDE" : "OPERATIVE PROFILE: ENCRYPTED"} // <span lang={user.supportLanguage}>{hasIdentity ? support.echoOnline : support.profileEncrypted}</span></p>
+          <div className="echo-title">
+            {operativeName ? <h1>{operativeName}</h1> : <strong className="identity-pending-title">IDENTITY PENDING</strong>}
+            <span>{dashboard.rank}</span>
+          </div>
+          {operativeName ? (
+            <><p className="echo-welcome">{copy.welcome.en}</p><small lang={copy.welcome.lang}>{copy.welcome.support}</small></>
+          ) : (
+            <><p className="echo-welcome">Complete three Rookie Missions to create your hacker identity.</p><small lang={user.supportLanguage}>{support.identityHelp}</small></>
+          )}
+          <div className="echo-readouts">
+            <div><span>{progression ? "LIFETIME XP" : copy.totalPoints.en}<small lang={copy.totalPoints.lang}>{copy.totalPoints.support}</small></span><strong>{progression?.lifetimeXP ?? dashboard.totalPoints}</strong></div>
+            <div><span>CREDITS</span><strong>{progression?.currentCredits ?? 0}</strong></div>
+            <div><span>{copy.currentMission.en}<small lang={copy.currentMission.lang}>{copy.currentMission.support}</small></span><strong>{String(dashboard.currentMission).padStart(2, "0")}</strong></div>
+          </div>
+          {progression && hasIdentity && (
+            <HackerProfile
+              user={user}
+              progression={progression}
+              onShop={onShop ?? (() => undefined)}
+              onUpdate={onProgression ?? (() => undefined)}
+            />
+          )}
         </div>
       </section>
-      {dashboard.progression && (
-        <>
-          <HackerProfile
-            user={user}
-            progression={dashboard.progression}
-            onShop={onShop ?? (() => undefined)}
-            onUpdate={onProgression ?? (() => undefined)}
-          />
-          {!dashboard.progression.storyFlags.rookieTrainingCompleted && (
-            <section className="rookie-introduction">
-              <h2>
-                <Copy id="training" language={user.supportLanguage} />
-              </h2>
-              <p>
-                <Copy id="introduction" language={user.supportLanguage} />
-              </p>
-            </section>
-          )}
-        </>
-      )}
-      {unlockedTraining.length > 0 && (
-        <section
-          className="training-home-entry"
-          aria-label="Training Center status"
-        >
-          <div>
-            <p className="eyebrow">
-              <TrainingCopy
-                copy={trainingCopy(
-                  "homeBaseTrainingCenter",
-                  user.supportLanguage,
-                )}
-              />
-            </p>
-            <h2>
-              <TrainingCopy
-                copy={trainingCopy("keepSystemsSharp", user.supportLanguage)}
-              />
-            </h2>
-            <p>
-              <TrainingCopy
-                copy={trainingAvailableModules(
-                  user.supportLanguage,
-                  unlockedTraining.length,
-                )}
-              />
-            </p>
-          </div>
-          <div className="training-home-readout">
-            <TrainingCopy
-              copy={trainingCopy("trainingCredits", user.supportLanguage)}
-            />
-            <strong>
-              {trainingCredits} / {trainingCreditCap} Credits
-            </strong>
-            <ProgressMeter
-              label="Training Credits"
-              value={trainingCredits}
-              max={trainingCreditCap}
-              detail={`${trainingCredits} / ${trainingCreditCap}`}
-            />
-            <button
-              aria-label="Open Training Center"
-              className="primary-button"
-              onClick={onTraining}
-            >
-              <TrainingCopy
-                copy={trainingCopy("openTrainingCenter", user.supportLanguage)}
-              />
-              <b>→</b>
-            </button>
-          </div>
-        </section>
-      )}
-      <section className="mission-card-grid" aria-label="Training missions">
+
+      <section className="cyber-home-operation cyber-glass spectral-border" data-rgb-pattern="mission-wave">
+        <div className="operation-copy">
+          <p className="eyebrow">CURRENT OPERATION // <span lang={user.supportLanguage}>{support.currentOperation}</span></p>
+          <span className="operation-priority">PRIORITY MISSION {String(activeMission.number).padStart(2, "0")}</span>
+          <h2>OPERATION {String(activeMission.number).padStart(2, "0")} — <em>{activeMission.title.en}</em></h2>
+          <h3 lang={user.supportLanguage}>{activeMission.title[user.supportLanguage]}</h3>
+          <p>{activeMission.story.en}</p>
+          <small lang={user.supportLanguage}>{activeMission.story[user.supportLanguage]}</small>
+        </div>
+        <div className="operation-radar" aria-hidden="true">
+          <i /><i /><i /><b /><span />
+          <small>RF_SIGNAL_MONITOR // NODE_{String(activeMission.number).padStart(2, "0")}</small>
+        </div>
+      </section>
+
+      <section className="cyber-home-launch cyber-glass spectral-border" data-rgb-pattern="launch-reverse">
+        <div><span>▣</span><p><small>READY TO ENGAGE</small><strong>CONSOLE LINK ESTABLISHED</strong><em>{copy.nextSkill.en}</em></p></div>
+        <button disabled={!activeProgress?.unlocked} onClick={launchCurrentMission}>
+          <span>ϟ</span><strong>BEGIN OPERATION</strong><small lang={user.supportLanguage}>{support.beginOperation}</small>
+        </button>
+      </section>
+
+      <section className="cyber-home-network cyber-glass spectral-border" data-rgb-pattern="campaign-diagonal">
+        <header>
+          <div><span>⌘</span><p><strong>CAMPAIGN PROGRESSION NETWORK</strong><small lang={user.supportLanguage}>{support.campaignNetwork}</small></p></div>
+          <b>{dashboard.completedMissions.length} / {MISSIONS.length} SECURED</b>
+        </header>
+        <section className="mission-card-grid" aria-label="Training missions">
         {MISSIONS.map((mission) => {
+          const robotMode = robotDefenseModes.find(mode => mode.requiredMission === mission.number);
           const progress = dashboard.missions.find(
             (item) => item.missionId === mission.id,
           ) ?? {
@@ -272,14 +318,36 @@ export function StudentHome({
                   </button>
                 )}
               </div>
+              {robotMode && onRobotDefense && robotDefenseUnlocked(robotMode, dashboard.completedMissions) && <button className="mission-training-link" aria-label={`Train ${robotMode.name}`} onClick={() => onRobotDefense(robotMode.id)}><span>TRAINING CENTER <small lang={user.supportLanguage}>{support.trainingCenter}</small></span><strong>{robotMode.name}</strong><small lang={user.supportLanguage}>{robotMode.support[user.supportLanguage]}</small><b>→</b></button>}
             </article>
           );
         })}
+        </section>
       </section>
-      <section className="home-bottom">
+
+      <section className="cyber-home-utilities">
+        <section className="cyber-home-training cyber-glass spectral-border" data-rgb-pattern="training-orbit" aria-label="Training Center status">
+          <header><span>◎</span><div><strong>TRAINING CENTER</strong><small lang={user.supportLanguage}>{support.trainingCenter}</small></div><b>{availableTrainingCount} READY</b></header>
+          <h2><TrainingCopy copy={trainingCopy("keepSystemsSharp", user.supportLanguage)} /></h2>
+          {availableTrainingCount > 0 ? (
+            <>
+              <p><TrainingCopy copy={trainingAvailableModules(user.supportLanguage, availableTrainingCount)} /></p>
+              {trainingCreditCap > 0 && <><strong>{trainingCredits} / {trainingCreditCap} Credits</strong><ProgressMeter label="Training Credits" value={trainingCredits} max={trainingCreditCap} detail={`${trainingCredits} / ${trainingCreditCap}`} /></>}
+              <button aria-label="Open Training Center" className="cyber-outline-button cyan" onClick={onTraining}><TrainingCopy copy={trainingCopy("openTrainingCenter", user.supportLanguage)} /><b>→</b></button>
+            </>
+          ) : <p><span>Training modules unlock through the campaign.</span><small lang={user.supportLanguage}>{support.trainingLocked}</small></p>}
+        </section>
+
+        <section className="cyber-home-supply cyber-glass spectral-border" data-rgb-pattern="supply-reverse">
+          <header><span>▦</span><div><strong>CYBER SHOP</strong><small lang={user.supportLanguage}>{support.supplyDepot}</small></div><b>{progression?.currentCredits ?? 0} CREDITS</b></header>
+          <div className="supply-preview"><i>◇</i><p><strong>AGENT LOADOUT</strong><span>HEROES · POINTERS · THEMES · ASSISTANTS</span></p></div>
+          <button className="cyber-outline-button orange" onClick={onShop}><span>OPEN CYBER SHOP</span><small lang={user.supportLanguage}>{support.openSupply}</small><b>→</b></button>
+        </section>
+      </section>
+
+      <section className="cyber-home-system cyber-glass spectral-border" data-rgb-pattern="system-wave">
         <div>
-          <p className="step-label">{copy.progress.en}</p>
-          <small lang={copy.progress.lang}>{copy.progress.support}</small>
+          <p className="step-label">{copy.progress.en} <small lang={copy.progress.lang}>{copy.progress.support}</small></p>
           <ProgressMeter
             label="Campaign progress"
             value={dashboard.completedMissions.length}
@@ -287,10 +355,10 @@ export function StudentHome({
             detail={`${dashboard.completedMissions.length} / ${MISSIONS.length} nodes secured`}
           />
           <p>
-            {dashboard.completedMissions.length} missions completed · Your
-            progress is private.
+            {dashboard.completedMissions.length} missions completed · Your progress is private.
           </p>
         </div>
+        <div className="system-stream"><span>NODE_SYNC_OK</span><span>{operativeName ? `${operativeName}_LINK_ACTIVE` : "IDENTITY_LOCKED"}</span><span>TRAINING_ENCLAVE_SECURE</span></div>
         <button className="settings-link" onClick={onSettings}>
           <span>✦</span>
           <div>
@@ -300,6 +368,7 @@ export function StudentHome({
           <b>→</b>
         </button>
       </section>
+      <footer className="cyber-home-footer"><span>● SYNC: 0.002s</span><b>SYSTEM CONSOLE: {operativeName ? `${operativeName}@CYBER-HERO` : "ACCESS_PENDING"}</b><strong>{support.systemReady}</strong></footer>
     </main>
   );
 }

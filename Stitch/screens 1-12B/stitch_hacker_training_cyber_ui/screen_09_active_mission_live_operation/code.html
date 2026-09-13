@@ -1,0 +1,548 @@
+<!DOCTYPE html><html class="dark" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.tactical-grid-bg{background-image:radial-gradient(#2d3732 1px,transparent 1px),radial-gradient(#18221d 1px,#07100c 1px);background-size:40px 40px;background-position:0 0,20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary-fixed":"#7df4ff","on-primary-fixed-variant":"#6e3900","surface-container-highest":"#2d3732","on-tertiary":"#003911","on-secondary-fixed-variant":"#004f54","surface-tint":"#ffb77d","on-surface":"#dae5de","inverse-on-surface":"#28332e","on-primary-fixed":"#2f1500","on-secondary-container":"#00686f","surface-dim":"#0b1511","error-container":"#93000a","background":"#0b1511","tertiary-fixed":"#6bff83","primary-fixed":"#ffdcc3","tertiary-fixed-dim":"#00e55b","inverse-primary":"#904d00","on-primary":"#4d2600","outline-variant":"#564334","surface-container-lowest":"#07100c","on-tertiary-fixed-variant":"#00531b","tertiary":"#00e55b","surface-container":"#18221d","error":"#ffb4ab","on-tertiary-container":"#004917","tertiary-container":"#00c44c","secondary-container":"#00eefc","secondary":"#d3fbff","surface-bright":"#313b36","on-primary-container":"#623200","surface-container-low":"#141e19","primary-fixed-dim":"#ffb77d","on-background":"#dae5de","on-secondary-fixed":"#002022","on-error-container":"#ffdad6","secondary-fixed-dim":"#00dbe9","surface":"#0b1511","on-surface-variant":"#ddc1ae","surface-variant":"#2d3732","on-error":"#690005","primary":"#ffb77d","on-tertiary-fixed":"#002107","primary-container":"#ff8c00","inverse-surface":"#dae5de","on-secondary":"#00363a","outline":"#a48c7a","surface-container-high":"#222c27"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"hud-margin":"24px","hud-gap-md":"16px","hud-col-gutter":"16px","hud-hairline":"1px","hud-gap-xs":"4px","hud-gap-lg":"24px","hud-gap-sm":"8px","hud-gap-xl":"32px"},"fontFamily":{"telemetry-label":["Space Mono"],"subtext-intel":["JetBrains Mono"],"headline-md":["Space Grotesk"],"headline-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-code-sm":["JetBrains Mono"],"body-code-md":["JetBrains Mono"],"body-code-lg":["JetBrains Mono"]},"fontSize":{"telemetry-label":["11px",{"lineHeight":"14px","letterSpacing":"0.2em","fontWeight":"700"}],"subtext-intel":["9px",{"lineHeight":"12px","letterSpacing":"0.25em","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"0.1em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"0.12em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"0.08em","fontWeight":"600"}],"body-code-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.03em","fontWeight":"400"}],"body-code-md":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"400"}],"body-code-lg":["16px",{"lineHeight":"24px","letterSpacing":"0.02em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface tactical-grid-bg min-h-screen flex items-center justify-center p-hud-margin"><main class="w-full flex items-center justify-center"><div class="flex flex-col w-full text-on-surface select-none">
+<!-- TOP MISSION COMMAND BAR -->
+<header class="w-full bg-surface-container-lowest/90 backdrop-blur-md px-hud-margin py-3 mb-hud-gap-md shadow-2xl relative z-30">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<!-- Left: Title & Mission Metadata -->
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary-container/20 flex items-center justify-center text-primary-container relative">
+<span class="material-symbols-outlined text-2xl animate-pulse">satellite_alt</span>
+<div class="absolute -top-1 -left-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -bottom-1 -right-1 w-2 h-2 bg-primary"></div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-telemetry-label text-telemetry-label text-primary-fixed-dim uppercase tracking-wider">OPERATION 04 // LIVE DEFENSE SEQUENCE</span>
+<span class="text-surface-variant font-body-code-sm">::</span>
+<span class="font-subtext-intel text-subtext-intel text-secondary-fixed uppercase">区域_09 // ORBITAL DECRYPTION</span>
+</div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-bold">
+            MISSION 04 — INTERCEPTED SATELLITE BREACH &amp; PAYLOAD EXTRACTION
+          </h1>
+</div>
+</div>
+<!-- Center: Tactical Alerts & Badges -->
+<div class="flex items-center gap-3">
+<!-- Live Badge -->
+<div class="flex items-center gap-2 bg-error-container/30 px-3 py-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error animate-ping"></span>
+<span class="font-telemetry-label text-telemetry-label text-error font-bold">LIVE OPERATION</span>
+</div>
+<!-- Defcon 2 -->
+<div class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5">
+<span class="material-symbols-outlined text-sm text-primary-container">shield_with_heart</span>
+<span class="font-telemetry-label text-telemetry-label text-primary">DEFCON 2: ELEVATED</span>
+</div>
+<!-- Trace Alert Meter -->
+<div class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5">
+<span class="material-symbols-outlined text-sm text-tertiary">radar</span>
+<div class="flex flex-col">
+<div class="flex justify-between items-center text-[10px] gap-2">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">HOSTILE TRACE</span>
+<span class="font-telemetry-label text-telemetry-label text-primary-fixed-dim font-bold" id="trace-pct-display">34%</span>
+</div>
+<div class="w-24 h-1.5 bg-surface-container-lowest rounded-none overflow-hidden flex">
+<div class="h-full bg-primary transition-all duration-500" style="width: 34%"></div>
+<div class="h-full bg-error/40 animate-pulse" style="width: 12%"></div>
+</div>
+</div>
+</div>
+<!-- Timer Countdown -->
+<div class="flex items-center gap-3 bg-surface-container-lowest px-4 py-1.5 shadow-inner">
+<div class="flex flex-col items-end">
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">TIME TO EXFILTRATION</span>
+<span class="font-headline-md text-headline-md text-primary font-bold tracking-widest font-mono" id="mission-clock">02:23.4</span>
+</div>
+<span class="material-symbols-outlined text-primary text-xl animate-spin" style="animation-duration: 8s;">hourglass_bottom</span>
+</div>
+</div>
+<!-- Right: Utility Controls & HQ CTA -->
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-2 bg-surface-container hover:bg-surface-container-high text-secondary text-xs font-telemetry-label transition-colors" id="lang-toggle-btn">
+<span class="material-symbols-outlined text-sm">translate</span>
+<span class="">JA / EN</span>
+</button>
+<button class="relative flex items-center gap-1.5 px-3 py-2 bg-surface-container hover:bg-surface-container-high text-tertiary-fixed-dim text-xs font-telemetry-label transition-colors" id="hint-toggle-btn">
+<span class="material-symbols-outlined text-sm">lightbulb</span>
+<span class="">HINT (2)</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-2 bg-surface-container hover:bg-error-container/40 text-error text-xs font-telemetry-label transition-colors" id="reset-mission-btn">
+<span class="material-symbols-outlined text-sm">restart_alt</span>
+<span class="">EMERGENCY ABORT</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(255,140,0,0.45)] transition-all transform active:scale-95" id="submit-hq-btn">
+<span class="material-symbols-outlined text-base">send_and_archive</span>
+<span class="">TRANSMIT TO HQ</span>
+</button>
+</div>
+</div>
+<!-- Network subline status -->
+<div class="mt-2 pt-1 flex items-center justify-between text-xs font-body-code-sm text-on-surface-variant/80 border-t border-surface-variant/30">
+<div class="flex items-center gap-3">
+<span class="inline-block w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="text-secondary font-telemetry-label text-[10px]">NETWORK STATUS: UNSTABLE // RE-ROUTING THROUGH SECURE PROXY (ORBIT-NODE 92-A)</span>
+<span class="text-surface-variant">|</span>
+<span class="text-on-surface-variant">CIPHER: AES-GCM-512</span>
+</div>
+<div class="flex items-center gap-4 text-[10px] font-subtext-intel">
+<span class="text-tertiary">LATENCY: 18ms</span>
+<span class="text-on-surface-variant">DROPPED PKTS: 0.002%</span>
+<span class="text-secondary">TUNNEL: ACTIVE</span>
+</div>
+</div>
+</header>
+<!-- MAIN OPERATIONAL WORKSPACE (Tri-Pane Layout) -->
+<div class="grid grid-cols-12 gap-hud-gap-md w-full items-start">
+<!-- LEFT FLANK: OBJECTIVES & CG HOLOGRAPHIC MENTOR (3 Cols) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-hud-gap-md">
+<!-- Objective Tracker Card -->
+<div class="bg-surface-container-low p-4 shadow-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-lg">flag</span>
+<span class="font-telemetry-label text-telemetry-label text-primary font-bold uppercase tracking-wider">DIRECTIVE LOG</span>
+</div>
+<span class="bg-surface-container px-2 py-0.5 text-[9px] font-subtext-intel text-tertiary">PHASE 2 / 3</span>
+</div>
+<p class="font-body-code-sm text-xs text-on-surface mb-4 leading-relaxed font-semibold">
+          Extract target decryption hash from <code class="bg-surface-container-highest text-secondary-fixed px-1.5 py-0.5 font-mono text-[11px]">intercepted_signal.txt</code> and transmit over secure channel.
+        </p>
+<!-- Progress Steps -->
+<div class="flex flex-col gap-3 font-body-code-sm">
+<!-- Step 1 (Completed) -->
+<div class="flex items-start gap-3 bg-surface-container/60 p-2.5">
+<div class="w-6 h-6 rounded-full bg-tertiary/20 text-tertiary flex items-center justify-center text-xs shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-tertiary">STEP 1: INFILTRATE FS</span>
+<span class="text-[11px] text-on-surface-variant">Navigated to /DOWNLOADS directory</span>
+</div>
+</div>
+<!-- Step 2 (Active) -->
+<div class="flex items-start gap-3 bg-primary-container/10 p-2.5 shadow-[0_0_12px_rgba(255,140,0,0.15)] relative">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold animate-pulse">
+              2
+            </div>
+<div class="flex flex-col">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-primary">STEP 2: EXTRACT TARGET HASH</span>
+<span class="text-[9px] font-telemetry-label text-primary-container tracking-wider uppercase">[ACTIVE]</span>
+</div>
+<span class="text-[11px] text-on-surface">Locate signal artifact, open payload inspector, copy extraction key.</span>
+</div>
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+</div>
+<!-- Step 3 (Pending) -->
+<div class="flex items-start gap-3 bg-surface-container/30 p-2.5 opacity-60">
+<div class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center text-xs shrink-0 mt-0.5 font-bold">
+              3
+            </div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-on-surface-variant">STEP 3: TRANSMISSION INJECTION</span>
+<span class="text-[11px] text-on-surface-variant">Verify parity string and fire payload to HQ enclaves.</span>
+</div>
+</div>
+</div>
+<!-- Tactical Operational Guidance -->
+
+</div>
+<!-- Cyber Guide Holographic Advisor -->
+<div class="bg-surface-container-low p-4 shadow-xl relative overflow-hidden flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-ping"></span>
+<span class="font-telemetry-label text-telemetry-label text-tertiary uppercase">CG CHANNEL: ENCRYPTED // LINK STABLE</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant">AI-MENTOR v4.1</span>
+</div>
+<!-- Avatar HUD Box -->
+<div class="relative w-full h-44 bg-surface-container-lowest overflow-hidden flex items-center justify-center group">
+<img alt="Holographic CG Avatar" class="w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UjRq5udX6UWFKwo7485HWqeA1YGFS_UD7F52mRh7PVeRHKljXsHdQtRJAcjKVH5pxsCPZhwgwP6lBg0j7OW33R_TrAXwlOLhHw1WoXUyGXbyOMCSGJYljVH9un1eMximSOOSJZ7urdWRwmpFNSoZNFC3Cav4qdfAkWBQD5542cxB6c8yGgQsTI33KJPzBYae3rRB3SNUu4KmMU5bTDN5oEQPmToms7vXhnVheu5s3qGYDsDUqgYZUZuA">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent"></div>
+<!-- Tactical Overlay markings -->
+<div class="absolute top-2 left-2 font-subtext-intel text-[8px] text-secondary">RETICLE: LOCKED // 04.92</div>
+<div class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-surface-container-lowest/80 px-2 py-0.5">
+<span class="w-1.5 h-1.5 bg-tertiary rounded-full"></span>
+<span class="font-telemetry-label text-[9px] text-tertiary">MENTOR VOICE ONLINE</span>
+</div>
+<div class="absolute top-2 right-2 text-primary font-mono text-[9px]">SIG: 99.4%</div>
+</div>
+<!-- Dialogue Bubble -->
+<div class="bg-surface-container p-3 text-xs font-body-code-md text-on-surface relative">
+<div class="flex items-center gap-1 mb-1">
+<span class="font-bold text-secondary font-headline-sm text-xs">CYBER GUIDE (CG):</span>
+<span class="text-[9px] text-on-surface-variant font-subtext-intel">[TACTICAL INTEL]</span>
+</div>
+<p class="leading-relaxed text-secondary-fixed">Copy extracted hash <span class="bg-surface-container-highest px-1.5 py-0.5 text-primary-fixed-dim font-bold font-mono selection:bg-primary selection:text-black">VX-4821-OMEGA</span> from payload inspector, then fire the secure transmission dock.</p>
+</div>
+<!-- Expandable Hint Module -->
+<details class="group bg-surface-container-high/40 p-2.5 cursor-pointer">
+<summary class="flex items-center justify-between text-xs font-telemetry-label text-primary">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm">psychology</span>
+              TACTICAL FIELD HINT
+            </span>
+<span class="material-symbols-outlined text-xs group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-2 pt-2 text-[11px] font-body-code-sm text-on-surface-variant border-t border-surface-variant/40">
+            Use the simulated PC's Right-Click context menu on <code class="text-secondary">intercepted_signal.txt</code> or click the green <strong>"COPY TO BUFFER"</strong> button in the live inspection deck below.
+          </div>
+</details>
+<!-- Warning Feedback Box -->
+
+</div>
+</aside>
+<!-- CENTER AREA: SIMULATED TRAINING COMPUTER (LIGHT THEME) (6 Cols) -->
+<main class="col-span-12 flex flex-col gap-hud-gap-md lg:col-span-9">
+<!-- Simulated Desktop Window Container -->
+<div class="bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col transition-all duration-300 relative text-slate-800 font-sans">
+<!-- Window Titlebar (macOS Style Dots + Breadcrumbs) -->
+<div class="bg-slate-100 px-4 py-2.5 flex items-center justify-between border-b border-slate-200">
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-red-500 inline-block shadow-sm"></span>
+<span class="w-3 h-3 rounded-full bg-yellow-400 inline-block shadow-sm"></span>
+<span class="w-3 h-3 rounded-full bg-green-500 inline-block shadow-sm"></span>
+</div>
+<span class="ml-2 font-mono text-xs font-bold text-slate-600 tracking-wide">CYBER-OS v2.4 // FILE EXPLORER [LIVE SESSION]</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1 bg-green-100 text-green-800 text-[10px] font-mono font-bold px-2 py-0.5 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600 animate-pulse"></span>
+              SANDBOX SECURE
+            </span>
+<span class="material-symbols-outlined text-slate-400 text-sm">shield</span>
+</div>
+</div>
+<!-- Navigation / Breadcrumb Toolbar -->
+<div class="bg-slate-50 px-4 py-2 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 text-xs">
+<!-- Back / Forward & Path -->
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 text-slate-400">
+<button class="p-1 hover:bg-slate-200 rounded text-slate-600"><span class="material-symbols-outlined text-base">arrow_back</span></button>
+<button class="p-1 hover:bg-slate-200 rounded text-slate-300 cursor-not-allowed"><span class="material-symbols-outlined text-base">arrow_forward</span></button>
+<button class="p-1 hover:bg-slate-200 rounded text-slate-600"><span class="material-symbols-outlined text-base">refresh</span></button>
+</div>
+<div class="flex items-center bg-white px-2.5 py-1 rounded border border-slate-200 text-slate-600 font-mono text-[11px] shadow-sm">
+<span class="text-slate-400">ROOT</span>
+<span class="mx-1 text-slate-300">/</span>
+<span class="text-slate-400">VOL_01</span>
+<span class="mx-1 text-slate-300">/</span>
+<span class="text-slate-400">USERS</span>
+<span class="mx-1 text-slate-300">/</span>
+<span class="text-slate-400">ECHO</span>
+<span class="mx-1 text-slate-300">/</span>
+<span class="font-bold text-blue-600">DOWNLOADS</span>
+</div>
+</div>
+<!-- Quick Search Filter -->
+<div class="flex items-center bg-white px-2 py-1 rounded border border-slate-200 shadow-sm w-44">
+<span class="material-symbols-outlined text-slate-400 text-sm mr-1">search</span>
+<input class="w-full text-[11px] outline-none text-slate-700 bg-transparent" placeholder="Filter files..." type="text" value="signal">
+</div>
+</div>
+<!-- Explorer Body: Sidebar + File Grid -->
+<div class="grid grid-cols-12 min-h-[220px] bg-slate-50/50">
+<!-- Left Quick Access Tree -->
+<div class="col-span-3 bg-slate-100/70 p-3 border-r border-slate-200 flex flex-col gap-1 text-xs">
+<div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-1">Quick Access</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded text-slate-600 hover:bg-slate-200/60 cursor-pointer">
+<span class="material-symbols-outlined text-sm text-slate-500">desktop_windows</span>
+<span class="">Desktop</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded text-slate-600 hover:bg-slate-200/60 cursor-pointer">
+<span class="material-symbols-outlined text-sm text-slate-500">description</span>
+<span class="">Documents</span>
+</div>
+<!-- Active Directory -->
+<div class="flex items-center justify-between px-2 py-1.5 rounded bg-blue-100/70 text-blue-700 font-semibold cursor-pointer shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-blue-600">download</span>
+<span class="">Downloads</span>
+</div>
+<span class="bg-blue-600 text-white text-[9px] px-1.5 rounded-full">4</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded text-slate-600 hover:bg-slate-200/60 cursor-pointer">
+<span class="material-symbols-outlined text-sm text-slate-500">lan</span>
+<span class="">Network</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1.5 rounded text-slate-400 hover:bg-slate-200/60 cursor-pointer mt-4">
+<span class="material-symbols-outlined text-sm">delete</span>
+<span class="">Trash Bin</span>
+</div>
+</div>
+<!-- File Grid Canvas (Light, Crisp Realism) -->
+<div class="col-span-9 p-4 bg-white relative">
+<div class="grid grid-cols-3 gap-3">
+<!-- Folder: System Archive -->
+<div class="flex flex-col items-center p-2 rounded hover:bg-slate-100 cursor-pointer text-center group transition-colors">
+<span class="material-symbols-outlined text-amber-400 text-4xl group-hover:scale-105 transition-transform">folder</span>
+<span class="text-xs text-slate-700 font-medium mt-1 truncate max-w-full">System_Archive</span>
+<span class="text-[10px] text-slate-400">DIR · 2 items</span>
+</div>
+<!-- TARGET FILE: intercepted_signal.txt (Highlighted / Selected state) -->
+<div class="relative flex flex-col items-center p-2 rounded bg-cyan-50 border-2 border-cyan-500 shadow-md cursor-pointer text-center group" id="target-file-card">
+<div class="relative">
+<span class="material-symbols-outlined text-cyan-600 text-4xl group-hover:scale-105 transition-transform">description</span>
+<span class="absolute -top-1 -right-1 flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+</span>
+</div>
+<span class="text-xs text-cyan-950 font-bold mt-1 truncate max-w-full">intercepted_signal.txt</span>
+<span class="text-[10px] text-cyan-700 font-mono">1.8 KB · TARGET</span>
+<!-- SIMULATED CONTEXT MENU POPUP (Right-Click Simulation Overlay) -->
+<div class="absolute -right-6 top-8 w-48 bg-white border border-slate-300 shadow-2xl rounded py-1 z-20 text-left font-sans text-xs">
+<div class="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+<span class="">Actions</span>
+<span class="text-cyan-600 font-mono">TXT</span>
+</div>
+<button class="w-full px-3 py-2 text-left hover:bg-blue-600 hover:text-white flex items-center gap-2 text-slate-700 font-medium transition-colors bg-blue-50 text-blue-700" id="ctx-copy-key">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span class="">Copy Key Code</span>
+<span class="ml-auto text-[9px] opacity-75 font-mono">⌘C</span>
+</button>
+<button class="w-full px-3 py-1.5 text-left hover:bg-slate-100 flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined text-sm">preview</span>
+<span class="">Inspect Raw Telemetry</span>
+</button>
+<button class="w-full px-3 py-1.5 text-left hover:bg-slate-100 flex items-center gap-2 text-slate-600">
+<span class="material-symbols-outlined text-sm">drive_file_move</span>
+<span class="">Move to Enclave</span>
+</button>
+<div class="border-t border-slate-100 my-1"></div>
+<button class="w-full px-3 py-1.5 text-left hover:bg-red-50 text-red-600 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">delete</span>
+<span class="">Delete Record</span>
+</button>
+</div>
+</div>
+<!-- File: briefing_audio.wav -->
+<div class="flex flex-col items-center p-2 rounded hover:bg-slate-100 cursor-pointer text-center group transition-colors">
+<span class="material-symbols-outlined text-indigo-500 text-4xl group-hover:scale-105 transition-transform">audio_file</span>
+<span class="text-xs text-slate-700 font-medium mt-1 truncate max-w-full">briefing_audio.wav</span>
+<span class="text-[10px] text-slate-400">4.2 MB · AUDIO</span>
+</div>
+<!-- File: diagnostics.log -->
+<div class="flex flex-col items-center p-2 rounded hover:bg-slate-100 cursor-pointer text-center group transition-colors">
+<span class="material-symbols-outlined text-slate-400 text-4xl group-hover:scale-105 transition-transform">receipt_long</span>
+<span class="text-xs text-slate-700 font-medium mt-1 truncate max-w-full">diagnostics.log</span>
+<span class="text-[10px] text-slate-400">12 KB · LOG</span>
+</div>
+<!-- File: payload_manifest.json -->
+<div class="flex flex-col items-center p-2 rounded hover:bg-slate-100 cursor-pointer text-center group transition-colors">
+<span class="material-symbols-outlined text-emerald-500 text-4xl group-hover:scale-105 transition-transform">data_object</span>
+<span class="text-xs text-slate-700 font-medium mt-1 truncate max-w-full">payload_manifest.json</span>
+<span class="text-[10px] text-slate-400">3.4 KB · JSON</span>
+</div>
+<!-- Suspicious Binary (Trap item for learning) -->
+<div class="flex flex-col items-center p-2 rounded hover:bg-red-50 cursor-pointer text-center group border border-transparent hover:border-red-200">
+<span class="material-symbols-outlined text-rose-500 text-4xl group-hover:scale-105 transition-transform">terminal</span>
+<span class="text-xs text-rose-800 font-semibold mt-1 truncate max-w-full">override_agent.exe</span>
+<span class="text-[9px] text-red-500 font-mono">⚠️ UNTRUSTED</span>
+</div>
+</div>
+</div>
+</div>
+<!-- PAYLOAD INSPECTION PANEL (Lower Half of Simulated Computer) -->
+<div class="bg-slate-900 text-slate-100 p-4 border-t border-slate-800">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-cyan-400 text-base">terminal</span>
+<span class="font-mono text-xs font-bold text-cyan-400">PAYLOAD INSPECTOR // FILE: intercepted_signal.txt</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="bg-emerald-950 border border-emerald-500/30 text-emerald-400 font-mono text-[10px] px-2 py-0.5 rounded">
+                DECRYPTABLE // HASH DETECTED
+              </span>
+</div>
+</div>
+<!-- Hex & Decryption Code Block -->
+<div class="bg-slate-950 p-3 rounded border border-slate-800 font-mono text-xs text-slate-300 flex flex-col gap-1.5 shadow-inner">
+<div class="text-slate-500 text-[11px] select-none">
+              00000000  7e 4f 52 42 49 54 2d 50  41 59 4c 4f 41 44 2d 30  |~ORBIT-PAYLOAD-0|
+            </div>
+<div class="text-slate-500 text-[11px] select-none">
+              00000010  34 20 53 45 43 55 52 45  20 54 52 41 4e 53 4d 49  |4 SECURE TRANSMI|
+            </div>
+<!-- Highlighted Target Hash -->
+<div class="bg-slate-900 border border-amber-500/40 p-2 rounded flex flex-wrap items-center justify-between gap-2 my-1">
+<div class="flex items-center gap-2">
+<span class="text-amber-400 font-bold text-[11px]">EXTRACTION KEY:</span>
+<span class="bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded tracking-wider border border-amber-500/50 select-all" id="target-key-text">
+                  VX-4821-OMEGA
+                </span>
+</div>
+<button class="bg-amber-500 hover:bg-amber-400 text-black font-bold font-sans text-xs px-3 py-1 rounded flex items-center gap-1.5 transition shadow-sm active:scale-95" id="copy-key-btn">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span class="">COPY TO BUFFER</span>
+</button>
+</div>
+<div class="text-slate-500 text-[11px] select-none">
+              00000030  45 4e 44 20 4f 46 20 53  49 47 4e 41 4c 20 23 23  |END OF SIGNAL ##|
+            </div>
+</div>
+<!-- State Feedback Indicator -->
+<div class="mt-3 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2 text-slate-300 font-mono text-[11px]" id="clipboard-status-banner">
+<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+<span class="">STATUS: <strong class="text-amber-400">KEY READY IN CLIPBOARD</strong> // AWAITING SUBMISSION DOCK</span>
+</div>
+<span class="text-slate-500 font-mono text-[10px]">PARITY SHA-256: 9f8a...33c1</span>
+</div>
+<!-- SECURE CHANNEL SUBMISSION DOCK -->
+<div class="mt-3 pt-3 border-t border-slate-800 flex items-center gap-3">
+<div class="flex-1 relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 font-mono text-xs">
+                [TRANSMISSION BUFFER] &gt;
+              </div>
+<input class="w-full bg-slate-950 border border-cyan-500/50 text-cyan-300 font-mono text-xs pl-44 pr-24 py-2 rounded focus:outline-none focus:border-cyan-400 shadow-inner font-bold tracking-wider" id="transmission-input" type="text" value="VX-4821-OMEGA">
+<div class="absolute inset-y-0 right-2 flex items-center text-[10px] font-mono text-emerald-400 font-bold">
+                ✓ HASH VERIFIED
+              </div>
+</div>
+<button class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-sans text-xs font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-md active:scale-95 transition" id="dock-transmit-btn">
+<span class="material-symbols-outlined text-sm">lock_open</span>
+<span class="">FIRE DOCK</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Tips Bar under Simulated PC -->
+<div class="flex items-center justify-between text-xs font-body-code-sm text-on-surface-variant bg-surface-container-low px-4 py-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary">mouse</span>
+<span class="">Right-click or click <strong>COPY TO BUFFER</strong> to extract credentials without tampering.</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-tertiary">ENCRYPTOR READY</span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+</div>
+</div>
+</main>
+<!-- RIGHT FLANK: INTENSE CYBER HOLLYWOOD INSTRUMENTATION (3 Cols) -->
+
+</div>
+<!-- BOTTOM STATUS RAIL (Command Bar Line) -->
+<footer class="mt-hud-gap-md bg-surface-container-lowest/80 px-hud-margin py-2 text-xs font-body-code-sm flex flex-wrap items-center justify-between text-on-surface-variant border-t border-surface-variant/30">
+<div class="flex items-center gap-4 text-[11px]">
+<span class="flex items-center gap-1.5 text-tertiary font-mono font-bold">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+        DEFENSE-GRID: ONLINE
+      </span>
+<span class="text-surface-variant">|</span>
+<span class="">NODE: OMEGA-SAT-04</span>
+<span class="text-surface-variant">|</span>
+<span class="">PORT: 8443 [TLS 1.3]</span>
+</div>
+<div class="flex items-center gap-4 text-[11px] font-subtext-intel">
+<span class="text-secondary">PROMPT: OPERATOR@DEFENSE-GRID:~$</span>
+<span class="text-primary animate-pulse">█</span>
+</div>
+</footer>
+</div>
+<!-- INLINE CLIENT INTERACTIVITY SCRIPT -->
+<script>
+  (function initTacticalConsole() {
+    // 1. Mission Timer Countdown logic
+    let totalSeconds = 282.8; // 04:42.8
+    const clockElem = document.getElementById('mission-clock');
+    
+    setInterval(() => {
+      if (totalSeconds > 0) {
+        totalSeconds -= 0.1;
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = Math.floor(totalSeconds % 60);
+        const tenths = Math.floor((totalSeconds % 1) * 10);
+        const formatted = String(mins).padStart(2, '0') + ':' + 
+                          String(secs).padStart(2, '0') + '.' + 
+                          tenths;
+        if (clockElem) clockElem.innerText = formatted;
+      }
+    }, 100);
+
+    // 2. Action Log appending helper
+    function appendActionLog(tag, msg, tagClass = 'text-primary') {
+      const logContainer = document.getElementById('live-action-log');
+      if (!logContainer) return;
+      
+      const now = new Date();
+      const timeStr = String(now.getHours()).padStart(2, '0') + ':' +
+                      String(now.getMinutes()).padStart(2, '0') + ':' +
+                      String(now.getSeconds()).padStart(2, '0');
+
+      const entry = document.createElement('div');
+      entry.className = 'flex items-start gap-1 animate-pulse';
+      entry.innerHTML = `
+        <span class="text-surface-variant">${timeStr}</span>
+        <span class="${tagClass} font-bold">${tag}:</span>
+        <span class="text-on-surface">${msg}</span>
+      `;
+      logContainer.prepend(entry);
+    }
+
+    // 3. Simulated Copy Key button logic
+    const copyKeyBtn = document.getElementById('copy-key-btn');
+    const ctxCopyKey = document.getElementById('ctx-copy-key');
+    const transInput = document.getElementById('transmission-input');
+    const statusBanner = document.getElementById('clipboard-status-banner');
+
+    function executeCopyKey() {
+      const keyVal = "VX-4821-OMEGA";
+      navigator.clipboard?.writeText(keyVal).catch(() => {});
+      
+      if (transInput) {
+        transInput.value = keyVal;
+        transInput.classList.add('bg-amber-950/40');
+        setTimeout(() => transInput.classList.remove('bg-amber-950/40'), 600);
+      }
+
+      if (statusBanner) {
+        statusBanner.innerHTML = `
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span>STATUS: <strong class="text-emerald-400">KEY COPIED TO BUFFER</strong> // READY TO TRANSMIT</span>
+        `;
+      }
+
+      appendActionLog('BUFFER', 'KEY [VX-4821-OMEGA] EXTRACTED TO BUFFER', 'text-tertiary');
+    }
+
+    if (copyKeyBtn) copyKeyBtn.addEventListener('click', executeCopyKey);
+    if (ctxCopyKey) ctxCopyKey.addEventListener('click', executeCopyKey);
+
+    // 4. HQ Transmission Submission Buttons
+    const transmitBtn = document.getElementById('submit-hq-btn');
+    const dockTransmitBtn = document.getElementById('dock-transmit-btn');
+
+    function handleSubmission() {
+      appendActionLog('HQ-LINK', 'TRANSMISSION SENT // SIGNATURE ACCEPTED BY HQ', 'text-secondary');
+      alert('OPERATIONAL SUCCESS: Target Decryption Hash [VX-4821-OMEGA] successfully relayed to HQ defense grid! Trace neutralized.');
+    }
+
+    if (transmitBtn) transmitBtn.addEventListener('click', handleSubmission);
+    if (dockTransmitBtn) dockTransmitBtn.addEventListener('click', handleSubmission);
+
+    // 5. Emergency Abort
+    const abortBtn = document.getElementById('reset-mission-btn');
+    if (abortBtn) {
+      abortBtn.addEventListener('click', () => {
+        if (confirm("INITIATE EMERGENCY ABORT SEQUENCE? This resets local buffer state.")) {
+          appendActionLog('ABORT', 'RESET TRIGGERED BY OPERATOR', 'text-error');
+        }
+      });
+    }
+
+    // 6. Language Toggle Prompt
+    const langBtn = document.getElementById('lang-toggle-btn');
+    if (langBtn) {
+      langBtn.addEventListener('click', () => {
+        appendActionLog('LOCALE', 'BILINGUAL TELEMETRY MODE ACTIVE (JA/EN)', 'text-secondary-fixed');
+      });
+    }
+  })();
+</script></main>
+
+</body></html>

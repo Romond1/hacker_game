@@ -1,35 +1,739 @@
 {
   "missions": {
-    "mission-1": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
-    "mission-2": { "xpMax": 1000, "credits": 20, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
-    "mission-3": { "xpMax": 1000, "credits": 30, "rookie": true, "nodeId": "training", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 },
-    "mission-4": { "xpMax": 1000, "credits": 30, "rookie": false, "nodeId": "classified", "maxRewardAttempts": 2, "replayXPMultiplier": 1, "replayCreditMultiplier": 1 }
+    "mission-1": {
+      "xpMax": 1000,
+      "credits": 20,
+      "rookie": true,
+      "nodeId": "training",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-2": {
+      "xpMax": 1000,
+      "credits": 20,
+      "rookie": true,
+      "nodeId": "training",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-3": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": true,
+      "nodeId": "training",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-4": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    }
   },
   "ranks": [
-    { "id": "rookie", "name": "Rookie", "requiredMissions": [], "earningCap": 140, "spendingCap": 140 },
-    { "id": "operator", "name": "Operator", "requiredMissions": [1,2,3], "earningCap": 240, "spendingCap": 240 },
-    { "id": "infiltrator", "name": "Infiltrator", "requiredMissions": [1,2,3,4,5,6,7,8,9,10], "earningCap": 1200, "spendingCap": 1200 }
+    {
+      "id": "rookie",
+      "name": "Rookie",
+      "requiredMissions": [],
+      "earningCap": 140,
+      "spendingCap": 140
+    },
+    {
+      "id": "operator",
+      "name": "Operator",
+      "requiredMissions": [
+        1,
+        2,
+        3
+      ],
+      "earningCap": 240,
+      "spendingCap": 240
+    },
+    {
+      "id": "infiltrator",
+      "name": "Infiltrator",
+      "requiredMissions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "earningCap": 1200,
+      "spendingCap": 1200
+    }
   ],
   "items": [
-    { "itemId": "rookie-badge", "name": "Rookie Hacker", "description": "Wear proof that you made it through training.", "category": "badge", "price": 40, "rarity": "standard", "icon": "◇", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "label": "ROOKIE HACKER" } },
-    { "itemId": "neon-pointer", "name": "Neon Pointer", "description": "A bright cyan pointer for your next operation.", "category": "cursor", "price": 60, "rarity": "standard", "icon": "↗", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "className": "neon-pointer" } },
-    { "itemId": "matrix-terminal", "name": "Matrix Terminal", "description": "Green scanlines and a glowing training computer.", "category": "terminalTheme", "price": 100, "rarity": "rare", "icon": ">_", "requiredRank": "operator", "purchasable": true, "equipable": true, "asset": { "className": "matrix-terminal" } },
-    { "itemId": "mini-drone", "name": "Mini Drone", "description": "Your own hovering companion. Reach Mission 10 to gain clearance.", "category": "companion", "price": 600, "rarity": "legendary", "icon": "⌁", "requiredRank": "infiltrator", "purchasable": true, "equipable": true, "asset": { "className": "mini-drone" } }
+    {
+      "itemId": "rookie-badge",
+      "name": "Rookie Hacker",
+      "description": "Wear proof that you made it through training.",
+      "category": "badge",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "◇",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "label": "ROOKIE HACKER"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "neon-pointer",
+      "name": "Neon Pointer",
+      "description": "A bright cyan pointer for your next operation.",
+      "category": "cursor",
+      "price": 60,
+      "rarity": "standard",
+      "icon": "↗",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "neon-pointer"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "matrix-terminal",
+      "name": "Matrix Terminal",
+      "description": "Green scanlines and a glowing training computer.",
+      "category": "terminalTheme",
+      "price": 100,
+      "rarity": "rare",
+      "icon": ">_",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "matrix-terminal"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "mini-drone",
+      "name": "Mini Drone",
+      "description": "Your own hovering companion. Reach Mission 10 to gain clearance.",
+      "category": "companion",
+      "price": 600,
+      "rarity": "legendary",
+      "icon": "⌁",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "mini-drone"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "tactical-crosshair",
+      "name": "Tactical Crosshair",
+      "description": "Precision HUD targeting reticle for accurate clicking.",
+      "category": "cursor",
+      "price": 50,
+      "rarity": "standard",
+      "icon": "⊕",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "tactical-crosshair"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "plasma-arrow",
+      "name": "Plasma Arrow",
+      "description": "Cyan plasma arrow with soft energy trail.",
+      "category": "cursor",
+      "price": 80,
+      "rarity": "rare",
+      "icon": "➢",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "plasma-arrow"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "orbit-blue-theme",
+      "name": "Orbit Blue Matrix",
+      "description": "Deep-space blue cockpit ambiance with crystal telemetry.",
+      "category": "terminalTheme",
+      "price": 60,
+      "rarity": "standard",
+      "icon": "◈",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "orbit-blue-theme"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "solar-amber-theme",
+      "name": "Solar Amber Matrix",
+      "description": "Tactical amber alert theme with defense grid scanlines.",
+      "category": "terminalTheme",
+      "price": 90,
+      "rarity": "rare",
+      "icon": "▣",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "solar-amber-theme"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cyber-pup",
+      "name": "Cyber Pup Companion",
+      "description": "Autonomous robotic scout companion providing tactical support.",
+      "category": "companion",
+      "price": 700,
+      "rarity": "legendary",
+      "icon": "🐕",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cyber-pup"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-standard",
+      "name": "Cyber Wolf Cadet",
+      "description": "Standard tactical suit in sleek cyan telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/standard.png",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-rare",
+      "name": "Cyber Wolf Vanguard",
+      "description": "Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/rare.jpg",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-elite",
+      "name": "Cyber Wolf Centurion",
+      "description": "Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/elite.jpg",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-legendary",
+      "name": "Cyber Wolf Imperator",
+      "description": "Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/legendary.jpg",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-standard",
+      "name": "Cyber Panda Cadet",
+      "description": "Standard heavy suit in clean cyan armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/standard.png",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-rare",
+      "name": "Cyber Panda Guardian",
+      "description": "Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/rare.jpg",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-elite",
+      "name": "Cyber Panda Dynasty",
+      "description": "Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/elite.jpg",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-legendary",
+      "name": "Cyber Panda Warlord",
+      "description": "Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/legendary.jpg",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-standard",
+      "name": "Cyber Tiger Cadet",
+      "description": "Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/standard.png",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-rare",
+      "name": "Cyber Tiger Striker",
+      "description": "Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/rare.jpg",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-elite",
+      "name": "Cyber Tiger Ronin",
+      "description": "Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/elite.jpg",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-legendary",
+      "name": "Cyber Tiger Shogun",
+      "description": "Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/legendary.jpg",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-standard",
+      "name": "Cyber Bird Cadet",
+      "description": "Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/standard.png",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-rare",
+      "name": "Cyber Bird Falcon",
+      "description": "Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/rare.jpg",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-elite",
+      "name": "Cyber Bird Tengu",
+      "description": "Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/elite.jpg",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-legendary",
+      "name": "Cyber Bird Kensei",
+      "description": "Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/legendary.jpg",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-standard",
+      "name": "Cyber Rabbit Cadet",
+      "description": "Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/standard.png",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-rare",
+      "name": "Cyber Rabbit Scout",
+      "description": "Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/rare.jpg",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-elite",
+      "name": "Cyber Rabbit Shinobi",
+      "description": "Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/elite.jpg",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-legendary",
+      "name": "Cyber Rabbit Cyber-Star",
+      "description": "Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/legendary.jpg",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    }
   ],
-  "suggestedCodenames": ["NOVA","ZERO","BYTE","GHOST","GLITCH","ECHO","PIXEL","SHADOW","CIRCUIT","VECTOR"],
-  "blockedCodenameFragments": ["FUCK","SHIT","BITCH","CUNT","NIGGER","NAZI","HITLER","PENIS","PUSSY","ASSHOLE","DICK","SEX","MERDA","CAZZO","STRONZ"],
+  "suggestedCodenames": [
+    "NOVA",
+    "ZERO",
+    "BYTE",
+    "GHOST",
+    "GLITCH",
+    "ECHO",
+    "PIXEL",
+    "SHADOW",
+    "CIRCUIT",
+    "VECTOR"
+  ],
+  "blockedCodenameFragments": [
+    "FUCK",
+    "SHIT",
+    "BITCH",
+    "CUNT",
+    "NIGGER",
+    "NAZI",
+    "HITLER",
+    "PENIS",
+    "PUSSY",
+    "ASSHOLE",
+    "DICK",
+    "SEX",
+    "MERDA",
+    "CAZZO",
+    "STRONZ"
+  ],
   "nodes": [
-    { "nodeId": "training", "name": "Home Base", "missionIds": ["mission-1","mission-2","mission-3"], "prerequisites": [], "icon": "⌂", "position": { "x": 0, "y": 0 } },
-    { "nodeId": "classified", "name": "Classified Network", "missionIds": ["mission-4"], "prerequisites": ["training"], "icon": "◈", "position": { "x": 0, "y": 1 } }
+    {
+      "nodeId": "training",
+      "name": "Home Base",
+      "missionIds": [
+        "mission-1",
+        "mission-2",
+        "mission-3"
+      ],
+      "prerequisites": [],
+      "icon": "⌂",
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "nodeId": "classified",
+      "name": "Classified Network",
+      "missionIds": [
+        "mission-4"
+      ],
+      "prerequisites": [
+        "training"
+      ],
+      "icon": "◈",
+      "position": {
+        "x": 0,
+        "y": 1
+      }
+    }
   ],
   "trainingModules": {
-    "systems-calibration": { "xpMax": 150, "credits": 1, "activityCreditCap": 20, "linkedMissionId": "mission-3", "requiredCompletedMissions": [1,2,3], "speedAchievementSeconds": 30 },
-    "data-transfer": { "xpMax": 150, "credits": 1, "activityCreditCap": 20, "linkedMissionId": "mission-4", "requiredCompletedMissions": [1,2,3,4], "speedAchievementSeconds": 75 }
+    "systems-calibration": {
+      "xpMax": 150,
+      "credits": 1,
+      "activityCreditCap": 20,
+      "linkedMissionId": "mission-3",
+      "requiredCompletedMissions": [
+        1,
+        2,
+        3
+      ],
+      "speedAchievementSeconds": 30
+    },
+    "data-transfer": {
+      "xpMax": 150,
+      "credits": 1,
+      "activityCreditCap": 20,
+      "linkedMissionId": "mission-4",
+      "requiredCompletedMissions": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "speedAchievementSeconds": 75
+    }
+  },
+  "robotTraining": {
+    "xpMax": 0,
+    "credits": 1,
+    "activityCreditCap": 20
   },
   "trainingAchievements": [
-    { "id": "first-training", "name": "FIRST TRAINING", "description": "Complete a training module." },
-    { "id": "perfect-calibration", "name": "PERFECT CALIBRATION", "description": "Complete Systems Calibration with 100% accuracy." },
-    { "id": "speed-operator", "name": "SPEED OPERATOR", "description": "Finish within the module speed target." },
-    { "id": "training-master", "name": "TRAINING MASTER", "description": "Earn all Credits from one training module." }
+    {
+      "id": "first-training",
+      "name": "FIRST TRAINING",
+      "description": "Complete a training module."
+    },
+    {
+      "id": "perfect-calibration",
+      "name": "PERFECT CALIBRATION",
+      "description": "Complete Systems Calibration with 100% accuracy."
+    },
+    {
+      "id": "speed-operator",
+      "name": "SPEED OPERATOR",
+      "description": "Finish within the module speed target."
+    },
+    {
+      "id": "training-master",
+      "name": "TRAINING MASTER",
+      "description": "Earn all Credits from one training module."
+    }
   ]
 }

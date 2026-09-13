@@ -15,6 +15,7 @@ import { TrainingCopy } from "./TrainingCopy";
 import { AmbientLayer } from "../gamefeel/AmbientLayer";
 import { OperatorMessage } from "../gamefeel/OperatorMessage";
 import { ProgressMeter } from "../gamefeel/ProgressMeter";
+import { robotDefenseModes, robotDefenseUnlocked, type RobotDefenseModeId } from "../../training/robot-defense";
 
 function formatTime(seconds: number | null): string {
   if (seconds === null) return "—";
@@ -43,12 +44,16 @@ export function TrainingCenter({
   modules,
   progress,
   onStart,
+  completedMissions = [],
+  onRobotDefense,
   onBack,
 }: {
   language: SupportLanguage;
   modules: readonly TrainingModule[];
   progress: TrainingProgress[];
   onStart: (trainingId: string) => void;
+  completedMissions?: number[];
+  onRobotDefense?: (mode: RobotDefenseModeId) => void;
   onBack: () => void;
 }) {
   return (
@@ -93,6 +98,18 @@ export function TrainingCenter({
         }
         title="CYBER GUIDE / TRAINING"
       />
+      {onRobotDefense && <section className="robot-defense-modes" aria-label="Robot Defense training modes">
+        <header><p className="eyebrow">TRAINING GROUND / {language === 'it' ? 'Campo di addestramento' : '訓練場'}</p><h2>Robot Defense Training</h2><p>Three training stages linked to Missions 1–3. <small lang={language}>{language === 'it' ? 'Tre fasi di addestramento collegate alle Missioni 1–3.' : 'ミッション1～3につながる3つの訓練段階。'}</small></p></header>
+        <div className="robot-defense-mode-grid">{robotDefenseModes.map(mode => {
+          const unlocked = robotDefenseUnlocked(mode, completedMissions);
+          return <article key={mode.id} className={`robot-defense-mode ${unlocked ? 'available' : 'locked'}`} aria-label={mode.name}>
+            <span>MISSION {mode.requiredMission}.5</span><h3>{mode.name}</h3><small lang={language}>{mode.support[language]}</small>
+            <p>{mode.skill.en}</p><small lang={language}>{mode.skill[language]}</small>
+            {unlocked ? <button aria-label={`Train ${mode.name}`} className="primary-button" onClick={() => onRobotDefense(mode.id)}>Start training →</button>
+              : <p className="training-lock-note">Complete Mission {mode.requiredMission} to unlock. <small lang={language}>{language === 'it' ? `Completa la Missione ${mode.requiredMission} per sbloccare.` : `ミッション${mode.requiredMission}を完了すると解除されます。`}</small></p>}
+          </article>;
+        })}</div>
+      </section>}
       <section className="training-module-list" aria-label="Training modules">
         {modules.map((module, moduleIndex) => {
           const state =

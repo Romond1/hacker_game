@@ -5,6 +5,8 @@ require __DIR__ . '/../src/bootstrap.php';
 require __DIR__ . '/../src/reset_mission.php';
 require_once __DIR__ . '/../src/progression.php';
 require_once __DIR__ . '/../src/training.php';
+require_once __DIR__ . '/../src/teacher_balances.php';
+require_once __DIR__ . '/../src/robot_training.php';
 
 try {
     start_secure_session();
@@ -201,6 +203,18 @@ try {
             if (!is_array($evidence) || $duration === false) fail('validation_failed', 'Invalid training result.', 422);
             respond(training_finish(db(), $user['id'], $attemptId, $evidence, $duration));
 
+        case 'robot.start':
+            $user = current_user();
+            if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
+            respond(robot_training_start(db(), $user['id'], require_string($input, 'mode', 32)), 201);
+
+        case 'robot.finish':
+            $user = current_user();
+            if ($user['role'] !== 'student') fail('forbidden', 'Student access required.', 403);
+            $result = $input['result'] ?? null;
+            if (!is_array($result)) fail('validation_failed', 'Invalid training result.', 422);
+            respond(robot_training_finish(db(), $user['id'], require_string($input, 'runId', 36), $result));
+
         case 'teacher.resetMission':
             require_teacher();
             $studentId = require_string($input, 'studentId', 36);
@@ -208,6 +222,11 @@ try {
             try { $result = reset_student_mission(db(), $studentId, $missionId); }
             catch (MissionResetError $error) { fail($error->getMessage(), 'Student or mission not found.', 404); }
             respond($result);
+
+        case 'teacher.setBalances':
+            $teacher = require_teacher();
+            $studentId = require_string($input, 'studentId', 36);
+            respond(teacher_set_balances(db(), $teacher['id'], $studentId, $input));
 
         case 'teacher.students':
             require_teacher();
@@ -241,6 +260,9 @@ try {
         'training_not_found', 'training_attempt_not_found' => 404,
         default => 422,
     };
+    fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', $status);
+} catch (RobotTrainingError $error) {
+    $status = match ($error->getMessage()) { 'training_locked' => 403, 'training_not_found', 'training_attempt_not_found' => 404, default => 422 };
     fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', $status);
 } catch (EconomyError $error) {
     fail($error->getMessage(), str_replace('_', ' ', ucfirst($error->getMessage())) . '.', 422);

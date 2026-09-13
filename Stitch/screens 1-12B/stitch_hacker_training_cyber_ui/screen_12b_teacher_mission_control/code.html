@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.tactical-grid-bg{background-image:radial-gradient(#2d3732 1px,transparent 1px),radial-gradient(#18221d 1px,#07100c 1px);background-size:40px 40px;background-position:0 0,20px 20px;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"secondary-fixed":"#7df4ff","on-primary-fixed-variant":"#6e3900","surface-container-highest":"#2d3732","on-tertiary":"#003911","on-secondary-fixed-variant":"#004f54","surface-tint":"#ffb77d","on-surface":"#dae5de","inverse-on-surface":"#28332e","on-primary-fixed":"#2f1500","on-secondary-container":"#00686f","surface-dim":"#0b1511","error-container":"#93000a","background":"#0b1511","tertiary-fixed":"#6bff83","primary-fixed":"#ffdcc3","tertiary-fixed-dim":"#00e55b","inverse-primary":"#904d00","on-primary":"#4d2600","outline-variant":"#564334","surface-container-lowest":"#07100c","on-tertiary-fixed-variant":"#00531b","tertiary":"#00e55b","surface-container":"#18221d","error":"#ffb4ab","on-tertiary-container":"#004917","tertiary-container":"#00c44c","secondary-container":"#00eefc","secondary":"#d3fbff","surface-bright":"#313b36","on-primary-container":"#623200","surface-container-low":"#141e19","primary-fixed-dim":"#ffb77d","on-background":"#dae5de","on-secondary-fixed":"#002022","on-error-container":"#ffdad6","secondary-fixed-dim":"#00dbe9","surface":"#0b1511","on-surface-variant":"#ddc1ae","surface-variant":"#2d3732","on-error":"#690005","primary":"#ffb77d","on-tertiary-fixed":"#002107","primary-container":"#ff8c00","inverse-surface":"#dae5de","on-secondary":"#00363a","outline":"#a48c7a","surface-container-high":"#222c27"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"hud-margin":"24px","hud-gap-md":"16px","hud-col-gutter":"16px","hud-hairline":"1px","hud-gap-xs":"4px","hud-gap-lg":"24px","hud-gap-sm":"8px","hud-gap-xl":"32px"},"fontFamily":{"telemetry-label":["Space Mono"],"subtext-intel":["JetBrains Mono"],"headline-md":["Space Grotesk"],"headline-lg":["Space Grotesk"],"display-hero":["Space Grotesk"],"headline-sm":["Space Grotesk"],"body-code-sm":["JetBrains Mono"],"body-code-md":["JetBrains Mono"],"body-code-lg":["JetBrains Mono"]},"fontSize":{"telemetry-label":["11px",{"lineHeight":"14px","letterSpacing":"0.2em","fontWeight":"700"}],"subtext-intel":["9px",{"lineHeight":"12px","letterSpacing":"0.25em","fontWeight":"500"}],"headline-md":["24px",{"lineHeight":"32px","letterSpacing":"0.1em","fontWeight":"600"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"0.12em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"0.15em","fontWeight":"700"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"0.08em","fontWeight":"600"}],"body-code-sm":["12px",{"lineHeight":"18px","letterSpacing":"0.03em","fontWeight":"400"}],"body-code-md":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"400"}],"body-code-lg":["16px",{"lineHeight":"24px","letterSpacing":"0.02em","fontWeight":"500"}]}}}}</script></head><body class="bg-surface-container-lowest text-on-surface tactical-grid-bg min-h-screen flex items-center justify-center p-hud-margin"><main class="w-full flex items-center justify-center"><div class="flex flex-col w-full max-w-[1720px] mx-auto text-on-surface">
+<!-- COMMAND HEADER BAR -->
+<header class="w-full bg-surface-container-low rounded-xl p-hud-margin shadow-md mb-hud-gap-lg">
+<div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-hud-gap-md pb-hud-gap-md">
+<!-- Left: Title & Identity -->
+<div class="flex flex-col gap-hud-gap-xs">
+<div class="flex items-center gap-hud-gap-sm flex-wrap">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-high hover:bg-surface-bright text-on-surface rounded font-body-code-sm text-body-code-sm transition-colors">
+<span class="material-symbols-outlined text-sm text-primary">arrow_back</span>
+            Return to Home Base
+          </button>
+<div class="flex items-center bg-surface-container rounded p-0.5">
+<button class="px-3 py-1 rounded text-body-code-sm font-body-code-sm text-on-surface-variant hover:text-on-surface transition-colors">Supply Access</button>
+<button class="px-3 py-1 rounded text-body-code-sm font-body-code-sm bg-primary-container text-on-primary font-bold shadow-sm">Teacher Mission Control</button>
+</div>
+<span class="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-highest text-secondary-fixed rounded text-subtext-intel font-subtext-intel">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+            Classroom 4-B // 28 Cadets Online
+          </span>
+</div>
+<div class="flex items-baseline gap-hud-gap-sm mt-1 flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-wide">
+            MISSION CONTROL // TEACHER
+          </h1>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">
+            — STUDENT PROGRESS &amp; TELEMETRY
+          </span>
+</div>
+</div>
+<!-- Right: Action Suite -->
+<div class="flex items-center gap-hud-gap-sm w-full xl:w-auto justify-start xl:justify-end flex-wrap">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded text-body-code-md font-body-code-md text-on-surface transition-all">
+<span class="material-symbols-outlined text-secondary-container">filter_alt</span>
+          Classroom Filters
+        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded text-body-code-md font-body-code-md text-on-surface transition-all">
+<span class="material-symbols-outlined text-tertiary">download</span>
+          Export Class Telemetry
+        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-error-container hover:bg-opacity-90 text-on-error-container rounded text-body-code-md font-body-code-md font-bold transition-all" onclick="document.getElementById('reset-modal').classList.toggle('hidden')">
+<span class="material-symbols-outlined text-base">restart_alt</span>
+          Reset Cadets
+        </button>
+</div>
+</div>
+<!-- Key Policy Banner -->
+<div class="mt-hud-gap-sm pt-hud-gap-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-2 bg-surface-container px-4 py-2.5 rounded-lg">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-tertiary text-lg">verified_user</span>
+<span class="font-telemetry-label text-telemetry-label text-on-surface">
+          INDIVIDUAL TRAINING RECORDS ONLY: No public leaderboard. No student comparison. Autonomy preserved.
+        </span>
+</div>
+<span class="font-subtext-intel text-subtext-intel text-on-surface-variant uppercase tracking-widest">
+        Active Security Policy: Strict Privacy Tier-1
+      </span>
+</div>
+</header>
+<!-- OVERVIEW METRICS BAR -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-hud-gap-md mb-hud-gap-lg">
+<div class="bg-surface-container-low p-hud-margin rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-telemetry-label text-telemetry-label">
+<span>TOTAL CADETS</span>
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display-hero text-display-hero text-on-surface leading-none">28</span>
+<span class="font-body-code-sm text-body-code-sm text-tertiary">Enrolled &amp; Validated</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-primary h-full w-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-hud-margin rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-telemetry-label text-telemetry-label">
+<span>ACTIVE IN-MISSION</span>
+<span class="material-symbols-outlined text-secondary-container">sensors</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display-hero text-display-hero text-secondary-fixed leading-none">19</span>
+<span class="font-body-code-sm text-body-code-sm text-on-surface-variant">/ 28 live now</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-secondary-container h-full" style="width: 68%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-hud-margin rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-telemetry-label text-telemetry-label">
+<span>AVG CURRICULUM CLEAR</span>
+<span class="material-symbols-outlined text-tertiary">military_tech</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display-hero text-display-hero text-tertiary leading-none">82%</span>
+<span class="font-body-code-sm text-body-code-sm text-tertiary">+4% this session</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-tertiary h-full" style="width: 82%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-low p-hud-margin rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant font-telemetry-label text-telemetry-label">
+<span>GUIDANCE INDEPENDENCE</span>
+<span class="material-symbols-outlined text-primary-fixed">psychology</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display-hero text-display-hero text-primary-fixed leading-none">91%</span>
+<span class="font-body-code-sm text-body-code-sm text-on-surface-variant">Low AI Assist Need</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-3 overflow-hidden">
+<div class="bg-primary-fixed h-full" style="width: 91%;"></div>
+</div>
+</div>
+</section>
+<!-- SPLIT WORKSPACE: CADET ROSTER (LEFT/MAIN) + SELECTED INSPECTION RECORD (RIGHT) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-hud-gap-lg items-start">
+<!-- MAIN ROSTER TABLE -->
+<section class="lg:col-span-7 xl:col-span-8 bg-surface-container-low rounded-xl p-hud-margin shadow-md">
+<div class="flex items-center justify-between mb-hud-gap-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">badge</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Cadet Roster</h2>
+</div>
+<span class="font-body-code-sm text-body-code-sm text-on-surface-variant">Select Cadet to Open Record</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-code-sm text-body-code-sm">
+<thead>
+<tr class="bg-surface-container font-telemetry-label text-telemetry-label text-on-surface-variant">
+<th class="py-3 px-3 w-3"></th>
+<th class="py-3 px-3">CADET / CODENAME</th>
+<th class="py-3 px-3">LANG</th>
+<th class="py-3 px-3">CURRENT MISSION</th>
+<th class="py-3 px-3">COMPLETED</th>
+<th class="py-3 px-3">PB SCORE</th>
+<th class="py-3 px-3">BEST TIME</th>
+<th class="py-3 px-3">LAST SEEN</th>
+<th class="py-3 px-3 text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<!-- Row 1 (Selected) -->
+<tr class="bg-surface-container-high transition-colors">
+<td class="p-3"><div class="w-1.5 h-6 bg-primary-container rounded"></div></td>
+<td class="p-3">
+<div class="font-bold text-on-surface">Leo Chen</div>
+<div class="font-subtext-intel text-subtext-intel text-primary">CALLSIGN: ECHO</div>
+</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-surface-container rounded font-subtext-intel text-secondary-fixed">EN</span></td>
+<td class="p-3">
+<span class="text-on-surface font-medium">Mission 04</span>
+<span class="block text-subtext-intel font-subtext-intel text-on-surface-variant">Payload Extract</span>
+</td>
+<td class="p-3">
+<span class="text-tertiary font-bold">4 / 12</span>
+</td>
+<td class="p-3 font-bold text-on-surface">940 pts</td>
+<td class="p-3 text-on-surface-variant">02:21.3</td>
+<td class="p-3 text-tertiary">2 mins ago</td>
+<td class="p-3 text-right">
+<button class="px-3 py-1 bg-primary-container text-on-primary font-bold rounded hover:opacity-90 transition-opacity text-subtext-intel font-subtext-intel">SELECTED</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="p-3"><div class="w-1.5 h-6 bg-tertiary rounded"></div></td>
+<td class="p-3">
+<div class="font-bold text-on-surface">Maya Patel</div>
+<div class="font-subtext-intel text-subtext-intel text-tertiary">CALLSIGN: NOVA</div>
+</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-surface-container rounded font-subtext-intel text-on-surface-variant">JA</span></td>
+<td class="p-3">
+<span class="text-on-surface font-medium">Mission 07</span>
+<span class="block text-subtext-intel font-subtext-intel text-on-surface-variant">Firewall Bypass</span>
+</td>
+<td class="p-3">
+<span class="text-tertiary font-bold">7 / 12</span>
+</td>
+<td class="p-3 font-bold text-on-surface">985 pts</td>
+<td class="p-3 text-on-surface-variant">01:45.0</td>
+<td class="p-3 text-tertiary">5 mins ago</td>
+<td class="p-3 text-right">
+<button class="px-3 py-1 bg-surface-container-highest hover:bg-primary-container hover:text-on-primary text-on-surface rounded transition-colors text-subtext-intel font-subtext-intel">INSPECT</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="p-3"><div class="w-1.5 h-6 bg-secondary-container rounded"></div></td>
+<td class="p-3">
+<div class="font-bold text-on-surface">Alex Vance</div>
+<div class="font-subtext-intel text-subtext-intel text-secondary-container">CALLSIGN: BYTE</div>
+</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-surface-container rounded font-subtext-intel text-on-surface-variant">ES</span></td>
+<td class="p-3">
+<span class="text-on-surface font-medium">Mission 02</span>
+<span class="block text-subtext-intel font-subtext-intel text-on-surface-variant">Kernel Access</span>
+</td>
+<td class="p-3">
+<span class="text-tertiary font-bold">2 / 12</span>
+</td>
+<td class="p-3 font-bold text-on-surface">880 pts</td>
+<td class="p-3 text-on-surface-variant">03:12.8</td>
+<td class="p-3 text-on-surface-variant">12 mins ago</td>
+<td class="p-3 text-right">
+<button class="px-3 py-1 bg-surface-container-highest hover:bg-primary-container hover:text-on-primary text-on-surface rounded transition-colors text-subtext-intel font-subtext-intel">INSPECT</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="p-3"><div class="w-1.5 h-6 bg-primary-fixed rounded"></div></td>
+<td class="p-3">
+<div class="font-bold text-on-surface">Sofia Torres</div>
+<div class="font-subtext-intel text-subtext-intel text-primary-fixed">CALLSIGN: GHOST</div>
+</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-surface-container rounded font-subtext-intel text-on-surface-variant">FR</span></td>
+<td class="p-3">
+<span class="text-on-surface font-medium">Mission 10</span>
+<span class="block text-subtext-intel font-subtext-intel text-on-surface-variant">Neural Defense</span>
+</td>
+<td class="p-3">
+<span class="text-tertiary font-bold">10 / 12</span>
+</td>
+<td class="p-3 font-bold text-on-surface">995 pts</td>
+<td class="p-3 text-on-surface-variant">01:14.2</td>
+<td class="p-3 text-tertiary">Just now</td>
+<td class="p-3 text-right">
+<button class="px-3 py-1 bg-surface-container-highest hover:bg-primary-container hover:text-on-primary text-on-surface rounded transition-colors text-subtext-intel font-subtext-intel">INSPECT</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors">
+<td class="p-3"><div class="w-1.5 h-6 bg-surface-bright rounded"></div></td>
+<td class="p-3">
+<div class="font-bold text-on-surface">Kenji Sato</div>
+<div class="font-subtext-intel text-subtext-intel text-on-surface-variant">CALLSIGN: VECTOR</div>
+</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-surface-container rounded font-subtext-intel text-on-surface-variant">JA</span></td>
+<td class="p-3">
+<span class="text-on-surface font-medium">Mission 04</span>
+<span class="block text-subtext-intel font-subtext-intel text-on-surface-variant">Payload Extract</span>
+</td>
+<td class="p-3">
+<span class="text-tertiary font-bold">3 / 12</span>
+</td>
+<td class="p-3 font-bold text-on-surface">910 pts</td>
+<td class="p-3 text-on-surface-variant">02:45.6</td>
+<td class="p-3 text-on-surface-variant">Today 10:14</td>
+<td class="p-3 text-right">
+<button class="px-3 py-1 bg-surface-container-highest hover:bg-primary-container hover:text-on-primary text-on-surface rounded transition-colors text-subtext-intel font-subtext-intel">INSPECT</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- RIGHT: INDIVIDUAL STUDENT RECORD (INSPECTION DRAWER / PANEL) -->
+<section class="lg:col-span-5 xl:col-span-4 bg-surface-container-low rounded-xl p-hud-margin shadow-md flex flex-col gap-hud-gap-md">
+<!-- Student Profile Header Card -->
+<div class="bg-surface-container rounded-lg p-hud-gap-md">
+<div class="flex items-center justify-between">
+<span class="font-telemetry-label text-telemetry-label text-primary">PRIVATE STUDENT DOSSIER</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-tertiary text-subtext-intel font-subtext-intel">ACTIVE LIVE</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1">
+          Leo Chen <span class="text-primary-container text-headline-sm font-headline-sm">(ECHO)</span>
+</h3>
+<div class="grid grid-cols-2 gap-2 mt-3 pt-3 bg-surface-container-lowest p-2.5 rounded text-body-code-sm font-body-code-sm">
+<div>
+<span class="text-on-surface-variant font-subtext-intel text-subtext-intel block">CURRICULUM LANG</span>
+<span class="text-on-surface font-bold">English (Target)</span>
+</div>
+<div>
+<span class="text-on-surface-variant font-subtext-intel text-subtext-intel block">ACTIVE MISSION</span>
+<span class="text-secondary-fixed font-bold">04: Satellite Payload</span>
+</div>
+<div>
+<span class="text-on-surface-variant font-subtext-intel text-subtext-intel block">CAREER XP</span>
+<span class="text-primary font-bold">3,840 XP</span>
+</div>
+<div>
+<span class="text-on-surface-variant font-subtext-intel text-subtext-intel block">TRAINING CREDITS</span>
+<span class="text-on-surface font-bold">1,240 CR</span>
+</div>
+</div>
+</div>
+<!-- Progression & Gear Inventory Grid -->
+<div class="bg-surface-container rounded-lg p-hud-gap-md">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant block mb-2">EQUIPMENT &amp; ACCREDITATION</span>
+<div class="grid grid-cols-2 gap-2 text-body-code-sm font-body-code-sm">
+<div class="bg-surface-container-high p-2 rounded">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block">RANK TITLE</span>
+<span class="text-on-surface font-bold">Lvl 04 Field Specialist</span>
+</div>
+<div class="bg-surface-container-high p-2 rounded">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block">TACTICAL COMPANION</span>
+<span class="text-secondary-fixed font-bold">Echo (Ceramic White)</span>
+</div>
+<div class="bg-surface-container-high p-2 rounded">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block">COMPLETED MISSIONS</span>
+<span class="text-tertiary font-bold">4 / 12 (33%)</span>
+</div>
+<div class="bg-surface-container-high p-2 rounded">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block">TOTAL ATTEMPTS</span>
+<span class="text-on-surface font-bold">6 runs (2 replays)</span>
+</div>
+</div>
+<div class="mt-2.5 bg-surface-container-high p-2 rounded font-body-code-sm text-body-code-sm">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block mb-1">INVENTORY ITEMS (3 OWNED)</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 bg-surface-container rounded text-subtext-intel font-subtext-intel text-on-surface">MK-IV Ceramic Plating</span>
+<span class="px-2 py-0.5 bg-surface-container rounded text-subtext-intel font-subtext-intel text-on-surface">Neon Pointer</span>
+<span class="px-2 py-0.5 bg-surface-container rounded text-subtext-intel font-subtext-intel text-primary">Rookie Badge</span>
+</div>
+</div>
+</div>
+<!-- Training Summary Tile -->
+<div class="bg-surface-container rounded-lg p-hud-gap-md">
+<div class="flex items-center justify-between mb-2">
+<span class="font-telemetry-label text-telemetry-label text-on-surface-variant">LATEST DRILL MASTERY</span>
+<span class="text-tertiary font-bold font-headline-sm text-headline-sm">RANK S+</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded font-body-code-sm text-body-code-sm space-y-1.5">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Module / Skill:</span>
+<span class="text-on-surface font-medium">Data Transfer // Text Copy/Paste</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Accuracy &amp; Execution:</span>
+<span class="text-tertiary font-bold">98.6% (0 Errors)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Drill Time / Attempts:</span>
+<span class="text-on-surface font-medium">00:18.4 (5 Runs total)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">Credits Awarded:</span>
+<span class="text-primary font-bold">7 / 20 CR</span>
+</div>
+</div>
+</div>
+<!-- Action Panel for Student -->
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-error-container hover:bg-opacity-80 text-on-error-container font-body-code-sm text-body-code-sm font-bold rounded transition-colors flex items-center justify-center gap-1.5" onclick="document.getElementById('reset-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-sm">lock_reset</span>
+          Reset Mission 04
+        </button>
+<button class="px-4 py-2.5 bg-surface-container-highest hover:bg-surface-bright text-on-surface font-body-code-sm text-body-code-sm rounded transition-colors">
+          Print Record
+        </button>
+</div>
+</section>
+</div>
+<!-- MISSION ATTEMPT HISTORY TABLE -->
+<section class="mt-hud-gap-lg bg-surface-container-low rounded-xl p-hud-margin shadow-md">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-hud-gap-md gap-2">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Detailed Mission Run History</h2>
+<span class="font-body-code-sm text-body-code-sm text-on-surface-variant">Cadet Leo Chen (ECHO) — Chronological Drill Logs</span>
+</div>
+<span class="font-subtext-intel text-subtext-intel px-2.5 py-1 bg-surface-container rounded text-on-surface-variant">
+        RECORD ID: REC-0094-ECHO
+      </span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-code-sm text-body-code-sm">
+<thead>
+<tr class="bg-surface-container font-telemetry-label text-telemetry-label text-on-surface-variant">
+<th class="py-2.5 px-3">MISSION</th>
+<th class="py-2.5 px-3">TIMESTAMP</th>
+<th class="py-2.5 px-3">STATUS</th>
+<th class="py-2.5 px-3">FINAL SCORE</th>
+<th class="py-2.5 px-3">DURATION</th>
+<th class="py-2.5 px-3">TRANSLATIONS</th>
+<th class="py-2.5 px-3">GUIDE HINTS</th>
+<th class="py-2.5 px-3">ACTIONS</th>
+<th class="py-2.5 px-3">ERRORS</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<tr class="bg-surface-container-high">
+<td class="p-3 font-bold text-on-surface">Mission 04 (Sat Payload)</td>
+<td class="p-3 text-on-surface-variant">Oct 24, 10:15 AM</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container font-bold rounded text-subtext-intel font-subtext-intel">COMPLETED</span></td>
+<td class="p-3 font-bold text-primary">940 / 1000</td>
+<td class="p-3 font-bold text-on-surface">02:21.3</td>
+<td class="p-3 text-on-surface-variant">0 used</td>
+<td class="p-3 text-on-surface">1 hint</td>
+<td class="p-3 text-on-surface">14 valid</td>
+<td class="p-3 text-tertiary font-bold">0</td>
+</tr>
+<tr class="bg-surface-container-low">
+<td class="p-3 font-medium text-on-surface">Mission 03 (Relay Cipher)</td>
+<td class="p-3 text-on-surface-variant">Oct 22, 14:02 PM</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container font-bold rounded text-subtext-intel font-subtext-intel">COMPLETED</span></td>
+<td class="p-3 font-bold text-primary">915 / 1000</td>
+<td class="p-3 text-on-surface">03:04.1</td>
+<td class="p-3 text-on-surface-variant">1 used</td>
+<td class="p-3 text-on-surface">2 hints</td>
+<td class="p-3 text-on-surface">22 valid</td>
+<td class="p-3 text-on-surface">1 corrected</td>
+</tr>
+<tr class="bg-surface-container-high">
+<td class="p-3 font-medium text-on-surface">Mission 02 (Kernel Access)</td>
+<td class="p-3 text-on-surface-variant">Oct 21, 09:40 AM</td>
+<td class="p-3"><span class="px-2 py-0.5 bg-tertiary-container text-on-tertiary-container font-bold rounded text-subtext-intel font-subtext-intel">COMPLETED</span></td>
+<td class="p-3 font-bold text-primary">960 / 1000</td>
+<td class="p-3 text-on-surface">01:58.7</td>
+<td class="p-3 text-on-surface-variant">0 used</td>
+<td class="p-3 text-on-surface">0 hints</td>
+<td class="p-3 text-on-surface">11 valid</td>
+<td class="p-3 text-tertiary font-bold">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- RESET CONFIRMATION MODAL / EMBEDDED POPUP CARD -->
+<div class="hidden fixed inset-0 bg-surface-container-lowest/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" id="reset-modal">
+<div class="bg-surface-container-low max-w-lg w-full rounded-xl p-hud-margin shadow-2xl flex flex-col gap-hud-gap-md relative">
+<!-- Modal Header -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2 text-error">
+<span class="material-symbols-outlined">warning</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">RESET MISSION PROGRESS</h3>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" onclick="document.getElementById('reset-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded text-body-code-sm font-body-code-sm">
+<span class="text-subtext-intel font-subtext-intel text-on-surface-variant block">TARGET CADET</span>
+<span class="text-on-surface font-bold text-headline-sm font-headline-sm">Leo Chen (Codename: ECHO)</span>
+</div>
+<!-- Scope Breakdown: What is deleted vs preserved -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<!-- Deleted -->
+<div class="bg-surface-container p-3 rounded">
+<span class="font-telemetry-label text-telemetry-label text-error block mb-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">delete</span>
+            WHAT WILL BE CLEARED
+          </span>
+<ul class="text-body-code-sm font-body-code-sm text-on-surface-variant space-y-1">
+<li>• Current Mission 04 state</li>
+<li>• Live interactive console drill logs</li>
+<li>• Active session temporary buffer</li>
+</ul>
+</div>
+<!-- Preserved -->
+<div class="bg-surface-container p-3 rounded">
+<span class="font-telemetry-label text-telemetry-label text-tertiary block mb-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+            WHAT REMAINS PERMANENT
+          </span>
+<ul class="text-body-code-sm font-body-code-sm text-on-surface-variant space-y-1">
+<li>• All 3 Earned Badges</li>
+<li>• Unlocked Equipment / Skins</li>
+<li>• Callsign Certification</li>
+<li>• Total Level &amp; 3,840 XP</li>
+</ul>
+</div>
+</div>
+<!-- Modal Action Buttons -->
+<div class="flex justify-end gap-hud-gap-sm mt-2">
+<button class="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded text-body-code-md font-body-code-md text-on-surface transition-colors" onclick="document.getElementById('reset-modal').classList.add('hidden')">
+          Cancel
+        </button>
+<button class="px-5 py-2 bg-error-container hover:bg-opacity-90 text-on-error-container rounded text-body-code-md font-body-code-md font-bold transition-all shadow-md" onclick="document.getElementById('reset-modal').classList.add('hidden')">
+          Confirm Reset
+        </button>
+</div>
+</div>
+</div>
+</div></main></body></html>

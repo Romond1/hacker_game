@@ -17,6 +17,8 @@ await mkdir('dist/shared', { recursive: true });
 await cp('shared/economy.json', 'dist/shared/economy.json');
 await cp('server/src/progression.php', 'dist/src/progression.php');
 await cp('server/src/training.php', 'dist/src/training.php');
+await cp('server/src/teacher_balances.php', 'dist/src/teacher_balances.php');
+await cp('server/src/robot_training.php', 'dist/src/robot_training.php');
 await cp('server/bin/check_economy.php', 'dist/bin/check_economy.php');
 
 await access('dist/src/training.php');

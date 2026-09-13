@@ -13,12 +13,14 @@ import { emptyProgression, ECONOMY, type PlayerProgression } from './domain/prog
 import { HackerShop } from './components/progression/HackerShop';
 import { IdentityProtocol, Transmission } from './components/progression/IdentityProtocol';
 import { TrainingCenter } from './components/training/TrainingCenter';
+import { RobotDefense } from './components/training/RobotDefense';
+import { robotDefenseModes, robotDefenseUnlocked, type RobotDefenseModeId } from './training/robot-defense';
 import { TrainingSession, type FinishTrainingInput } from './components/training/TrainingSession';
 import { TRAINING_MODULES, getTrainingModule } from './training/catalog';
 import type { TrainingAttemptStart, TrainingCompletion } from './domain/training';
 import './progression.css';
 
-type Screen = 'login' | 'home' | 'shop' | 'settings' | 'mission-template' | 'training-center' | 'training-session' | 'teacher' | 'teacher-student';
+type Screen = 'login' | 'home' | 'shop' | 'settings' | 'mission-template' | 'training-center' | 'training-session' | 'robot-defense' | 'teacher' | 'teacher-student';
 type EventType = 'mission_started' | 'tutorial_completed' | 'folder_opened' | 'file_opened' | 'back_used' | 'translation_used' | 'hint_used' | 'objective_completed' | 'mission_completed';
 
 const THEMES: Record<ThemeName, { label: string; color: string }> = {
@@ -64,12 +66,13 @@ function Brand({ languages }: { languages?: LoginSupportLanguage[] }) {
 }
 
 function Topbar({ user, onHome, onLogout }: { user: SessionUser; onHome: () => void; onLogout: () => void }) {
-  return <header className="topbar"><button className="brand-button" onClick={onHome}><Brand /></button><div className="top-actions"><span className="identity"><i />{user.displayName}</span><button className="quiet-button" onClick={onLogout}>Log out</button></div></header>;
+  return <header className="topbar"><button className="brand-button" onClick={onHome}><Brand /></button><div className="top-actions">{user.displayName && <span className="identity"><i />{user.displayName}</span>}<button className="quiet-button" onClick={onLogout}>Log out</button></div></header>;
 }
 
 function LoginScreen({ onAuthenticated }: { onAuthenticated: (user: SessionUser) => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const languages = useMemo(() => preferredLoginLanguages(), []);
@@ -85,16 +88,102 @@ function LoginScreen({ onAuthenticated }: { onAuthenticated: (user: SessionUser)
     } finally { setBusy(false); }
   }
 
-  return <main className="login-screen notranslate" translate="no" lang="en">
-    <div className="login-atmosphere" aria-hidden="true"><div className="radar-ring ring-one" /><div className="radar-ring ring-two" /><div className="agent-mark">01</div></div>
-    <section className="login-copy"><Brand languages={languages} /><div className="login-kicker"><p className="eyebrow">{LOGIN_COPY.kicker.en}</p><LoginTranslations message={LOGIN_COPY.kicker} languages={languages} /></div><h1 aria-label="Hacker Training: Every great agent starts with the basics.">Every great agent<br />starts with the basics.</h1><LoginTranslations message={LOGIN_COPY.hero} languages={languages} className="login-support-heading" /><div className="login-intro"><p>{LOGIN_COPY.intro.en}</p><LoginTranslations message={LOGIN_COPY.intro} languages={languages} /></div><div className="status-line"><i /><div><span>{LOGIN_COPY.online.en}</span><LoginTranslations message={LOGIN_COPY.online} languages={languages} /></div></div></section>
-    <form className="login-panel" onSubmit={submit}>
-      <div><div className="panel-kicker"><p className="step-label">{LOGIN_COPY.access.en}</p><LoginTranslations message={LOGIN_COPY.access} languages={languages} /></div><h2>{LOGIN_COPY.ready.en}</h2><LoginTranslations message={LOGIN_COPY.ready} languages={languages} className="panel-heading-translations" /><p>{LOGIN_COPY.account.en}</p><LoginTranslations message={LOGIN_COPY.account} languages={languages} className="panel-translation" /></div>
-      <label><span>{LOGIN_COPY.username.en}</span><LoginTranslations message={LOGIN_COPY.username} languages={languages} /><input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" required /></label>
-      <label><span>{LOGIN_COPY.password.en}</span><LoginTranslations message={LOGIN_COPY.password} languages={languages} /><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required /></label>
-      {error && <p className="error" role="alert">{error}</p>}
-      <button className="primary-button login-submit" disabled={busy}><span><b>{busy ? LOGIN_COPY.connecting.en : LOGIN_COPY.enter.en}</b><LoginTranslations message={busy ? LOGIN_COPY.connecting : LOGIN_COPY.enter} languages={languages} /></span><i>→</i></button>
-    </form>
+  return <main className="login-screen cyber-login notranslate" translate="no" lang="en">
+    <div className="cyber-login-background" aria-hidden="true">
+      <div className="cyber-login-grid" />
+      <div className="cyber-login-floor" />
+      <div className="cyber-login-scan" />
+      <div className="cyber-login-glow glow-one" />
+      <div className="cyber-login-glow glow-two" />
+      <div className="cyber-login-shape shape-one" />
+      <div className="cyber-login-shape shape-two" />
+    </div>
+
+    <div className="cyber-login-dock">
+      <header className="cyber-hud-ribbon spectral-border" data-rgb-pattern="ribbon">
+        <div className="cyber-ribbon-title"><i /><span>PORTAL_ONLINE</span><b>//</b><strong>CYBER HERO TRAINING GATEWAY</strong><em>[NODE_LINK: READY]</em></div>
+        <div className="cyber-ribbon-stats">
+          <span><small>AUTH PROTOCOL</small><b>SECURE ACCESS</b></span>
+          <span><small>DEFENSE GRID</small><b>TRAINING MODE</b></span>
+          <span className="cadet-chip">CADET LVL 1+</span>
+        </div>
+      </header>
+
+      <div className="cyber-login-layout">
+        <aside className="cyber-login-side cyber-login-left">
+          <section className="hud-panel telemetry-panel spectral-border" data-rgb-pattern="clockwise">
+            <div className="hud-panel-title"><span>◎ TELEMETRY_LINK</span><small>GEO_09 // 軌道通信</small></div>
+            <div className="latency-readout"><span>QUANTUM<br />LATENCY</span><strong>12 MS<br />[OPTIMAL]</strong><svg aria-hidden="true" viewBox="0 0 220 42" preserveAspectRatio="none"><path d="M0 22 C25 2 44 40 73 21 S124 4 151 22 S197 43 220 8" /></svg></div>
+            <div className="telemetry-pair"><div><span>PACKET LOSS</span><b>0.00%</b></div><div><span>GATEWAY</span><b>EU-TRAIN-01</b></div></div>
+            <div className="sync-meter"><span>NEURAL LINK SYNC <b>98.7%</b></span><i><em /></i></div>
+          </section>
+          <section className="hud-panel radar-lock-panel spectral-border" data-rgb-pattern="diagonal">
+            <div className="hud-panel-title orange"><span>RADAR LOCK: ACADEMY_01</span><i /></div>
+            <p>SAFE TRAINING CHANNEL ESTABLISHED. DIRECT LINK LOCKED TO THE HACKER TRAINING NETWORK.</p>
+            <div className="handshake"><span>HANDSHAKE STATUS</span><b>SYNCHRONIZED // 準備完了</b></div>
+          </section>
+        </aside>
+
+        <section className="cyber-access-panel spectral-border" data-rgb-pattern="portal-wave">
+          <div className="cyber-emblem" aria-hidden="true">
+            <img src={`${import.meta.env.BASE_URL}cyber-hero-logo.png`} alt="" />
+          </div>
+          <div className="cyber-login-heading">
+            <h1 aria-label="Hacker Training: Every great agent starts with the basics.">CYBER <em>HERO</em></h1>
+            <p>HACKER TRAINING OS // NETWORK ACCESS PORTAL</p>
+            <LoginTranslations message={LOGIN_COPY.brand} languages={languages} />
+            <LoginTranslations message={LOGIN_COPY.hero} languages={languages} className="cyber-hero-translations" />
+          </div>
+
+          <form className="cyber-login-form" onSubmit={submit}>
+            <div className="cyber-field-heading"><span>▣ {LOGIN_COPY.username.en.toUpperCase()} / AGENT ID</span><LoginTranslations message={LOGIN_COPY.username} languages={languages} /></div>
+            <label className="cyber-input-shell">
+              <span>[AGENT_ID]:</span>
+              <input aria-label={LOGIN_COPY.username.en} value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" placeholder="ENTER USERNAME" required />
+              <b aria-hidden="true">◇</b>
+            </label>
+
+            <div className="cyber-field-heading"><div><span>⚿ TACTICAL CIPHER PASSKEY</span><LoginTranslations message={LOGIN_COPY.password} languages={languages} /></div><button type="button" onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? '[HIDE CIPHER]' : '[REVEAL CIPHER]'}</button></div>
+            <label className="cyber-input-shell">
+              <span>[CIPHER]:</span>
+              <input aria-label={LOGIN_COPY.password.en} type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" placeholder="ENTER PASSKEY" required />
+              <b aria-hidden="true">▣</b>
+            </label>
+
+            <div className="cyber-access-copy">
+              <p>{LOGIN_COPY.account.en}</p>
+              <LoginTranslations message={LOGIN_COPY.account} languages={languages} />
+            </div>
+            {error && <p className="error cyber-login-error" role="alert">{error}</p>}
+            <button className="cyber-connect-button" disabled={busy}><span>ϟ</span><b>{busy ? LOGIN_COPY.connecting.en : LOGIN_COPY.enter.en}</b><i>→</i><LoginTranslations message={busy ? LOGIN_COPY.connecting : LOGIN_COPY.enter} languages={languages} /></button>
+          </form>
+          <div className="cyber-access-foot"><span>◇ SAFE STUDENT ACCESS</span><b>SECURITY AUDIT ✓</b></div>
+        </section>
+
+        <aside className="cyber-login-side cyber-login-right">
+          <section className="hud-panel radar-panel spectral-border" data-rgb-pattern="radar-orbit">
+            <div className="hud-panel-title orange"><span>RADAR SWEEP // 衛星レーダー</span><small>360° ACT</small></div>
+            <div className="radar-scope" aria-hidden="true"><i /><b /><em /><span /></div>
+            <div className="radar-node">NODE: ACADEMY ENCLAVE 01</div>
+          </section>
+          <section className="hud-panel rules-panel spectral-border" data-rgb-pattern="counter-clockwise">
+            <div className="hud-panel-title"><span>♢ RULES OF ENGAGEMENT</span></div>
+            <ol>
+              <li><b>01</b><div><strong>PROTECT YOUR ACCOUNT</strong><p>Never share your password. Always log out before another student plays.</p></div></li>
+              <li><b>02</b><div><strong>TRAIN SAFELY</strong><p>All activity happens inside a safe simulated computer.</p></div></li>
+              <li><b>03</b><div><strong>LEARN AT YOUR PACE</strong><p>Use translation and Cyber Guide support whenever you need it.</p></div></li>
+            </ol>
+          </section>
+        </aside>
+      </div>
+
+      <footer className="cyber-login-footer spectral-border" data-rgb-pattern="footer-wave">
+        <span>▣ SAFE SIMULATION MODE</span>
+        <b>NO LIVE SERVER IMPACT</b>
+        <p>{LOGIN_COPY.intro.en}<LoginTranslations message={LOGIN_COPY.intro} languages={languages} /></p>
+        <strong>256-BIT TRAINING ENCLAVE</strong>
+      </footer>
+    </div>
   </main>;
 }
 
@@ -220,6 +309,8 @@ export default function App() {
   const [attemptId, setAttemptId] = useState<string>();
   const [selectedMissionId, setSelectedMissionId] = useState<string>(missionOne.id);
   const [selectedTrainingId, setSelectedTrainingId] = useState<string>('systems-calibration');
+  const [selectedRobotDefenseMode, setSelectedRobotDefenseMode] = useState<RobotDefenseModeId>('base_defense');
+  const [robotDefenseReturnScreen, setRobotDefenseReturnScreen] = useState<'home' | 'training-center' | 'teacher'>('training-center');
   const [trainingAttempt, setTrainingAttempt] = useState<TrainingAttemptStart>();
 
   useEffect(() => {
@@ -265,7 +356,7 @@ export default function App() {
       } catch { /* local state still clears */ }
     }
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
-    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setTeacherDetail(undefined); setAttemptId(undefined); setTrainingAttempt(undefined); setSelectedMissionId(missionOne.id); setSelectedTrainingId('systems-calibration'); setScreen('login');
+    setUser(undefined); setDashboard(EMPTY_DASHBOARD); setStudents([]); setTeacherDetail(undefined); setAttemptId(undefined); setTrainingAttempt(undefined); setSelectedMissionId(missionOne.id); setSelectedTrainingId('systems-calibration'); setSelectedRobotDefenseMode('base_defense'); setScreen('login');
   }
   const selectedMission = getMission(selectedMissionId) ?? missionOne;
   const selectedTraining = getTrainingModule(selectedTrainingId);
@@ -296,20 +387,21 @@ export default function App() {
   const content = (() => {
     if (screen === 'home' && progression && pendingIdentity) return <IdentityProtocol user={user} progression={progression} onUpdate={updateProgression} />;
     if (screen === 'home' && progression && pendingTransmission) return <Transmission user={user} progression={progression} onUpdate={updateProgression} />;
-    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('mission-template'); }} onSettings={() => setScreen('settings')} onShop={() => setScreen('shop')} onProgression={updateProgression} onTraining={() => setScreen('training-center')} />;
+    if (screen === 'home') return <MissionDashboard user={user} dashboard={dashboard} onMission={(missionId) => { setSelectedMissionId(missionId); setScreen('mission-template'); }} onSettings={() => setScreen('settings')} onShop={() => setScreen('shop')} onProgression={updateProgression} onTraining={() => setScreen('training-center')} onRobotDefense={(modeId) => { const mode = robotDefenseModes.find(item => item.id === modeId); if (!mode || !robotDefenseUnlocked(mode, dashboard.completedMissions)) return; setSelectedRobotDefenseMode(modeId); setRobotDefenseReturnScreen('home'); setScreen('robot-defense'); }} />;
     if (screen === 'shop') return <HackerShop user={user} progression={progression ?? emptyProgression()} onUpdate={updateProgression} onBack={() => setScreen('home')} />;
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
     if (screen === 'mission-template') {
       const progress = dashboard.missions.find(item => item.missionId === selectedMission.id);
       return progress ? <MissionTemplate mission={selectedMission} user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} progress={progress} progression={progression} onHome={() => { setAttemptId(undefined); setScreen('home'); }} onRewardContinue={pendingIdentity || pendingTransmission ? () => setScreen('home') : undefined} onAttemptChange={setAttemptId} onComplete={async () => setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken))} /> : null;
     }
-    if (screen === 'training-center') return <TrainingCenter language={user.supportLanguage} modules={TRAINING_MODULES} progress={dashboard.training ?? []} onStart={(trainingId) => void startTraining(trainingId)} onBack={() => setScreen('home')} />;
+    if (screen === 'training-center') return <TrainingCenter language={user.supportLanguage} modules={TRAINING_MODULES} progress={dashboard.training ?? []} completedMissions={dashboard.completedMissions} onStart={(trainingId) => void startTraining(trainingId)} onRobotDefense={(modeId) => { const mode = robotDefenseModes.find(item => item.id === modeId); if (!mode || !robotDefenseUnlocked(mode, dashboard.completedMissions)) return; setSelectedRobotDefenseMode(modeId); setRobotDefenseReturnScreen('training-center'); setScreen('robot-defense'); }} onBack={() => setScreen('home')} />;
+    if (screen === 'robot-defense') return <RobotDefense mode={selectedRobotDefenseMode} language={user.supportLanguage} user={user} teacherPreview={user.role === 'teacher'} backToHome={robotDefenseReturnScreen === 'home'} onAccountUpdate={updateProgression} onBack={() => setScreen(robotDefenseReturnScreen)} />;
     if (screen === 'training-session' && selectedTraining && trainingAttempt) return <TrainingSession key={trainingAttempt.attemptId} module={selectedTraining} attempt={trainingAttempt} user={user} finish={finishTraining} onExit={() => setScreen('training-center')} onHome={() => setScreen('home')} onReplay={() => void startTraining(selectedTrainingId)} />;
-    if (user.role === 'teacher' && screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} onReset={async (missionId) => { await api('teacher.resetMission', { studentId: teacherDetail.student.id, missionId }, user.csrfToken); const [detail, list] = await Promise.all([api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken), api<{ students: TeacherStudent[] }>('teacher.students', {}, user.csrfToken)]); setTeacherDetail(detail); setStudents(list.students); }} />;
-    if (screen === 'teacher') return <MissionControl students={students} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
+    if (user.role === 'teacher' && screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} onSetBalances={async (changes) => { await api('teacher.setBalances', { studentId: teacherDetail.student.id, ...changes }, user.csrfToken); const detail = await api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken); setTeacherDetail(detail); }} onReset={async (missionId) => { await api('teacher.resetMission', { studentId: teacherDetail.student.id, missionId }, user.csrfToken); const [detail, list] = await Promise.all([api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken), api<{ students: TeacherStudent[] }>('teacher.students', {}, user.csrfToken)]); setTeacherDetail(detail); setStudents(list.students); }} />;
+    if (screen === 'teacher') return <MissionControl students={students} onPreviewTraining={() => { setSelectedRobotDefenseMode('base_defense'); setRobotDefenseReturnScreen('teacher'); setScreen('robot-defense'); }} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
     return null;
   })();
 
   const equipmentClasses = Object.values(progression?.equippedItems ?? {}).map(id => ECONOMY.items.find(item => item.itemId === id)?.asset.className ?? '').join(' ');
-  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
+  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerIdentityUnlocked ? (progression.hackerCodename ?? '') : '' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
 }

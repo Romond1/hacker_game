@@ -42,9 +42,10 @@ describe('local development authentication', () => {
     ]);
   });
 
-  it('allows the test student to use the shared student password', () => {
+  it('allows the test student to use the shared student password and derives canTestShop capability', () => {
     const service = createDevAuthService(fixture());
-    expect(service.login('test.hacker', 'student-test-secret')?.user).toMatchObject({ role: 'student', username: 'test.hacker' });
+    expect(service.login('test.hacker', 'student-test-secret')?.user).toMatchObject({ role: 'student', username: 'test.hacker', canTestShop: true });
+    expect(service.login('himari.hacker', 'student-test-secret')?.user).toMatchObject({ role: 'student', username: 'himari.hacker', canTestShop: false });
   });
 
   it('resets only the selected mission and rejects old attempts after reset', () => {

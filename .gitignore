@@ -17,3 +17,7 @@ vite.config.d.ts
 Thumbs.db
 SSH passkey/
 *.key
+/TRAINING CENTER/Assets/
+/TRAINING CENTER/**/*.ai
+/TRAINING CENTER/**/craftpix-net-*/
+/TRAINING CENTER/**/__MACOSX/

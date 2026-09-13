@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CYBER HERO — QUANTUM HACKER ACADEMY RPG</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:wght@400;700&amp;family=JetBrains+Mono:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#ffb77d",
+          "primary-container": "#ff8c00",
+          "secondary": "#d3fbff",
+          "secondary-container": "#00eefc",
+          "tertiary": "#00e55b",
+          "neon-cyan": "#00F0FF",
+          "neon-orange": "#FF8C00",
+          "neon-green": "#00E55B",
+          "neon-amber": "#FFB77D",
+          "obsidian-deep": "#030608",
+          "obsidian-card": "#091210",
+          "obsidian-elevated": "#0f1c17",
+          "surface-container": "#18221d"
+        },
+        fontFamily: {
+          "orbitron": ["Orbitron", "sans-serif"],
+          "display": ["Space Grotesk", "sans-serif"],
+          "body": ["Plus Jakarta Sans", "sans-serif"],
+          "mono": ["Space Mono", "monospace"],
+          "code": ["JetBrains Mono", "monospace"]
+        }
+      }
+    }
+  };
+</script>
+<style>
+  @layer base {
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #030608;
+      color: #dae5de;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030608;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #193129;
+      border-radius: 6px;
+      border: 2px solid #030608;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff8c00;
+    }
+  }
+
+  /* BASE RGB CHROMA CARD STRUCTURE */
+  .rgb-chroma-card {
+    position: relative;
+    border-radius: 1.5rem; /* rounded-3xl */
+    isolation: isolate;
+  }
+
+  .rgb-chroma-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(6, 14, 12, 0.68) 0%, rgba(3, 7, 6, 0.82) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* CSS PROPERTY FOR ROTATING CONIC GRADIENTS */
+  @property --spectral-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  /* KEYFRAMES FOR DIVERSE INDIVIDUALIZED MOTION PATTERNS */
+  @keyframes spinClockwise {
+    0% { --spectral-angle: 0deg; }
+    100% { --spectral-angle: 360deg; }
+  }
+
+  @keyframes spinCounterClockwise {
+    0% { --spectral-angle: 360deg; }
+    100% { --spectral-angle: 0deg; }
+  }
+
+  @keyframes waveFlowHorizontal {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes waveFlowDiagonal {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+  }
+
+  @keyframes pulseRadialBloom {
+    0%, 100% {
+      opacity: 0.55;
+      transform: scale(1);
+      filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.25));
+    }
+    50% {
+      opacity: 0.75;
+      transform: scale(1.006);
+      filter: drop-shadow(0 0 11px rgba(255, 140, 0, 0.45));
+    }
+  }
+
+  /* 1. TOP RIBBON / NAV BARS: Subtle Linear Pulse */
+  .rgb-pattern-ribbon::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ff0055aa, #ff8c00aa, #00f0ffaa, #00ff88aa, #7000ffaa, #ff0055aa);
+    background-size: 300% 100%;
+    animation: waveFlowHorizontal 8s linear infinite;
+    z-index: -2;
+    opacity: 0.68; /* 20% reduced intensity */
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.3));
+    transition: opacity 0.3s ease;
+  }
+
+  /* 2. OPERATIVE ECHO PROFILE CARD: Smooth CLOCKWISE Conic rotation at ~7s cycle */
+  .rgb-pattern-clockwise-7s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--spectral-angle),
+      rgba(255, 0, 85, 0.85),
+      rgba(255, 140, 0, 0.85),
+      rgba(255, 238, 0, 0.85),
+      rgba(0, 240, 255, 0.85),
+      rgba(0, 255, 136, 0.85),
+      rgba(112, 0, 255, 0.85),
+      rgba(255, 0, 85, 0.85)
+    );
+    animation: spinClockwise 7s linear infinite;
+    z-index: -2;
+    opacity: 0.72; /* 20% softened intensity */
+    filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.38));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-clockwise-7s:hover::before {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.5));
+  }
+
+  /* 3. OPERATION 04 HERO MISSION CARD: Flowing horizontal undulating WAVE at ~4.5s cycle */
+  .rgb-pattern-wave-45s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      #ff0055,
+      #ff8c00,
+      #ffee00,
+      #00f0ff,
+      #00e55b,
+      #7000ff,
+      #ff8c00,
+      #00f0ff,
+      #ff0055
+    );
+    background-size: 350% 100%;
+    animation: waveFlowHorizontal 4.5s ease-in-out infinite;
+    z-index: -2;
+    opacity: 0.72; /* 20% softened */
+    filter: drop-shadow(0 0 9px rgba(0, 240, 255, 0.35));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-wave-45s:hover::before {
+    opacity: 0.84;
+    filter: drop-shadow(0 0 13px rgba(255, 140, 0, 0.5));
+  }
+
+  /* 4. CONSOLE LINK / LAUNCH CARD: COUNTER-CLOCKWISE Conic rotation at ~5s cycle */
+  .rgb-pattern-counter-5s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--spectral-angle),
+      rgba(255, 140, 0, 0.9),
+      rgba(255, 0, 85, 0.9),
+      rgba(112, 0, 255, 0.9),
+      rgba(0, 240, 255, 0.9),
+      rgba(0, 255, 136, 0.9),
+      rgba(255, 238, 0, 0.9),
+      rgba(255, 140, 0, 0.9)
+    );
+    animation: spinCounterClockwise 5s linear infinite;
+    z-index: -2;
+    opacity: 0.74; /* 20% softened */
+    filter: drop-shadow(0 0 8px rgba(255, 140, 0, 0.4));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-counter-5s:hover::before {
+    opacity: 0.86;
+    filter: drop-shadow(0 0 13px rgba(255, 140, 0, 0.55));
+  }
+
+  /* 5. CAMPAIGN PROGRESSION NETWORK CARD: Sinusoidal diagonal breathing/sweeping wave at ~9s cycle */
+  .rgb-pattern-diagonal-9s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      #00e55b 0%,
+      #00f0ff 25%,
+      #7000ff 50%,
+      #ff0055 75%,
+      #ff8c00 100%
+    );
+    background-size: 300% 300%;
+    animation: waveFlowDiagonal 9s ease-in-out infinite;
+    z-index: -2;
+    opacity: 0.68; /* 20% softened */
+    filter: drop-shadow(0 0 7px rgba(0, 229, 91, 0.32));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-diagonal-9s:hover::before {
+    opacity: 0.82;
+    filter: drop-shadow(0 0 11px rgba(0, 240, 255, 0.45));
+  }
+
+  /* 6. SIMULATION CHAMBER: Fast-paced clockwise orbital trace at ~3.8s cycle */
+  .rgb-pattern-orbital-fast-38s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--spectral-angle),
+      #00f0ff,
+      #00e55b,
+      #ffee00,
+      #ff8c00,
+      #7000ff,
+      #00f0ff
+    );
+    animation: spinClockwise 3.8s linear infinite;
+    z-index: -2;
+    opacity: 0.70; /* 20% softened */
+    filter: drop-shadow(0 0 7px rgba(0, 240, 255, 0.35));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-orbital-fast-38s:hover::before {
+    opacity: 0.84;
+    filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.5));
+  }
+
+  /* 7. SUPPLY DEPOT: Counter-clockwise reverse orbit / wave at ~6.2s cycle */
+  .rgb-pattern-counter-62s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--spectral-angle),
+      #ff8c00,
+      #ffee00,
+      #ff0055,
+      #7000ff,
+      #00f0ff,
+      #ff8c00
+    );
+    animation: spinCounterClockwise 6.2s linear infinite;
+    z-index: -2;
+    opacity: 0.70; /* 20% softened */
+    filter: drop-shadow(0 0 7px rgba(255, 140, 0, 0.35));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-counter-62s:hover::before {
+    opacity: 0.84;
+    filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.5));
+  }
+
+  /* 8. SYSTEM ACTION STREAM / TERMINAL: Slow subtle horizontal scanning chromatic wave at ~11s cycle */
+  .rgb-pattern-scan-11s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      #00f0ff 0%,
+      #00e55b 20%,
+      #ff8c00 40%,
+      #ff0055 60%,
+      #7000ff 80%,
+      #00f0ff 100%
+    );
+    background-size: 300% 100%;
+    animation: waveFlowHorizontal 11s linear infinite;
+    z-index: -2;
+    opacity: 0.66; /* 20% softened */
+    filter: drop-shadow(0 0 6px rgba(0, 240, 255, 0.28));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-scan-11s:hover::before {
+    opacity: 0.80;
+    filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45));
+  }
+
+  /* 9. SYSTEM MODULES / ACADEMY RIG: Subtle radial pulsating chromatic bloom / breathing at ~8s cycle */
+  .rgb-pattern-bloom-8s::before {
+    content: '';
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 140, 0, 0.85) 0%,
+      rgba(0, 240, 255, 0.85) 45%,
+      rgba(112, 0, 255, 0.85) 75%,
+      rgba(0, 229, 91, 0.85) 100%
+    );
+    animation: pulseRadialBloom 8s ease-in-out infinite;
+    z-index: -2;
+    opacity: 0.66; /* 20% softened */
+    filter: drop-shadow(0 0 6px rgba(255, 140, 0, 0.3));
+    transition: opacity 0.3s ease, filter 0.3s ease;
+  }
+  .rgb-pattern-bloom-8s:hover::before {
+    opacity: 0.82;
+    filter: drop-shadow(0 0 11px rgba(255, 140, 0, 0.48));
+  }
+
+  /* GEOMETRIC POLYGONAL MATRIX & FLOATING CRYSTALLINE SHAPES */
+  @keyframes polyDrift1 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    33% { transform: translate(35px, -45px) rotate(45deg) scale(1.08); }
+    66% { transform: translate(-25px, 20px) rotate(-30deg) scale(0.95); }
+  }
+
+  @keyframes polyDrift2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    50% { transform: translate(-45px, -60px) rotate(-70deg) scale(1.15); }
+  }
+
+  @keyframes polyDrift3 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(30px, 50px) rotate(120deg); }
+  }
+
+  .animate-poly-1 { animation: polyDrift1 18s ease-in-out infinite; }
+  .animate-poly-2 { animation: polyDrift2 24s ease-in-out infinite; }
+  .animate-poly-3 { animation: polyDrift3 28s ease-in-out infinite; }
+
+  /* CONTINUOUS RADAR SWEEP SCANLINE */
+  @keyframes radarPageScan {
+    0% {
+      top: -120px;
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.85;
+    }
+    85% {
+      opacity: 0.85;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+
+  .radar-sweep-scanline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 240, 255, 0.04) 30%,
+      rgba(255, 140, 0, 0.12) 75%,
+      rgba(0, 240, 255, 0.35) 98%,
+      #00f0ff 100%
+    );
+    box-shadow: 0 4px 28px rgba(0, 240, 255, 0.45);
+    pointer-events: none;
+    animation: radarPageScan 10s linear infinite;
+    z-index: 0;
+  }
+
+  /* Grid & Floor */
+  .cyber-grid-infinite {
+    background-image: 
+      linear-gradient(to right, rgba(0, 240, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+    background-size: 55px 55px;
+    animation: infiniteGridTravel 2.8s linear infinite;
+  }
+
+  @keyframes infiniteGridTravel {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 55px; }
+  }
+
+  .cyber-perspective-floor {
+    transform: perspective(650px) rotateX(65deg) scale(1.65);
+    transform-origin: 50% 100%;
+  }
+
+  .cockpit-radar-bay {
+    background: radial-gradient(circle at 50% 50%, rgba(13, 33, 26, 0.65) 0%, rgba(5, 13, 10, 0.85) 80%, rgba(2, 6, 5, 0.95) 100%);
+    box-shadow: 
+      inset 0 0 40px rgba(0, 0, 0, 0.95),
+      inset 0 0 20px rgba(0, 240, 255, 0.25);
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    backdrop-filter: blur(16px);
+  }
+
+  .launch-btn-glow {
+    box-shadow: 
+      0 0 28px rgba(255, 140, 0, 0.52),
+      0 12px 28px rgba(0, 0, 0, 0.7),
+      inset 0 2px 3px rgba(255, 255, 255, 0.6),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.4);
+  }
+  .launch-btn-glow:hover {
+    box-shadow: 
+      0 0 44px rgba(255, 140, 0, 0.76),
+      0 16px 36px rgba(255, 140, 0, 0.32),
+      inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  }
+</style>
+</head>
+<body class="bg-obsidian-deep text-on-surface font-body selection:bg-neon-orange selection:text-black relative">
+<!-- ================= 00: RICH GEOMETRIC POLYGONAL MATRIX & CONTINUOUS RADAR SCANLINE ================= -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<!-- Traveling Radar Scanline Beam (Full Page Pass) -->
+<div class="radar-sweep-scanline"></div>
+<!-- Isometric Polygonal Wireframes & Diamond Matrix Layers -->
+<div class="absolute inset-0 cyber-grid-infinite opacity-40"></div>
+<div class="absolute -bottom-[20%] left-0 right-0 h-[65%] cyber-grid-infinite cyber-perspective-floor opacity-50"></div>
+<!-- Floating Polygonal Shards & Crystals in Background (Parallax planes) -->
+<!-- 1. Octahedron Rhombus Crystal (Top Right) -->
+<div class="absolute top-24 right-[10%] w-44 h-44 animate-poly-1 opacity-45">
+<svg class="w-full h-full text-cyan-400 drop-shadow-[0_0_15px_rgba(0,240,255,0.45)]" viewbox="0 0 100 100">
+<polygon fill="none" points="50,5 95,50 50,95 5,50" stroke="currentColor" stroke-dasharray="3 2" stroke-width="1.5"></polygon>
+<polygon fill="rgba(0,240,255,0.06)" points="50,20 80,50 50,80 20,50" stroke="currentColor" stroke-width="1.2"></polygon>
+<line opacity="0.6" stroke="#ff8c00" stroke-width="1" x1="5" x2="95" y1="50" y2="50"></line>
+<line opacity="0.6" stroke="#ff8c00" stroke-width="1" x1="50" x2="50" y1="5" y2="95"></line>
+</svg>
+</div>
+<!-- 2. Drifting Wireframe Tetrahedron (Mid Left) -->
+<div class="absolute top-[680px] left-[5%] w-56 h-56 animate-poly-2 opacity-40">
+<svg class="w-full h-full text-neon-orange drop-shadow-[0_0_18px_rgba(255,140,0,0.45)]" viewbox="0 0 120 120">
+<polygon fill="rgba(255,140,0,0.05)" points="60,10 110,100 10,100" stroke="currentColor" stroke-width="1.5"></polygon>
+<line stroke="#00f0ff" stroke-width="1.5" x1="60" x2="60" y1="10" y2="72"></line>
+<line stroke="#00f0ff" stroke-width="1.5" x1="10" x2="60" y1="100" y2="72"></line>
+<line stroke="#00f0ff" stroke-width="1.5" x1="110" x2="60" y1="100" y2="72"></line>
+<circle cx="60" cy="72" fill="#00e55b" r="4"></circle>
+</svg>
+</div>
+<!-- 3. Faceted Crystalline Shard (Lower Right) -->
+<div class="absolute top-[1350px] right-[7%] w-60 h-60 animate-poly-3 opacity-35">
+<svg class="w-full h-full text-fuchsia-400 drop-shadow-[0_0_20px_rgba(217,70,239,0.4)]" viewbox="0 0 100 100">
+<polygon fill="none" points="30,10 70,10 90,50 60,90 20,80 10,40" stroke="currentColor" stroke-width="1.5"></polygon>
+<line stroke="currentColor" stroke-dasharray="2 3" stroke-width="1" x1="30" x2="60" y1="10" y2="90"></line>
+<line stroke="#00f0ff" stroke-width="1" x1="70" x2="20" y1="10" y2="80"></line>
+<line stroke="#ff8c00" stroke-width="1" x1="10" x2="90" y1="40" y2="50"></line>
+</svg>
+</div>
+<!-- 4. Chevron Cluster Matrix (Near Center) -->
+<div class="absolute top-[1850px] left-[12%] w-48 h-48 animate-poly-1 opacity-40">
+<svg class="w-full h-full text-emerald-400 drop-shadow-[0_0_16px_rgba(0,229,91,0.45)]" viewbox="0 0 100 100">
+<path d="M 20 20 L 50 45 L 80 20" fill="none" stroke="currentColor" stroke-width="2"></path>
+<path d="M 20 40 L 50 65 L 80 40" fill="none" stroke="#00f0ff" stroke-width="2"></path>
+<path d="M 20 60 L 50 85 L 80 60" fill="none" stroke="#ff8c00" stroke-width="2"></path>
+<circle cx="50" cy="45" fill="#ffffff" r="3"></circle>
+<circle cx="50" cy="65" fill="#ffffff" r="3"></circle>
+<circle cx="50" cy="85" fill="#ffffff" r="3"></circle>
+</svg>
+</div>
+<!-- Ambient Spectrum Glow Spheres -->
+<div class="absolute -top-32 -left-32 w-[750px] h-[750px] rounded-full blur-[170px] opacity-30 bg-gradient-to-tr from-cyan-500 via-fuchsia-600 to-indigo-600 mix-blend-screen"></div>
+<div class="absolute top-[35%] -right-48 w-[800px] h-[800px] rounded-full blur-[180px] opacity-25 bg-gradient-to-br from-amber-500 via-rose-500 to-cyan-500 mix-blend-screen"></div>
+<div class="absolute bottom-10 left-1/4 w-[750px] h-[750px] rounded-full blur-[180px] opacity-25 bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 mix-blend-screen"></div>
+</div>
+<!-- ================= 00: GLOBAL FLOATING SCI-FI GLASS NAVIGATION ================= -->
+<header class="fixed top-0 left-0 w-full h-24 rgb-chroma-card rgb-pattern-ribbon !rounded-none z-50 px-6 sm:px-10 flex items-center justify-between border-b border-white/20">
+<!-- Glowing Bottom Energy Seam with shifting rainbow tint -->
+<div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-neon-orange via-neon-cyan via-fuchsia-500 to-neon-green opacity-95"></div>
+<!-- Left: Cyber Hero Shield Logo & Rig Title -->
+<div class="flex items-center gap-4 sm:gap-5 relative z-10">
+<a class="relative group p-1 bg-black/60 rounded-2xl border border-white/25 shadow-[0_0_20px_rgba(255,140,0,0.35)] transition-transform duration-300 hover:scale-105" href="#hero-showcase">
+<div class="absolute -inset-1 bg-gradient-to-r from-neon-orange via-cyan-400 to-neon-green rounded-2xl blur-xs opacity-75 group-hover:opacity-100 transition duration-300"></div>
+<img alt="Cyber Hero Shield Logo" class="relative w-14 h-14 object-contain drop-shadow-[0_4px_12px_rgba(255,140,0,0.6)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUz2edw-WKMjDE1wijvz9Et9SRdubv1BeANtPP_-MyXFUVS8n7XSDxoRCgHxrtu2dCpw9KuJ_mb30WjqtYWfGWBcEyv59qw88LKWXIC1VsLpr0NkybHAatgl0q4UZk5dmmgZiChH7tw-iMnxJ1YrSfnCo3qdvCdPuVdbTVwPQN1AP6XgM9fBTOGrvG_qRzSfHB_i_5ZI-SIw43Z4lqdzirMK9xyFPAuGeUDz5RAO3nCpk1b3ugoFft_N07Cq69wIRMrRA"/>
+</a>
+<div class="flex flex-col">
+<div class="flex flex-wrap items-center gap-2 sm:gap-3">
+<span class="font-orbitron font-black text-xl sm:text-2xl tracking-wider text-white uppercase drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">CYBER HERO</span>
+<span class="font-mono text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full bg-cyan-950/70 border border-neon-cyan/60 tracking-widest text-neon-cyan shadow-[0_0_12px_rgba(0,240,255,0.25)]">// HACKER TRAINING RIG</span>
+<span class="hidden md:inline-flex items-center gap-1 font-orbitron text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-orange-500/20 text-neon-orange border border-orange-500/40">RPG MODE ACTIVE</span>
+</div>
+<div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-mono text-slate-300 mt-1">
+<span class="w-2.5 h-2.5 rounded-full bg-neon-green animate-ping"></span>
+<span class="font-bold text-white">作戦区域 // SECTOR 00: ORBITAL DEFENSE</span>
+<span class="text-slate-600">|</span>
+<span class="text-neon-orange font-bold">NODE: 7B-21</span>
+<span class="text-slate-600">|</span>
+<span class="text-neon-cyan font-bold">NEURAL LINK ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Center Nav Tabs (Fast Jump Scroll Across RPG Stages) -->
+<nav class="hidden 2xl:flex items-center gap-2 px-4 py-2 rounded-2xl bg-black/50 border border-white/20 backdrop-blur-xl relative z-10">
+<a class="px-3.5 py-1.5 rounded-xl font-display text-xs font-bold text-slate-300 hover:text-neon-cyan hover:bg-cyan-950/40 transition" href="#hero-showcase">OPERATIVE PROFILE</a>
+<a class="px-3.5 py-1.5 rounded-xl font-display text-xs font-bold text-neon-orange bg-orange-950/40 border border-orange-500/40 transition" href="#mission-briefing">OPERATION 04</a>
+<a class="px-3.5 py-1.5 rounded-xl font-display text-xs font-bold text-slate-300 hover:text-neon-green hover:bg-emerald-950/40 transition" href="#campaign-network">DEFENSE SECTORS</a>
+<a class="px-3.5 py-1.5 rounded-xl font-display text-xs font-bold text-slate-300 hover:text-neon-cyan hover:bg-cyan-950/40 transition" href="#simulator-depot">DEPOT &amp; SIMULATOR</a>
+<a class="px-3.5 py-1.5 rounded-xl font-display text-xs font-bold text-slate-300 hover:text-white transition" href="#telemetry-console">ACTION STREAM</a>
+</nav>
+<!-- Right: Central Telemetry & Operative Logout -->
+<div class="flex items-center gap-3 sm:gap-4 relative z-10">
+<div class="hidden lg:flex items-center gap-4 px-4 py-2 rounded-2xl bg-black/50 backdrop-blur-xl border border-white/20 text-xs font-mono">
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold">SECURITY CLEARANCE:</span>
+<span class="px-2.5 py-0.5 rounded-md bg-neon-orange text-black font-black text-[11px] shadow-[0_0_10px_#FF8C00]">OPERATOR LVL 4</span>
+</div>
+<div class="w-px h-4 bg-white/20"></div>
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold">RIG LATENCY:</span>
+<span class="text-neon-cyan font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30">12ms [OPTIMAL]</span>
+</div>
+<div class="w-px h-4 bg-white/20"></div>
+<div class="flex items-center gap-2">
+<span class="text-slate-400 font-bold">SIGNAL LOCK:</span>
+<span class="text-neon-green font-bold bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/30">98.7%</span>
+</div>
+</div>
+<div class="flex items-center gap-3 px-3.5 py-2 rounded-2xl bg-black/50 backdrop-blur-xl border border-white/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+<div class="relative">
+<img alt="ECHO Cyber Wolf Mini" class="w-10 h-10 rounded-xl object-cover ring-2 ring-neon-orange shadow-[0_0_10px_rgba(255,140,0,0.5)]" src="https://lh3.googleusercontent.com/aida/AEtjO1VispCJ-g0YiF19Oa7Y6ykSANBVsqBYWNlI0fwQd_8yevLzgu8GBqi8tLVoffeX_jDmmzRIP7-8i0eB5qjVQvcOqzp7s6wGZ3oc9Sz-BUBUmmqwnc_bzyASPFKuqZfUImoK_ziq3rcVm7BWWlL9SpYvM3VPyA66Q_pTtWNWUZr96_Y3zDEEqLgTnVcZ3q6IRa-RwxhRoHUJuR8x7fRbFU5zdVAp3jip9P9XZr57wRMjwq69xvH00QtC0bh1"/>
+<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-neon-green border-2 border-black animate-pulse"></span>
+</div>
+<div class="hidden sm:flex flex-col">
+<div class="font-display font-bold text-xs tracking-wider text-white flex items-center gap-1.5">
+<span>CODENAME: ECHO</span>
+<span class="text-[9px] font-mono font-bold text-black bg-neon-orange px-1.5 py-0.2 rounded-full">WOLF-01</span>
+</div>
+<div class="text-[10px] font-mono text-neon-cyan font-semibold">OPERATOR // 任務遂行中</div>
+</div>
+</div>
+<button class="px-3 sm:px-4 py-2 bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 font-mono text-xs font-bold rounded-xl border border-rose-500/40 transition-all flex items-center gap-1.5 shadow-[0_0_12px_rgba(244,63,94,0.2)] active:scale-95">
+<span class="hidden md:inline">LOGOUT</span>
+<span class="material-symbols-outlined text-[18px] text-rose-400">power_settings_new</span>
+</button>
+</div>
+</header>
+<!-- ================= EXPANSIVE VERTICAL GAMING CANVAS ================= -->
+<main class="w-full pt-32 pb-24 px-4 sm:px-8 lg:px-12 max-w-[1720px] mx-auto flex flex-col gap-14 relative z-10">
+<!-- ================= TOP QUANTUM NEURAL STATUS RIBBON ================= -->
+<section class="rgb-chroma-card rgb-pattern-ribbon rounded-3xl p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4 sm:gap-6">
+<div class="flex items-center gap-3">
+<span class="relative flex h-4 w-4">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-4 w-4 bg-neon-cyan shadow-[0_0_10px_#00F0FF]"></span>
+</span>
+<span class="font-mono text-sm sm:text-base font-bold text-neon-cyan tracking-wider">NEURAL LINK: SYNCHRONIZED</span>
+</div>
+<div class="hidden sm:block w-px h-6 bg-white/20"></div>
+<div class="text-sm font-body font-semibold text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-neon-orange text-[20px]">verified_user</span>
+<span>Operative Echo Ready • Quantum Uplink Established</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-950/80 border border-cyan-400/50 text-cyan-200 font-mono text-xs font-extrabold shadow-[0_0_12px_rgba(0,240,255,0.25)]">
+<span class="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse"></span>
+<span>FIREWALL: ARMED</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-950/80 border border-orange-500/50 text-orange-200 font-mono text-xs font-extrabold shadow-[0_0_12px_rgba(255,140,0,0.25)]">
+<span class="w-2.5 h-2.5 rounded-full bg-neon-orange animate-ping"></span>
+<span>COUNTER-SIGINT: READY</span>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 1: HERO OPERATIVE SHOWCASE (RPG PROFILE & VAULT) ================= -->
+<!-- Individualized RGB Pattern: Smooth CLOCKWISE Conic Rotation at ~7s cycle, softened intensity -->
+<section class="rgb-chroma-card rgb-pattern-clockwise-7s rounded-3xl p-6 sm:p-10" id="hero-showcase">
+<div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
+<!-- Character Cinematic Portrait Box with Spectral Highlight -->
+<div class="relative w-full sm:w-[420px] lg:w-[460px] flex-shrink-0">
+<div class="absolute -inset-3 bg-gradient-to-tr from-neon-cyan via-fuchsia-500/40 to-neon-orange rounded-3xl blur-md opacity-60"></div>
+<div class="relative rounded-3xl overflow-hidden border-2 border-white/40 shadow-[0_0_32px_rgba(0,240,255,0.2)] group">
+<img alt="Friendly Cyber Wolf Operative Echo" class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1VispCJ-g0YiF19Oa7Y6ykSANBVsqBYWNlI0fwQd_8yevLzgu8GBqi8tLVoffeX_jDmmzRIP7-8i0eB5qjVQvcOqzp7s6wGZ3oc9Sz-BUBUmmqwnc_bzyASPFKuqZfUImoK_ziq3rcVm7BWWlL9SpYvM3VPyA66Q_pTtWNWUZr96_Y3zDEEqLgTnVcZ3q6IRa-RwxhRoHUJuR8x7fRbFU5zdVAp3jip9P9XZr57wRMjwq69xvH00QtC0bh1"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/20 pointer-events-none"></div>
+<div class="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-white/20 to-transparent pointer-events-none"></div>
+<div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2">
+<div class="px-3.5 py-2 bg-black/85 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-orange">smart_toy</span>
+<span class="text-xs font-mono font-black text-white">OPERATIVE_ID: #774-ECHO</span>
+</div>
+<span class="text-xs font-mono text-neon-cyan font-extrabold bg-black/85 px-3.5 py-2 rounded-2xl border border-neon-cyan/60 backdrop-blur-md shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+              INTELLIGENCE: 100%
+            </span>
+</div>
+</div>
+</div>
+<!-- Operative RPG Stats & Character Dossier -->
+<div class="flex-1 w-full flex flex-col justify-between gap-6">
+<div class="flex flex-wrap items-start justify-between gap-4 pb-4 border-b border-white/15">
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono uppercase tracking-widest text-slate-400 font-bold">CYBER OPERATIVE</span>
+<span class="text-xs font-mono text-neon-orange bg-orange-950/80 border border-orange-500/40 font-bold px-2 py-0.5 rounded">正義の味方</span>
+</div>
+<div class="flex items-center gap-4 mt-2">
+<h1 class="font-orbitron font-black text-4xl sm:text-5xl text-white tracking-wider drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">ECHO</h1>
+<span class="px-4 py-1.5 bg-neon-orange text-black font-orbitron font-black text-base rounded-full shadow-[0_0_15px_#FF8C00]">LVL 04</span>
+</div>
+</div>
+<div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-950/80 border border-emerald-400/50 shadow-[0_0_15px_rgba(0,229,91,0.25)]">
+<span class="w-3 h-3 rounded-full bg-neon-green animate-ping"></span>
+<span class="text-sm font-mono font-black text-neon-green">OPERATOR</span>
+</div>
+</div>
+<!-- Tactial XP Progression Bar -->
+<div class="p-5 rounded-2xl bg-black/50 backdrop-blur-xl border border-white/20">
+<div class="flex justify-between items-center text-sm font-mono mb-2.5">
+<span class="font-bold text-slate-300 uppercase tracking-wide">TACTICAL XP</span>
+<span class="text-neon-orange font-black text-base">4,604 / 5,000 <span class="text-xs text-slate-400 font-normal">(92%)</span></span>
+</div>
+<div class="h-5 w-full bg-black/60 rounded-full overflow-hidden p-1 border border-white/20 shadow-inner">
+<div class="h-full bg-gradient-to-r from-neon-orange via-amber-400 to-neon-orange rounded-full shadow-[0_0_15px_#FF8C00] transition-all duration-1000" style="width: 92%"></div>
+</div>
+</div>
+<!-- 2-Column RPG Badges & Credits Inset -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-950/40 to-black/50 border border-orange-500/40 rounded-2xl backdrop-blur-xl">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-neon-orange/20 border border-neon-orange/60 flex items-center justify-center text-neon-orange shadow-[0_0_15px_rgba(255,140,0,0.3)]">
+<span class="material-symbols-outlined text-[28px]">toll</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold">CREDITS BALANCE</span>
+<span class="font-orbitron font-black text-xl text-white">5 CREDITS</span>
+</div>
+</div>
+<button class="px-4 py-2 bg-neon-orange hover:bg-amber-400 text-black text-xs font-mono font-black rounded-xl transition shadow-[0_0_10px_rgba(255,140,0,0.5)] active:scale-95">
+              + REFILL
+            </button>
+</div>
+<div class="flex items-center gap-3.5 p-4 bg-gradient-to-r from-cyan-950/40 to-black/50 border border-cyan-500/40 rounded-2xl backdrop-blur-xl">
+<div class="w-12 h-12 rounded-2xl bg-neon-cyan/20 border border-neon-cyan/60 flex items-center justify-center text-neon-cyan shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+<span class="material-symbols-outlined text-[28px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-bold">ACTIVE INSIGNIA</span>
+<span class="font-display font-bold text-sm text-white">ROOKIE HACKER [STAGE 1]</span>
+</div>
+</div>
+</div>
+<!-- Honor Emblems Section -->
+<div class="pt-4 border-t border-white/15">
+<div class="flex justify-between items-center mb-3">
+<span class="text-xs font-mono font-black tracking-wider text-slate-300 uppercase">HONOR EMBLEMS // 名誉バッジ</span>
+<span class="text-xs font-mono text-neon-cyan font-black bg-cyan-950/80 border border-cyan-500/50 px-3 py-1 rounded-full">5 UNLOCKED</span>
+</div>
+<div class="grid grid-cols-5 gap-3 sm:gap-4">
+<div class="p-3 sm:p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-cyan-500/40 flex flex-col items-center shadow-lg hover:border-neon-cyan hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition cursor-pointer group" title="First Access">
+<span class="material-symbols-outlined text-neon-cyan text-[28px] group-hover:scale-110 transition">key</span>
+<span class="text-[9px] font-mono font-extrabold text-white mt-2">ACCESS</span>
+</div>
+<div class="p-3 sm:p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-orange-500/40 flex flex-col items-center shadow-lg hover:border-neon-orange hover:shadow-[0_0_15px_rgba(255,140,0,0.4)] transition cursor-pointer group" title="Rookie No More">
+<span class="material-symbols-outlined text-neon-orange text-[28px] group-hover:scale-110 transition">military_tech</span>
+<span class="text-[9px] font-mono font-extrabold text-white mt-2">ROOKIE</span>
+</div>
+<div class="p-3 sm:p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-emerald-500/40 flex flex-col items-center shadow-lg hover:border-neon-green hover:shadow-[0_0_15px_rgba(0,229,91,0.4)] transition cursor-pointer group" title="First Training">
+<span class="material-symbols-outlined text-neon-green text-[28px] group-hover:scale-110 transition">model_training</span>
+<span class="text-[9px] font-mono font-extrabold text-white mt-2">TRAIN</span>
+</div>
+<div class="p-3 sm:p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-amber-500/40 flex flex-col items-center shadow-lg hover:border-amber-400 hover:shadow-[0_0_15px_rgba(251,191,36,0.4)] transition cursor-pointer group" title="Calibration">
+<span class="material-symbols-outlined text-amber-400 text-[28px] group-hover:scale-110 transition">tune</span>
+<span class="text-[9px] font-mono font-extrabold text-white mt-2">CALIBR</span>
+</div>
+<div class="p-3 sm:p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-cyan-400/40 flex flex-col items-center shadow-lg hover:border-cyan-300 hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition cursor-pointer group" title="Speed Operator">
+<span class="material-symbols-outlined text-cyan-300 text-[28px] group-hover:scale-110 transition">bolt</span>
+<span class="text-[9px] font-mono font-extrabold text-white mt-2">SPEED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 2: MAIN STORY MISSION BRIEFING & MASSIVE HOLOGRAPHIC RADAR ================= -->
+<!-- Individualized RGB Pattern: Flowing horizontal undulating WAVE at ~4.5s cycle, softened intensity -->
+<section class="rgb-chroma-card rgb-pattern-wave-45s rounded-3xl p-6 sm:p-10 lg:p-12 relative overflow-hidden" id="mission-briefing">
+<!-- Top Glowing Spectral Accent Bar -->
+<div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-neon-orange via-neon-cyan to-neon-orange opacity-80"></div>
+<div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 pb-6">
+<div class="flex items-center gap-3.5">
+<span class="w-4 h-4 rounded-full bg-neon-orange animate-ping shadow-[0_0_15px_#FF8C00]"></span>
+<div class="flex flex-col">
+<span class="font-mono text-sm font-black tracking-widest text-neon-orange uppercase">CURRENT OPERATION // 作戦指令</span>
+<span class="text-xs font-mono text-slate-300 font-bold">TARGET SYSTEM: ORBITAL DEFENSE NODE</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-orange-500/20 border-2 border-neon-orange text-neon-orange font-orbitron text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(255,140,0,0.3)]">
+<span class="material-symbols-outlined text-[20px] animate-bounce">priority_high</span>
+<span>PRIORITY MISSION 04</span>
+</div>
+</div>
+<!-- Monumental Quest Title & Story Text -->
+<div class="mt-8">
+<h2 class="font-orbitron font-black text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight uppercase leading-tight">
+        OPERATION 04 — <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-orange via-amber-400 to-neon-orange drop-shadow-[0_0_25px_rgba(255,140,0,0.5)]">INTERCEPTED TRANSMISSION</span>
+</h2>
+<p class="font-body text-base sm:text-lg lg:text-xl text-slate-300 mt-4 leading-relaxed max-w-4xl font-medium">
+        Classified audio and packet payload detected in orbital relay. Decryption clearance granted by Cyber Hero HQ. Deploy payload intercept protocol before the automated node self-purges.
+      </p>
+</div>
+<!-- Monumental Deep Obsidian Radar Scope Bay -->
+<div class="relative w-full h-[420px] sm:h-[480px] mt-10 rounded-3xl cockpit-radar-bay overflow-hidden flex items-center justify-center">
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 800 480">
+<circle cx="400" cy="240" fill="none" opacity="0.25" r="200" stroke="#00F0FF" stroke-dasharray="6 6" stroke-width="1.5"></circle>
+<circle cx="400" cy="240" fill="none" opacity="0.5" r="150" stroke="#FF8C00" stroke-width="1.5"></circle>
+<circle cx="400" cy="240" fill="none" opacity="0.4" r="90" stroke="#00F0FF" stroke-dasharray="4 4" stroke-width="1.5"></circle>
+<circle cx="400" cy="240" fill="none" r="35" stroke="#00F0FF" stroke-width="2.5"></circle>
+<circle cx="400" cy="240" fill="#00F0FF" r="5"></circle>
+<line opacity="0.3" stroke="#00F0FF" stroke-dasharray="4 6" stroke-width="1.5" x1="80" x2="720" y1="240" y2="240"></line>
+<line opacity="0.3" stroke="#00F0FF" stroke-dasharray="4 6" stroke-width="1.5" x1="400" x2="400" y1="40" y2="440"></line>
+<g transform="translate(400, 240)">
+<path d="M 0 0 L 200 -60 A 210 210 0 0 0 60 -200 Z" fill="url(#dualSweepGradient)" opacity="0.75">
+<animatetransform attributename="transform" dur="4.5s" from="0" repeatcount="indefinite" to="360" type="rotate"></animatetransform>
+</path>
+</g>
+<defs>
+<lineargradient id="dualSweepGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#00F0FF" stop-opacity="0.9"></stop>
+<stop offset="70%" stop-color="#FF8C00" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#FF8C00" stop-opacity="0.2"></stop>
+</lineargradient>
+</defs>
+<g transform="translate(540, 160)">
+<circle class="animate-ping" cx="0" cy="0" fill="none" opacity="0.85" r="22" stroke="#FF8C00" stroke-width="2.5"></circle>
+<circle cx="0" cy="0" fill="#FF8C00" filter="drop-shadow(0 0 8px #FF8C00)" r="10"></circle>
+<path d="M -16 -12 L -16 -16 L -12 -16" fill="none" stroke="#FFFFFF" stroke-width="2.5"></path>
+<path d="M 16 -12 L 16 -16 L 12 -16" fill="none" stroke="#FFFFFF" stroke-width="2.5"></path>
+<path d="M -16 12 L -16 16 L -12 16" fill="none" stroke="#FFFFFF" stroke-width="2.5"></path>
+<path d="M 16 12 L 16 16 L 12 16" fill="none" stroke="#FFFFFF" stroke-width="2.5"></path>
+</g>
+<g transform="translate(260, 310)">
+<circle cx="0" cy="0" fill="#00E55B" filter="drop-shadow(0 0 6px #00E55B)" r="7"></circle>
+<text fill="#00E55B" font-family="Space Mono" font-size="12" font-weight="bold" letter-spacing="1" x="16" y="5">RELAY_ALPHA [SECURE]</text>
+</g>
+</svg>
+<div class="absolute top-6 left-6 flex flex-col pointer-events-none">
+<span class="font-mono text-sm font-bold text-neon-cyan tracking-wider flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse"></span>
+          RF_SIGNAL_MONITOR // CH_09
+        </span>
+<span class="font-mono text-xs text-slate-400 mt-1">FREQUENCY: 142.850 MHz</span>
+</div>
+<div class="absolute top-6 right-6 bg-black/80 border border-orange-500/70 p-4 text-right rounded-2xl shadow-[0_0_25px_rgba(255,140,0,0.35)] backdrop-blur-md">
+<div class="flex items-center justify-end gap-2 font-mono text-sm font-bold text-neon-orange">
+<span class="w-2.5 h-2.5 bg-neon-orange animate-ping rounded-full"></span>
+<span>TARGET: NODE_0x77A4</span>
+</div>
+<div class="font-mono text-xs text-slate-300 mt-1">PAYLOAD: 1.42 MB</div>
+<div class="font-mono text-xs text-neon-green font-bold mt-0.5">SIGNAL CONFIDENCE: 98.2%</div>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 3: CONSOLE LINK DEPLOYMENT STATION (MASSIVE LAUNCH CTA) ================= -->
+<!-- Individualized RGB Pattern: COUNTER-CLOCKWISE Conic rotation at ~5s cycle, softened intensity -->
+<section class="rgb-chroma-card rgb-pattern-counter-5s rounded-3xl p-8 sm:p-10 shadow-[0_0_32px_rgba(255,140,0,0.16)]">
+<div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+<div class="flex items-center gap-5 sm:gap-6">
+<div class="relative w-20 h-20 rounded-3xl bg-orange-950/60 border-2 border-orange-500/60 flex items-center justify-center text-neon-orange flex-shrink-0 shadow-[0_0_25px_rgba(255,140,0,0.35)]">
+<span class="material-symbols-outlined text-[44px]">terminal</span>
+<span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-neon-green rounded-full border-2 border-black animate-ping"></span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs sm:text-sm font-mono font-black tracking-widest text-slate-400 uppercase">作戦開始 // READY TO ENGAGE</span>
+<h3 class="font-orbitron font-black text-2xl sm:text-3xl text-white mt-1">CONSOLE LINK ESTABLISHED</h3>
+<p class="text-sm sm:text-base text-slate-300 font-body font-medium mt-1">Deploy interactive exploit terminal with Wolf AI assist</p>
+</div>
+</div>
+<!-- Giant Primary Interactive Launch Button -->
+<button class="w-full lg:w-auto px-10 sm:px-14 py-6 sm:py-7 bg-gradient-to-r from-neon-orange via-amber-500 to-neon-orange hover:from-amber-400 hover:to-orange-500 text-black font-orbitron font-black text-lg sm:text-xl uppercase tracking-widest rounded-3xl launch-btn-glow hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-4 cursor-pointer">
+<span class="material-symbols-outlined text-[32px] text-black animate-bounce">bolt</span>
+<span>BEGIN OPERATION [LAUNCH]</span>
+</button>
+</div>
+</section>
+<!-- ================= SECTION 4: CAMPAIGN DEFENSE SECTOR GRID (ENLARGED RPG STAGE TILES) ================= -->
+<!-- Individualized RGB Pattern: Sinusoidal diagonal breathing / sweeping chromatic wave at ~9s cycle -->
+<section class="rgb-chroma-card rgb-pattern-diagonal-9s rounded-3xl p-6 sm:p-10" id="campaign-network">
+<div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/15 mb-8">
+<div class="flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-2xl bg-emerald-950/60 border border-emerald-500/60 flex items-center justify-center text-neon-green shadow-[0_0_15px_rgba(0,229,91,0.3)]">
+<span class="material-symbols-outlined text-[28px]">account_tree</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-orbitron font-black text-xl sm:text-2xl text-white tracking-wide uppercase">CAMPAIGN PROGRESSION NETWORK</h3>
+<span class="text-xs font-mono text-slate-400 font-semibold">作戦進行状況 // 6 DEFENSE SECTORS</span>
+</div>
+</div>
+<div class="font-mono text-sm text-slate-200 bg-emerald-950/80 border border-emerald-500/50 px-5 py-2.5 rounded-full font-bold shadow-[0_0_15px_rgba(0,229,91,0.2)]">
+<span class="text-neon-green font-black">3 / 6</span> SECURED // CLEARANCE <span class="text-neon-orange font-black">LVL 2</span>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+<!-- Node 01: Computer TRN -->
+<div class="p-5 bg-black/50 backdrop-blur-xl rounded-3xl border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(0,229,91,0.2)] flex flex-col items-center text-center relative group hover:border-neon-green transition">
+<div class="w-12 h-12 rounded-full bg-emerald-950/80 border border-emerald-400/60 flex items-center justify-center mb-3 shadow-[0_0_12px_#00E55B]">
+<span class="w-4 h-4 rounded-full bg-neon-green"></span>
+</div>
+<span class="font-mono text-xs text-neon-green font-bold">NODE 01</span>
+<h4 class="font-body text-base text-white font-extrabold mt-1">COMPUTER TRN</h4>
+<span class="text-xs font-mono text-neon-green font-bold mt-2">[SECURED ●]</span>
+</div>
+<!-- Node 02: Follow Trail -->
+<div class="p-5 bg-black/50 backdrop-blur-xl rounded-3xl border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(0,229,91,0.2)] flex flex-col items-center text-center relative group hover:border-neon-green transition">
+<div class="w-12 h-12 rounded-full bg-emerald-950/80 border border-emerald-400/60 flex items-center justify-center mb-3 shadow-[0_0_12px_#00E55B]">
+<span class="w-4 h-4 rounded-full bg-neon-green"></span>
+</div>
+<span class="font-mono text-xs text-neon-green font-bold">NODE 02</span>
+<h4 class="font-body text-base text-white font-extrabold mt-1">FOLLOW TRAIL</h4>
+<span class="text-xs font-mono text-neon-green font-bold mt-2">[SECURED ●]</span>
+</div>
+<!-- Node 03: File Detective -->
+<div class="p-5 bg-black/50 backdrop-blur-xl rounded-3xl border-2 border-emerald-500/60 shadow-[0_0_20px_rgba(0,229,91,0.2)] flex flex-col items-center text-center relative group hover:border-neon-green transition">
+<div class="w-12 h-12 rounded-full bg-emerald-950/80 border border-emerald-400/60 flex items-center justify-center mb-3 shadow-[0_0_12px_#00E55B]">
+<span class="w-4 h-4 rounded-full bg-neon-green"></span>
+</div>
+<span class="font-mono text-xs text-neon-green font-bold">NODE 03</span>
+<h4 class="font-body text-base text-white font-extrabold mt-1">FILE DETECTIVE</h4>
+<span class="text-xs font-mono text-neon-green font-bold mt-2">[SECURED ●]</span>
+</div>
+<!-- Node 04: Intercept TX -->
+<div class="p-5 bg-orange-950/40 backdrop-blur-xl rounded-3xl border-2 border-neon-orange flex flex-col items-center text-center relative shadow-[0_0_30px_rgba(255,140,0,0.5)] transform hover:scale-105 transition">
+<div class="w-12 h-12 rounded-full bg-orange-900/80 border-2 border-neon-orange flex items-center justify-center mb-3 shadow-[0_0_15px_#FF8C00]">
+<span class="w-4 h-4 rounded-full bg-neon-orange animate-ping"></span>
+</div>
+<span class="font-mono text-xs text-neon-orange font-black">NODE 04</span>
+<h4 class="font-body text-base text-white font-black mt-1">INTERCEPT TX</h4>
+<span class="text-xs font-mono text-neon-orange font-extrabold mt-2">[ACTIVE ◉]</span>
+</div>
+<!-- Node 05: Unknown (Locked) -->
+<div class="p-5 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col items-center text-center opacity-60">
+<div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3 text-slate-400">
+<span class="material-symbols-outlined text-[24px]">lock</span>
+</div>
+<span class="font-mono text-xs text-slate-400 font-bold">NODE 05</span>
+<h4 class="font-body text-base text-slate-400 font-semibold mt-1">UNKNOWN</h4>
+<span class="text-xs font-mono text-slate-500 mt-2">[LOCKED 🔒]</span>
+</div>
+<!-- Node 06: Classified (Locked) -->
+<div class="p-5 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 flex flex-col items-center text-center opacity-60">
+<div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3 text-slate-400">
+<span class="material-symbols-outlined text-[24px]">lock</span>
+</div>
+<span class="font-mono text-xs text-slate-400 font-bold">NODE 06</span>
+<h4 class="font-body text-base text-slate-400 font-semibold mt-1">CLASSIFIED</h4>
+<span class="text-xs font-mono text-slate-500 mt-2">[LOCKED 🔒]</span>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 5: DEFENSE LAB SIMULATOR & SUPPLY DEPOT MATRIX ================= -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="simulator-depot">
+<!-- Simulation Chamber Card: Fast-paced clockwise orbital trace at ~3.8s cycle -->
+<div class="rgb-chroma-card rgb-pattern-orbital-fast-38s rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-white/15">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-cyan-950/60 border border-cyan-500/60 flex items-center justify-center text-neon-cyan shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+<span class="material-symbols-outlined text-[28px]">view_in_ar</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-orbitron font-black text-xl text-white">SIMULATION CHAMBER</h3>
+<span class="text-xs font-mono text-slate-400 font-bold">シミュレータ // DEFENSE LAB</span>
+</div>
+</div>
+<span class="px-3.5 py-1 bg-cyan-950 border border-cyan-400 text-neon-cyan font-mono text-xs font-black rounded-full">1 READY</span>
+</div>
+<p class="font-body text-sm sm:text-base text-slate-300 mt-5 leading-relaxed font-medium">
+          Sharpen defensive intrusion reflexes in an isolated virtual sandbox. Practice zero-day firewall drills without alerting enemy radar.
+        </p>
+<!-- Battery Status Module -->
+<div class="mt-6 p-5 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/20 shadow-inner">
+<div class="flex items-center justify-between font-mono text-sm text-white mb-3">
+<span class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-neon-cyan">bolt</span>
+              BATTERY CHARGES:
+            </span>
+<span class="text-neon-cyan font-black text-base">5 / 20</span>
+</div>
+<div class="grid grid-cols-10 gap-2 h-4">
+<span class="bg-neon-cyan rounded-md shadow-[0_0_10px_#00F0FF]"></span>
+<span class="bg-neon-cyan rounded-md shadow-[0_0_10px_#00F0FF]"></span>
+<span class="bg-neon-cyan rounded-md shadow-[0_0_10px_#00F0FF]"></span>
+<span class="bg-neon-cyan rounded-md shadow-[0_0_10px_#00F0FF]"></span>
+<span class="bg-neon-cyan rounded-md shadow-[0_0_10px_#00F0FF]"></span>
+<span class="bg-white/15 rounded-md"></span>
+<span class="bg-white/15 rounded-md"></span>
+<span class="bg-white/15 rounded-md"></span>
+<span class="bg-white/15 rounded-md"></span>
+<span class="bg-white/15 rounded-md"></span>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full py-5 bg-cyan-950/80 hover:bg-cyan-900 text-neon-cyan font-orbitron text-sm uppercase tracking-widest font-black rounded-2xl border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.35)] hover:shadow-[0_0_35px_rgba(0,240,255,0.6)] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-[24px]">play_circle</span>
+<span>ENTER SIMULATOR</span>
+</button>
+</div>
+<!-- Supply Depot Card: Counter-clockwise reverse orbit / wave at ~6.2s cycle -->
+<div class="rgb-chroma-card rgb-pattern-counter-62s rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-white/15">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-orange-950/60 border border-orange-500/60 flex items-center justify-center text-neon-orange shadow-[0_0_15px_rgba(255,140,0,0.3)]">
+<span class="material-symbols-outlined text-[28px]">storefront</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-orbitron font-black text-xl text-white">SUPPLY DEPOT</h3>
+<span class="text-xs font-mono text-slate-400 font-bold">補給部隊 // UPGRADES</span>
+</div>
+</div>
+<span class="font-mono text-sm text-neon-orange font-black bg-orange-950 border border-orange-500/50 px-4 py-1 rounded-full">5 CREDITS</span>
+</div>
+<!-- Tactical Mini Drone Preview -->
+<div class="mt-6 p-5 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/20 shadow-inner">
+<div class="flex items-start gap-4">
+<div class="w-16 h-16 bg-black/60 border-2 border-cyan-400/60 rounded-2xl flex items-center justify-center flex-shrink-0 text-neon-cyan shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+<span class="material-symbols-outlined text-[36px] animate-pulse">precision_manufacturing</span>
+</div>
+<div class="flex flex-col">
+<h4 class="font-orbitron font-black text-base text-white">TACTICAL MINI DRONE</h4>
+<span class="text-xs font-mono text-neon-cyan font-bold mt-0.5">CYBER COMPANION [AI ASSIST]</span>
+<span class="text-xs font-mono text-rose-400 font-bold mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">lock</span>
+<span>REQ: MISSION 10 CLEARANCE</span>
+</span>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs text-slate-300">
+<span class="font-bold">STATUS: LOCKED</span>
+<span class="text-neon-orange font-black text-sm">PRICE: 12 CREDITS</span>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full py-5 bg-orange-950/80 hover:bg-orange-900 text-neon-orange font-orbitron text-sm uppercase tracking-widest font-black rounded-2xl border-2 border-orange-400 shadow-[0_0_20px_rgba(255,140,0,0.35)] hover:shadow-[0_0_35px_rgba(255,140,0,0.6)] transition-all flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-[24px]">shopping_bag</span>
+<span>OPEN SUPPLY MATRIX</span>
+</button>
+</div>
+</section>
+<!-- ================= SECTION 6: REAL-TIME TELEMETRY STREAM & PROTOCOL STAMP ================= -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch" id="telemetry-console">
+<!-- Action Stream Terminal (8 Cols): Slow subtle horizontal scanning chromatic wave at ~11s cycle -->
+<div class="lg:col-span-8 rgb-chroma-card rgb-pattern-scan-11s rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 border-b border-white/15 mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-neon-cyan text-[22px]">terminal</span>
+<span class="font-mono text-sm font-black text-neon-cyan tracking-wider">SYSTEM_ACTION_STREAM</span>
+</div>
+<span class="text-xs font-mono text-neon-green flex items-center gap-1.5 font-bold">
+<span class="w-2 h-2 bg-neon-green rounded-full animate-ping"></span> LIVE
+          </span>
+</div>
+<div class="font-mono text-sm flex flex-col gap-3 text-slate-300 bg-black/50 backdrop-blur-xl p-4 rounded-2xl border border-white/20">
+<div class="flex items-center justify-between"><span class="text-slate-500">09:43:22</span> <span>DIRECTORY_SEC_OPENED</span></div>
+<div class="flex items-center justify-between"><span class="text-slate-500">09:43:25</span> <span class="text-neon-cyan font-bold">PAYLOAD_SIG_MATCH</span></div>
+<div class="flex items-center justify-between"><span class="text-slate-500">09:43:29</span> <span class="text-neon-green font-bold">INTERCEPT_ARMED // OK</span></div>
+<div class="flex items-center justify-between"><span class="text-slate-500">09:43:40</span> <span class="text-neon-orange font-bold">ROUTE: 192.168.0.24</span></div>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
+<div>[RIG_ID: ECHO_04] // ENCLAVE VERIFIED // CYBER HERO HQ LINK: 100%</div>
+<div class="text-neon-cyan font-bold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-neon-cyan shadow-[0_0_8px_#00F0FF]"></span>
+<span>CYBER HERO HACKER WORKSTATION READY</span>
+</div>
+</div>
+</div>
+<!-- Academy Stamp & System Modules (4 Cols): Subtle radial pulsating chromatic bloom / breathing at ~8s cycle -->
+<div class="lg:col-span-4 rgb-chroma-card rgb-pattern-bloom-8s rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-white/15 pb-3">
+<span class="text-xs font-mono font-extrabold tracking-widest text-slate-400 uppercase">SYSTEM MODULES</span>
+<span class="text-xs font-mono font-bold text-neon-green bg-emerald-950/80 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse"></span> ONLINE
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs font-display font-semibold">
+<div class="p-2.5 rounded-xl bg-orange-950/50 border border-orange-500/40 text-neon-orange flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">radar</span>
+<span>TACTICAL OPS</span>
+</div>
+<div class="p-2.5 rounded-xl bg-black/40 border border-white/15 text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-cyan">hub</span>
+<span>NETWORK MATRIX</span>
+</div>
+<div class="p-2.5 rounded-xl bg-black/40 border border-white/15 text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-cyan">terminal</span>
+<span>EXPLOIT LAB</span>
+</div>
+<div class="p-2.5 rounded-xl bg-black/40 border border-white/15 text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-cyan">lock_open</span>
+<span>CRYPTO SIGINT</span>
+</div>
+<div class="p-2.5 rounded-xl bg-black/40 border border-white/15 text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-cyan">shield</span>
+<span>SIMULATION GRID</span>
+</div>
+<div class="p-2.5 rounded-xl bg-black/40 border border-white/15 text-slate-300 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-neon-cyan">tune</span>
+<span>RIG DIAGNOSTICS</span>
+</div>
+</div>
+</div>
+<!-- Cyber Hero Academy Official Stamp Plaque -->
+<div class="mt-6 p-4 rounded-2xl bg-black/50 backdrop-blur-xl border border-white/20 flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-white/5 p-1 border border-white/20 flex-shrink-0 flex items-center justify-center shadow-[0_0_15px_rgba(255,140,0,0.3)]">
+<img alt="Cyber Hero Logo" class="w-12 h-12 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMRl-pOiCTtszHgzf1OL_hO7bu2ckeA1HSibT9DO3s4cPTDh466Ak-7xvLCylRs2c9t7FK4Lbdk-3MUhn3XEHDaLMtbunwADv-b0Xkii9NQPIdarPAWQvJXFF6pQU6M23jg7mOS2D-B6arhjeuMbwgbkVk2gWNdDs2sFf9ULcffPjTei9CYtuuA3I590qQrlixyAmUY-JBxWWOJDHg7xtK-kWb37Fx5glnamhu4oCQ0Bkddebk6q-SgzrSNJ1w0hNFr_s"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-orbitron font-bold text-white">CYBER HERO ACADEMY</span>
+<span class="text-[10px] font-mono text-neon-cyan font-semibold tracking-wider">DEFENSE PROTOCOL VERIFIED</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- ================= BOTTOM HUD SYSTEM TRAY BAR ================= -->
+<footer class="fixed bottom-0 left-0 w-full h-11 rgb-chroma-card rgb-pattern-ribbon !rounded-none z-50 px-6 sm:px-10 flex items-center justify-between border-t border-white/20 text-xs font-mono">
+<div class="flex items-center gap-4 text-slate-300 relative z-10">
+<span class="text-neon-green font-bold flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-neon-green animate-ping"></span> SYNC: 0.002s
+    </span>
+<span class="text-slate-600">|</span>
+<span class="font-medium text-slate-400 hidden sm:inline">HANDSHAKE: ENCRYPTED (AES-256)</span>
+</div>
+<div class="text-slate-300 tracking-wider font-semibold hidden md:block relative z-10">
+    SYSTEM CONSOLE: ECHO@CYBER-DEFENSE // 守護神
+  </div>
+<div class="flex items-center gap-2 text-neon-orange font-black relative z-10">
+<span class="material-symbols-outlined text-[16px]">shield</span>
+<span>CYBER HERO COMMAND RIG</span>
+</div>
+</footer>
+</body></html>
