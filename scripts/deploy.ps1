@@ -19,7 +19,7 @@ Invoke-Checked 'npm.cmd' @('run', 'build')
 $deployId = [guid]::NewGuid().ToString('N')
 $deployArchive = Join-Path ([IO.Path]::GetTempPath()) "hacker-$deployId.tar.gz"
 # Explicit allowlist: config.php, local credentials and SSH keys cannot enter the archive.
-$deployFiles = @('index.html', 'favicon.svg', '.htaccess', 'assets', 'robot-defense', 'anonymous-cadet.png', 'cyber-hero-logo.png', 'echo-cyber-wolf.png', 'shared/economy.json', 'api/index.php', 'bin/create_user.php', 'bin/create_test_student.php', 'bin/check_reset.php', 'bin/check_economy.php', 'bin/provision_standard_accounts.php', 'src/bootstrap.php', 'src/reset_mission.php', 'src/progression.php', 'src/training.php', 'src/teacher_balances.php', 'src/robot_training.php')
+$deployFiles = @('index.html', 'favicon.svg', '.htaccess', 'assets', 'cursors', 'heroes', 'robot-defense', 'anonymous-cadet.png', 'cyber-hero-logo.png', 'echo-cyber-wolf.png', 'shared/economy.json', 'api/index.php', 'bin/create_user.php', 'bin/create_test_student.php', 'bin/release_mission_four.php', 'bin/check_reset.php', 'bin/check_economy.php', 'bin/provision_standard_accounts.php', 'src/bootstrap.php', 'src/reset_mission.php', 'src/progression.php', 'src/training.php', 'src/teacher_balances.php', 'src/robot_training.php')
 try {
     Invoke-Checked 'tar.exe' (@('-czf', $deployArchive, '-C', 'dist') + $deployFiles)
     Invoke-Checked 'tar.exe' @('-tzf', $deployArchive)
@@ -52,7 +52,7 @@ mkdir -p "$HOME/.hacker-backups"
 tar -czf "$HOME/.hacker-backups/DEPLOY_ID.tar.gz" -C "$live" .
 # Retain old hashed assets for browsers with the previous page open.
 cp -R "$stage/release/assets" "$live/"
-cp -R "$stage/release/robot-defense" "$live/"
+cp -R "$stage/release/robot-defense" "$stage/release/cursors" "$stage/release/heroes" "$live/"
 cp "$stage/release/anonymous-cadet.png" "$stage/release/cyber-hero-logo.png" "$stage/release/echo-cyber-wolf.png" "$live/"
 cp -R "$stage/release/src" "$stage/release/bin" "$stage/release/shared" "$live/"
 cp -R "$stage/release/api" "$live/"

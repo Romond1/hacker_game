@@ -21,8 +21,8 @@
     "mission-3": {
       "xpMax": 1000,
       "credits": 30,
-      "rookie": true,
-      "nodeId": "training",
+      "rookie": false,
+      "nodeId": "classified",
       "maxRewardAttempts": 2,
       "replayXPMultiplier": 1,
       "replayCreditMultiplier": 1
@@ -35,6 +35,42 @@
       "maxRewardAttempts": 2,
       "replayXPMultiplier": 1,
       "replayCreditMultiplier": 1
+    },
+    "mission-drag": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-context": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-scroll": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": true,
+      "nodeId": "training",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-recovery": {
+      "xpMax": 1000,
+      "credits": 100,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 1,
+      "replayXPMultiplier": 0.25,
+      "replayCreditMultiplier": 0
     }
   },
   "ranks": [
@@ -55,6 +91,21 @@
       ],
       "earningCap": 240,
       "spendingCap": 240
+    },
+    {
+      "id": "cyber-operative",
+      "name": "Cyber Operative",
+      "requiredMissions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "earningCap": 600,
+      "spendingCap": 600
     },
     {
       "id": "infiltrator",
@@ -88,7 +139,8 @@
       "purchasable": true,
       "equipable": true,
       "asset": {
-        "label": "ROOKIE HACKER"
+        "label": "ROOKIE HACKER",
+        "className": "frame-rookie"
       },
       "availability": "available"
     },
@@ -116,7 +168,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": ">_",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -164,11 +216,267 @@
       "price": 80,
       "rarity": "rare",
       "icon": "➢",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
         "className": "plasma-arrow"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-iceblade",
+      "name": "Iceblade",
+      "description": "A tapered glacier-blue arrow with a bright precision tip.",
+      "category": "cursor",
+      "price": 65,
+      "rarity": "standard",
+      "icon": "↗",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-iceblade"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-ember",
+      "name": "Ember",
+      "description": "A compact copper arrow with a warm signal edge.",
+      "category": "cursor",
+      "price": 75,
+      "rarity": "rare",
+      "icon": "➤",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-ember"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-ghost",
+      "name": "Ghost Signal",
+      "description": "A restrained violet stealth arrow with a hollow core.",
+      "category": "cursor",
+      "price": 85,
+      "rarity": "rare",
+      "icon": "◇",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-ghost"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-glacier",
+      "name": "Glacier Shard",
+      "description": "Crystalline blue arrow with a sharp, icy edge.",
+      "category": "cursor",
+      "price": 120,
+      "rarity": "rare",
+      "icon": "❄",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-glacier"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-hologram",
+      "name": "Holo Vector",
+      "description": "Layered cyan hologram arrow with a luminous core.",
+      "category": "cursor",
+      "price": 135,
+      "rarity": "rare",
+      "icon": "◈",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-hologram"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-ani-spark",
+      "name": "Sparkstorm",
+      "description": "Lime pointer with moving multicolor sparks.",
+      "category": "cursor",
+      "price": 145,
+      "rarity": "rare",
+      "icon": "✦",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-ani-spark"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-ani-ship",
+      "name": "Ghostwing",
+      "description": "A silver ship-shaped pointer with a soft flight shimmer.",
+      "category": "cursor",
+      "price": 160,
+      "rarity": "rare",
+      "icon": "✧",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-ani-ship"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "cursor-ani-sabre",
+      "name": "Photon Sabre",
+      "description": "A tiny blue energy blade that flickers as you move.",
+      "category": "cursor",
+      "price": 175,
+      "rarity": "rare",
+      "icon": "╱",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "cursor-ani-sabre"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-rainbow-comet",
+      "name": "Rainbow Comet",
+      "description": "A tight rainbow comet of fading particles behind the pointer.",
+      "category": "mouseEffect",
+      "price": 80,
+      "rarity": "rare",
+      "icon": "✦",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-rainbow-comet"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-aurora",
+      "name": "Aurora Trail",
+      "description": "A cool cyan and violet ribbon of light.",
+      "category": "mouseEffect",
+      "price": 65,
+      "rarity": "standard",
+      "icon": "⌁",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-aurora"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-solar",
+      "name": "Solar Trail",
+      "description": "Warm amber and coral sparks that follow your movement.",
+      "category": "mouseEffect",
+      "price": 65,
+      "rarity": "standard",
+      "icon": "☄",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-solar"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-frost",
+      "name": "Frost Trail",
+      "description": "A restrained blue-white trail with icy particles.",
+      "category": "mouseEffect",
+      "price": 65,
+      "rarity": "standard",
+      "icon": "❄",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-frost"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-solid-signal",
+      "name": "Solid Signal",
+      "description": "A crisp cyan-and-magenta line that fades just behind the pointer.",
+      "category": "mouseEffect",
+      "price": 90,
+      "rarity": "rare",
+      "icon": "⌁",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-solid-signal"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "trail-pixel-burst",
+      "name": "Pixel Burst",
+      "description": "Tiny arcade pixels scatter and fade as the pointer moves.",
+      "category": "mouseEffect",
+      "price": 95,
+      "rarity": "rare",
+      "icon": "▧",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "trail-pixel-burst"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "animation-sparkle",
+      "name": "Soft Sparkle",
+      "description": "A few small stars appear around your pointer as it moves.",
+      "category": "mouseAnimation",
+      "price": 55,
+      "rarity": "standard",
+      "icon": "✧",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "animation-sparkle"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "animation-pulse",
+      "name": "Orbit Pulse",
+      "description": "A subtle pulse blooms when you click.",
+      "category": "mouseAnimation",
+      "price": 55,
+      "rarity": "standard",
+      "icon": "◎",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "animation-pulse"
       },
       "availability": "available"
     },
@@ -196,7 +504,7 @@
       "price": 90,
       "rarity": "rare",
       "icon": "▣",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -248,7 +556,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": "🐺",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -328,7 +636,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": "🐼",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -408,7 +716,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": "🐯",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -488,7 +796,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": "🦅",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -568,7 +876,7 @@
       "price": 100,
       "rarity": "rare",
       "icon": "🐰",
-      "requiredRank": "operator",
+      "requiredRank": "cyber-operative",
       "purchasable": true,
       "equipable": true,
       "asset": {
@@ -619,6 +927,2070 @@
         "lore": "Legendary agile hero leaping on an energized launch platform."
       },
       "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-white-standard",
+      "name": "Cyber Wolf Cadet · White",
+      "description": "White edition. Standard tactical suit in sleek matching telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/white/standard.webp",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-cobalt-standard",
+      "name": "Cyber Wolf Cadet · Cobalt Blue",
+      "description": "Cobalt edition. Standard tactical suit in sleek matching telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/cobalt/standard.webp",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-red-standard",
+      "name": "Cyber Wolf Cadet · Red",
+      "description": "Red edition. Standard tactical suit in sleek matching telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/red/standard.webp",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-purple-standard",
+      "name": "Cyber Wolf Cadet · Purple",
+      "description": "Purple edition. Standard tactical suit in sleek matching telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/purple/standard.webp",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-green-standard",
+      "name": "Cyber Wolf Cadet · Green",
+      "description": "Green edition. Standard tactical suit in sleek matching telemetry.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐺",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf",
+        "species": "wolf",
+        "tier": "standard",
+        "image": "heroes/wolf/green/standard.webp",
+        "lore": "Standard-issue cybernetic reconnaissance suit for the Wolf operative."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-white-rare",
+      "name": "Cyber Wolf Vanguard · White",
+      "description": "White edition. Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/white/rare.webp",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-cobalt-rare",
+      "name": "Cyber Wolf Vanguard · Cobalt Blue",
+      "description": "Cobalt edition. Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/cobalt/rare.webp",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-red-rare",
+      "name": "Cyber Wolf Vanguard · Red",
+      "description": "Red edition. Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/red/rare.webp",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-purple-rare",
+      "name": "Cyber Wolf Vanguard · Purple",
+      "description": "Purple edition. Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/purple/rare.webp",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-green-rare",
+      "name": "Cyber Wolf Vanguard · Green",
+      "description": "Green edition. Tactical carbon-fiber plating with integrated HUD.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐺",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-rare",
+        "species": "wolf",
+        "tier": "rare",
+        "image": "heroes/wolf/green/rare.webp",
+        "lore": "Reinforced carbon-fiber armor with augmented HUD optics."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-wolf-white-elite",
+      "name": "Cyber Wolf Centurion · White",
+      "description": "White edition. Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/white/elite.webp",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-cobalt-elite",
+      "name": "Cyber Wolf Centurion · Cobalt Blue",
+      "description": "Cobalt edition. Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/cobalt/elite.webp",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-red-elite",
+      "name": "Cyber Wolf Centurion · Red",
+      "description": "Red edition. Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/red/elite.webp",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-purple-elite",
+      "name": "Cyber Wolf Centurion · Purple",
+      "description": "Purple edition. Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/purple/elite.webp",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-green-elite",
+      "name": "Cyber Wolf Centurion · Green",
+      "description": "Green edition. Historic Roman Centurion armor in cybernetic chassis.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-elite",
+        "species": "wolf",
+        "tier": "elite",
+        "image": "heroes/wolf/green/elite.webp",
+        "lore": "Roman Legionary battle armor forged from quantum nanotech."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-white-legendary",
+      "name": "Cyber Wolf Imperator · White",
+      "description": "White edition. Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/white/legendary.webp",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-cobalt-legendary",
+      "name": "Cyber Wolf Imperator · Cobalt Blue",
+      "description": "Cobalt edition. Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/cobalt/legendary.webp",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-red-legendary",
+      "name": "Cyber Wolf Imperator · Red",
+      "description": "Red edition. Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/red/legendary.webp",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-purple-legendary",
+      "name": "Cyber Wolf Imperator · Purple",
+      "description": "Purple edition. Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/purple/legendary.webp",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-wolf-green-legendary",
+      "name": "Cyber Wolf Imperator · Green",
+      "description": "Green edition. Cinematic legendary operative armor with glowing aura.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐺",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-wolf-legendary",
+        "species": "wolf",
+        "tier": "legendary",
+        "image": "heroes/wolf/green/legendary.webp",
+        "lore": "Mythic cyber-gladiator armor deployed in full orbital battle arena."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-white-standard",
+      "name": "Cyber Panda Cadet · White",
+      "description": "White edition. Standard heavy suit in clean matching armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/white/standard.webp",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-cobalt-standard",
+      "name": "Cyber Panda Cadet · Cobalt Blue",
+      "description": "Cobalt edition. Standard heavy suit in clean matching armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/cobalt/standard.webp",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-red-standard",
+      "name": "Cyber Panda Cadet · Red",
+      "description": "Red edition. Standard heavy suit in clean matching armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/red/standard.webp",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-purple-standard",
+      "name": "Cyber Panda Cadet · Purple",
+      "description": "Purple edition. Standard heavy suit in clean matching armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/purple/standard.webp",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-green-standard",
+      "name": "Cyber Panda Cadet · Green",
+      "description": "Green edition. Standard heavy suit in clean matching armor.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐼",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda",
+        "species": "panda",
+        "tier": "standard",
+        "image": "heroes/panda/green/standard.webp",
+        "lore": "Standard-issue heavy cyber-suit for defense specialists."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-white-rare",
+      "name": "Cyber Panda Guardian · White",
+      "description": "White edition. Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/white/rare.webp",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-cobalt-rare",
+      "name": "Cyber Panda Guardian · Cobalt Blue",
+      "description": "Cobalt edition. Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/cobalt/rare.webp",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-red-rare",
+      "name": "Cyber Panda Guardian · Red",
+      "description": "Red edition. Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/red/rare.webp",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-purple-rare",
+      "name": "Cyber Panda Guardian · Purple",
+      "description": "Purple edition. Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/purple/rare.webp",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-green-rare",
+      "name": "Cyber Panda Guardian · Green",
+      "description": "Green edition. Carbon-fiber heavy plating with visor display.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐼",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-rare",
+        "species": "panda",
+        "tier": "rare",
+        "image": "heroes/panda/green/rare.webp",
+        "lore": "Tactical blast shields and reinforced carbon chassis."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-panda-white-elite",
+      "name": "Cyber Panda Dynasty · White",
+      "description": "White edition. Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/white/elite.webp",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-cobalt-elite",
+      "name": "Cyber Panda Dynasty · Cobalt Blue",
+      "description": "Cobalt edition. Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/cobalt/elite.webp",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-red-elite",
+      "name": "Cyber Panda Dynasty · Red",
+      "description": "Red edition. Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/red/elite.webp",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-purple-elite",
+      "name": "Cyber Panda Dynasty · Purple",
+      "description": "Purple edition. Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/purple/elite.webp",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-green-elite",
+      "name": "Cyber Panda Dynasty · Green",
+      "description": "Green edition. Imperial Dynasty warrior armor in cyber form.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-elite",
+        "species": "panda",
+        "tier": "elite",
+        "image": "heroes/panda/green/elite.webp",
+        "lore": "Historic Chinese warrior dynasty armor reinforced with light weave."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-white-legendary",
+      "name": "Cyber Panda Warlord · White",
+      "description": "White edition. Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/white/legendary.webp",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-cobalt-legendary",
+      "name": "Cyber Panda Warlord · Cobalt Blue",
+      "description": "Cobalt edition. Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/cobalt/legendary.webp",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-red-legendary",
+      "name": "Cyber Panda Warlord · Red",
+      "description": "Red edition. Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/red/legendary.webp",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-purple-legendary",
+      "name": "Cyber Panda Warlord · Purple",
+      "description": "Purple edition. Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/purple/legendary.webp",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-panda-green-legendary",
+      "name": "Cyber Panda Warlord · Green",
+      "description": "Green edition. Legendary warrior commanding the tactical grid.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐼",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-panda-legendary",
+        "species": "panda",
+        "tier": "legendary",
+        "image": "heroes/panda/green/legendary.webp",
+        "lore": "Mythic commander armor holding the tactical plasma orb."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-white-standard",
+      "name": "Cyber Tiger Cadet · White",
+      "description": "White edition. Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/white/standard.webp",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-cobalt-standard",
+      "name": "Cyber Tiger Cadet · Cobalt Blue",
+      "description": "Cobalt edition. Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/cobalt/standard.webp",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-red-standard",
+      "name": "Cyber Tiger Cadet · Red",
+      "description": "Red edition. Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/red/standard.webp",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-purple-standard",
+      "name": "Cyber Tiger Cadet · Purple",
+      "description": "Purple edition. Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/purple/standard.webp",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-green-standard",
+      "name": "Cyber Tiger Cadet · Green",
+      "description": "Green edition. Standard high-agility strike suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐯",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger",
+        "species": "tiger",
+        "tier": "standard",
+        "image": "heroes/tiger/green/standard.webp",
+        "lore": "High-mobility strike suit built for agile infiltrators."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-white-rare",
+      "name": "Cyber Tiger Striker · White",
+      "description": "White edition. Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/white/rare.webp",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-cobalt-rare",
+      "name": "Cyber Tiger Striker · Cobalt Blue",
+      "description": "Cobalt edition. Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/cobalt/rare.webp",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-red-rare",
+      "name": "Cyber Tiger Striker · Red",
+      "description": "Red edition. Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/red/rare.webp",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-purple-rare",
+      "name": "Cyber Tiger Striker · Purple",
+      "description": "Purple edition. Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/purple/rare.webp",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-green-rare",
+      "name": "Cyber Tiger Striker · Green",
+      "description": "Green edition. Carbon-fiber strike plating with glowing visor.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐯",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-rare",
+        "species": "tiger",
+        "tier": "rare",
+        "image": "heroes/tiger/green/rare.webp",
+        "lore": "Stealth carbon weave with razor-sharp energy conduits."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-tiger-white-elite",
+      "name": "Cyber Tiger Ronin · White",
+      "description": "White edition. Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/white/elite.webp",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-cobalt-elite",
+      "name": "Cyber Tiger Ronin · Cobalt Blue",
+      "description": "Cobalt edition. Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/cobalt/elite.webp",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-red-elite",
+      "name": "Cyber Tiger Ronin · Red",
+      "description": "Red edition. Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/red/elite.webp",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-purple-elite",
+      "name": "Cyber Tiger Ronin · Purple",
+      "description": "Purple edition. Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/purple/elite.webp",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-green-elite",
+      "name": "Cyber Tiger Ronin · Green",
+      "description": "Green edition. Samurai-inspired heavy warrior cyber-armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-elite",
+        "species": "tiger",
+        "tier": "elite",
+        "image": "heroes/tiger/green/elite.webp",
+        "lore": "Traditional Eastern heavy samurai armor fused with cybernetics."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-white-legendary",
+      "name": "Cyber Tiger Shogun · White",
+      "description": "White edition. Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/white/legendary.webp",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-cobalt-legendary",
+      "name": "Cyber Tiger Shogun · Cobalt Blue",
+      "description": "Cobalt edition. Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/cobalt/legendary.webp",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-red-legendary",
+      "name": "Cyber Tiger Shogun · Red",
+      "description": "Red edition. Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/red/legendary.webp",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-purple-legendary",
+      "name": "Cyber Tiger Shogun · Purple",
+      "description": "Purple edition. Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/purple/legendary.webp",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-tiger-green-legendary",
+      "name": "Cyber Tiger Shogun · Green",
+      "description": "Green edition. Legendary warrior wielding a twin energy lance.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐯",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-tiger-legendary",
+        "species": "tiger",
+        "tier": "legendary",
+        "image": "heroes/tiger/green/legendary.webp",
+        "lore": "Heroic Shogun charging into cyber city streets with energy lance."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-white-standard",
+      "name": "Cyber Bird Cadet · White",
+      "description": "White edition. Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/white/standard.webp",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-cobalt-standard",
+      "name": "Cyber Bird Cadet · Cobalt Blue",
+      "description": "Cobalt edition. Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/cobalt/standard.webp",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-red-standard",
+      "name": "Cyber Bird Cadet · Red",
+      "description": "Red edition. Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/red/standard.webp",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-purple-standard",
+      "name": "Cyber Bird Cadet · Purple",
+      "description": "Purple edition. Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/purple/standard.webp",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-green-standard",
+      "name": "Cyber Bird Cadet · Green",
+      "description": "Green edition. Standard aerodynamic aerial reconnaissance suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🦅",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird",
+        "species": "bird",
+        "tier": "standard",
+        "image": "heroes/bird/green/standard.webp",
+        "lore": "Aerodynamic scout suit with optical wings."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-white-rare",
+      "name": "Cyber Bird Falcon · White",
+      "description": "White edition. Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/white/rare.webp",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-cobalt-rare",
+      "name": "Cyber Bird Falcon · Cobalt Blue",
+      "description": "Cobalt edition. Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/cobalt/rare.webp",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-red-rare",
+      "name": "Cyber Bird Falcon · Red",
+      "description": "Red edition. Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/red/rare.webp",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-purple-rare",
+      "name": "Cyber Bird Falcon · Purple",
+      "description": "Purple edition. Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/purple/rare.webp",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-green-rare",
+      "name": "Cyber Bird Falcon · Green",
+      "description": "Green edition. Tactical aerial chassis with high-speed optics.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🦅",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-rare",
+        "species": "bird",
+        "tier": "rare",
+        "image": "heroes/bird/green/rare.webp",
+        "lore": "High-altitude carbon wings and aerial telemetry goggles."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-bird-white-elite",
+      "name": "Cyber Bird Tengu · White",
+      "description": "White edition. Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/white/elite.webp",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-cobalt-elite",
+      "name": "Cyber Bird Tengu · Cobalt Blue",
+      "description": "Cobalt edition. Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/cobalt/elite.webp",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-red-elite",
+      "name": "Cyber Bird Tengu · Red",
+      "description": "Red edition. Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/red/elite.webp",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-purple-elite",
+      "name": "Cyber Bird Tengu · Purple",
+      "description": "Purple edition. Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/purple/elite.webp",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-green-elite",
+      "name": "Cyber Bird Tengu · Green",
+      "description": "Green edition. Historic crested avian warrior armor.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-elite",
+        "species": "bird",
+        "tier": "elite",
+        "image": "heroes/bird/green/elite.webp",
+        "lore": "Historic Japanese avian warrior armor with crested headpiece."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-white-legendary",
+      "name": "Cyber Bird Kensei · White",
+      "description": "White edition. Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/white/legendary.webp",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-cobalt-legendary",
+      "name": "Cyber Bird Kensei · Cobalt Blue",
+      "description": "Cobalt edition. Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/cobalt/legendary.webp",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-red-legendary",
+      "name": "Cyber Bird Kensei · Red",
+      "description": "Red edition. Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/red/legendary.webp",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-purple-legendary",
+      "name": "Cyber Bird Kensei · Purple",
+      "description": "Purple edition. Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/purple/legendary.webp",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-bird-green-legendary",
+      "name": "Cyber Bird Kensei · Green",
+      "description": "Green edition. Legendary warrior wielding an energy katana.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🦅",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-bird-legendary",
+        "species": "bird",
+        "tier": "legendary",
+        "image": "heroes/bird/green/legendary.webp",
+        "lore": "Master swordsman wielding dual energy katanas mid-flight."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-white-standard",
+      "name": "Cyber Rabbit Cadet · White",
+      "description": "White edition. Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/white/standard.webp",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-cobalt-standard",
+      "name": "Cyber Rabbit Cadet · Cobalt Blue",
+      "description": "Cobalt edition. Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/cobalt/standard.webp",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-red-standard",
+      "name": "Cyber Rabbit Cadet · Red",
+      "description": "Red edition. Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/red/standard.webp",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-purple-standard",
+      "name": "Cyber Rabbit Cadet · Purple",
+      "description": "Purple edition. Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/purple/standard.webp",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-green-standard",
+      "name": "Cyber Rabbit Cadet · Green",
+      "description": "Green edition. Standard rapid-reflex cyber-suit.",
+      "category": "hero",
+      "price": 40,
+      "rarity": "standard",
+      "icon": "🐰",
+      "requiredRank": "rookie",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit",
+        "species": "rabbit",
+        "tier": "standard",
+        "image": "heroes/rabbit/green/standard.webp",
+        "lore": "Ultra-fast evasion suit with reflex sensory modules."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-white-rare",
+      "name": "Cyber Rabbit Scout · White",
+      "description": "White edition. Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/white/rare.webp",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-cobalt-rare",
+      "name": "Cyber Rabbit Scout · Cobalt Blue",
+      "description": "Cobalt edition. Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/cobalt/rare.webp",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-red-rare",
+      "name": "Cyber Rabbit Scout · Red",
+      "description": "Red edition. Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/red/rare.webp",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-purple-rare",
+      "name": "Cyber Rabbit Scout · Purple",
+      "description": "Purple edition. Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/purple/rare.webp",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-green-rare",
+      "name": "Cyber Rabbit Scout · Green",
+      "description": "Green edition. Carbon-fiber sprinter armor with audio antenna.",
+      "category": "hero",
+      "price": 100,
+      "rarity": "rare",
+      "icon": "🐰",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-rare",
+        "species": "rabbit",
+        "tier": "rare",
+        "image": "heroes/rabbit/green/rare.webp",
+        "lore": "Carbon-fiber sprint booster armor with audio sensors."
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "hero-rabbit-white-elite",
+      "name": "Cyber Rabbit Shinobi · White",
+      "description": "White edition. Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/white/elite.webp",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-cobalt-elite",
+      "name": "Cyber Rabbit Shinobi · Cobalt Blue",
+      "description": "Cobalt edition. Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/cobalt/elite.webp",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-red-elite",
+      "name": "Cyber Rabbit Shinobi · Red",
+      "description": "Red edition. Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/red/elite.webp",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-purple-elite",
+      "name": "Cyber Rabbit Shinobi · Purple",
+      "description": "Purple edition. Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/purple/elite.webp",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-green-elite",
+      "name": "Cyber Rabbit Shinobi · Green",
+      "description": "Green edition. Historic shinobi scout armor with cyber stealth plates.",
+      "category": "hero",
+      "price": 450,
+      "rarity": "elite",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-elite",
+        "species": "rabbit",
+        "tier": "elite",
+        "image": "heroes/rabbit/green/elite.webp",
+        "lore": "Historic covert ninja armor adapted for quantum shadow-stepping."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-white-legendary",
+      "name": "Cyber Rabbit Cyber-Star · White",
+      "description": "White edition. Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/white/legendary.webp",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-cobalt-legendary",
+      "name": "Cyber Rabbit Cyber-Star · Cobalt Blue",
+      "description": "Cobalt edition. Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/cobalt/legendary.webp",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-red-legendary",
+      "name": "Cyber Rabbit Cyber-Star · Red",
+      "description": "Red edition. Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/red/legendary.webp",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-purple-legendary",
+      "name": "Cyber Rabbit Cyber-Star · Purple",
+      "description": "Purple edition. Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/purple/legendary.webp",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "hero-rabbit-green-legendary",
+      "name": "Cyber Rabbit Cyber-Star · Green",
+      "description": "Green edition. Legendary dynamic hero leaping across cyber city roofs.",
+      "category": "hero",
+      "price": 900,
+      "rarity": "legendary",
+      "icon": "🐰",
+      "requiredRank": "infiltrator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "hero-rabbit-legendary",
+        "species": "rabbit",
+        "tier": "legendary",
+        "image": "heroes/rabbit/green/legendary.webp",
+        "lore": "Legendary agile hero leaping on an energized launch platform."
+      },
+      "availability": "future"
+    },
+    {
+      "itemId": "frame-silver",
+      "name": "Silver Orbit",
+      "description": "Polished platinum wings and an ice crystal crown. A premium frame with a quiet shimmer.",
+      "category": "badge",
+      "price": 30,
+      "rarity": "standard",
+      "icon": "◇",
+      "requiredRank": "operator",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "frame-silver"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "frame-prism",
+      "name": "Prism Circuit",
+      "description": "Amethyst crystal facets, rose-gold edges, and drifting aurora light.",
+      "category": "badge",
+      "price": 60,
+      "rarity": "rare",
+      "icon": "◇",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "frame-prism"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "frame-pulse",
+      "name": "Signal Pulse",
+      "description": "Sapphire armour with luminous energy flowing around its engraved rim.",
+      "category": "badge",
+      "price": 90,
+      "rarity": "rare",
+      "icon": "◇",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "frame-pulse"
+      },
+      "availability": "available"
+    },
+    {
+      "itemId": "frame-verdant",
+      "name": "Emerald Sovereign",
+      "description": "An emerald crown with champagne-gold wings and orbiting starlight.",
+      "category": "badge",
+      "price": 90,
+      "rarity": "rare",
+      "icon": "◇",
+      "requiredRank": "cyber-operative",
+      "purchasable": true,
+      "equipable": true,
+      "asset": {
+        "className": "frame-verdant"
+      },
+      "availability": "available"
     }
   ],
   "suggestedCodenames": [
@@ -657,7 +3029,7 @@
       "missionIds": [
         "mission-1",
         "mission-2",
-        "mission-3"
+        "mission-scroll"
       ],
       "prerequisites": [],
       "icon": "⌂",
@@ -670,7 +3042,11 @@
       "nodeId": "classified",
       "name": "Classified Network",
       "missionIds": [
-        "mission-4"
+        "mission-drag",
+        "mission-context",
+        "mission-4",
+        "mission-recovery",
+        "mission-3"
       ],
       "prerequisites": [
         "training"
@@ -689,9 +3065,7 @@
       "activityCreditCap": 20,
       "linkedMissionId": "mission-3",
       "requiredCompletedMissions": [
-        1,
-        2,
-        3
+        8
       ],
       "speedAchievementSeconds": 30
     },
@@ -704,7 +3078,8 @@
         1,
         2,
         3,
-        4
+        4,
+        5
       ],
       "speedAchievementSeconds": 75
     }
@@ -735,5 +3110,49 @@
       "name": "TRAINING MASTER",
       "description": "Earn all Credits from one training module."
     }
+  ],
+  "campaign": [
+    {
+      "id": "mission-1",
+      "number": 1
+    },
+    {
+      "id": "mission-2",
+      "number": 2
+    },
+    {
+      "id": "mission-scroll",
+      "number": 3
+    },
+    {
+      "id": "mission-drag",
+      "number": 4,
+      "training": "drag_rescue"
+    },
+    {
+      "id": "mission-context",
+      "number": 5,
+      "training": "robot_untangle"
+    },
+    {
+      "id": "mission-4",
+      "number": 6,
+      "training": "data-transfer"
+    },
+    {
+      "id": "mission-recovery",
+      "number": 7
+    },
+    {
+      "id": "mission-3",
+      "number": 8,
+      "training": "robot_override"
+    }
+  ],
+  "recoveryRewardItems": [
+    "hero-wolf-rare",
+    "plasma-arrow",
+    "frame-prism",
+    "matrix-terminal"
   ]
 }

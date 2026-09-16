@@ -1,0 +1,52 @@
+/* The simulated computer is an opaque, readable surface in every shop theme. */
+/* Rendered at the document root: transformed/clipped mission shells must not
+   offset the viewport coordinates or hide the file attached to the pointer. */
+body>.mouse-drag-ghost { position:fixed; display:flex; flex-direction:column; align-items:flex-end; transform:translate(-100%,-100%); gap:5px; width:120px; padding:0; background:transparent; border:0; border-radius:0; color:#142c41; pointer-events:none; user-select:none; z-index:10000; opacity:.9; font:12px/1.3 'Segoe UI',Arial,sans-serif; }
+body>.mouse-drag-ghost .file-icon { width:38px; height:48px; min-width:38px; margin:0; background:#fff; color:#173346; border:1px solid #849dad; font-size:11px; box-shadow:0 3px 7px #18374b55; }
+body>.mouse-drag-ghost .mouse-drag-filename { max-width:120px; padding:3px 6px; border:1px solid #88bde3; border-radius:3px; background:#eaf5ff; text-align:center; overflow-wrap:anywhere; box-shadow:0 2px 5px #18374b33; }
+.app-shell .mission-screen .computer-shell:has(.mouse-mission-files),
+.app-shell .mission-screen .computer-body:has(.mouse-mission-files) { background:#edf3f9; color:#172d40; }
+.mouse-mission-files { width:100%; box-sizing:border-box; min-height:320px; padding:24px; background:#edf3f9; color:#172d40; font-family:Segoe UI,Arial,sans-serif; align-content:flex-start; }
+.mouse-mission-files h3 { margin:0 0 24px; font-size:21px; }
+.mouse-mission-files h3 small { margin-top:8px; font-size:14px; font-weight:400; }
+.app-shell .mouse-mission-files .file-item { color:#172d40; background:#fff; border:1px solid #9eb5ca; min-height:145px; border-radius:8px; }
+.app-shell .mouse-mission-files .file-item small { color:#435f77; }
+.app-shell .mouse-mission-files .file-item:hover { background:#d7eaff; border-color:#087ac9; transform:translateY(-3px); }
+.app-shell .mouse-mission-files .file-item.selected { background:#cce8ff; color:#123853; border-color:#1686ce; box-shadow:0 0 0 2px #86c9f7; }
+.app-shell .mouse-mission-files .file-item.selected small { color:#244f70; }
+.mouse-mission-files .file-icon { color:#173346; }
+.mouse-mission-files>p { flex-basis:100%; }
+.app-shell .mouse-mission-files .mouse-action-menu { position:absolute; z-index:20; top:100px; left:min(180px,35%); min-width:180px; padding:5px; background:#fff; color:#172d40; border:1px solid #8d9eae; border-radius:5px; box-shadow:0 8px 24px #152c4540; }
+.app-shell .mouse-action-menu button { background:#fff; color:#172d40; padding:12px 16px; width:100%; text-align:left; }
+.app-shell .mouse-action-menu button:hover { background:#d5eaff; }
+.mouse-skill-lesson { background:#edf3f9; color:#172d40; border:1px solid #819db5; border-radius:10px; overflow:hidden; font-family:Segoe UI,Arial,sans-serif; }
+.mouse-skill-lesson>p,.mouse-skill-lesson>small { display:block; margin:16px; line-height:1.6; }
+.mouse-skill-lesson>.primary-button { margin:0 16px 12px; }
+.mouse-skill-lesson .mouse-mission-files { min-height:210px; padding:16px; }
+.mouse-lesson-demo { position:relative; height:215px; margin:16px; border:1px solid #b1c4d5; background:white; }
+.demo-file,.demo-folder { position:absolute; top:35px; left:8%; display:flex; align-items:center; flex-direction:column; gap:12px; font-size:13px; transition:left 1.2s ease,opacity .4s; }
+.demo-folder { left:64%; }
+.drag-demo.step-1 .demo-file { left:64%; z-index:2; }
+.drag-demo.step-2 .demo-file { opacity:0; }
+.demo-pointer { position:absolute; left:24%; top:94px; color:#086fc4; font-size:32px; transition:left 1.2s ease; z-index:3; }
+.demo-pointer small { display:block; font-size:11px; background:#123b5b; color:white; padding:5px; border-radius:4px; }
+.drag-demo.step-1 .demo-pointer,.drag-demo.step-2 .demo-pointer { left:70%; }
+.demo-menu { position:absolute; left:46%; top:35px; width:45%; background:#fff; border:1px solid #849cb0; box-shadow:0 5px 15px #142e4426; }
+.demo-menu>* { display:block; padding:12px; font-size:14px; }
+.demo-menu .active { background:#c7e5ff; }
+.context-demo.step-1 .demo-pointer { left:65%; top:57px; }
+.demo-success { position:absolute; bottom:10px; left:15px; color:#08694d; }
+.mission-overlay-visual:has(.mouse-skill-lesson) { min-width:0; }
+@media(max-width:600px) { .mouse-mission-files { padding:14px; gap:12px; }.mouse-mission-files .file-item { width:110px; }.mouse-lesson-demo { margin:8px; }.demo-pointer small { font-size:9px; } }
+@media(prefers-reduced-motion:reduce) { .demo-file,.demo-pointer { transition:none; } }
+.drag-demo.step-1 .demo-file strong { visibility:hidden; }
+.drag-demo.step-1 .demo-folder .folder-icon { outline:3px solid #087ac9; outline-offset:6px; }
+.mission-overlay-panel:has(.mouse-skill-lesson) { width:min(1080px,calc(100vw - 32px)); max-width:100%; box-sizing:border-box; }
+@media(max-width:800px) {
+  .mission-overlay-panel:has(.mouse-skill-lesson) .mission-overlay-objective { display:none; }
+  .mission-overlay-panel:has(.mouse-skill-lesson) .mission-overlay-copy h1 { font-size:25px; }
+  .mission-overlay-panel:has(.mouse-skill-lesson) .mission-overlay-lead { min-height:0; }
+  .mission-overlay-panel:has(.mouse-skill-lesson) .mission-overlay-content { gap:14px; }
+  .mouse-skill-lesson>p { font-size:14px; }
+  .mouse-lesson-demo { height:185px; }
+}

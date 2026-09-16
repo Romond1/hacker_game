@@ -11,6 +11,7 @@
     "vite.config.ts",
     "dev/**/*.ts",
     "src/domain/progression.ts",
+    "src/domain/recovery.ts",
     "src/domain/training.ts",
     "src/training/catalog.ts",
     "src/training/systems-calibration.ts",

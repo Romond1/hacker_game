@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, expect, it } from 'vitest';
+import { afterAll, beforeAll, expect, it, vi } from 'vitest';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -78,7 +78,7 @@ it('protects economy endpoints and serializes concurrent purchase/reward request
     expect((await request({ action }, student.cookie)).status).toBe(403);
     expect((await request({ action }, teacher.cookie, teacher.token)).status).toBe(403);
   }
-  for (const missionId of ['mission-1','mission-2','mission-3']) {
+  for (const missionId of ['mission-1','mission-2','mission-scroll']) {
     const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
     const body = { action: 'attempt.finish', attemptId: started.attemptId, score: 800, durationSeconds: 60, stats: {} };
     const receipts = await Promise.all([request(body, student.cookie, student.token), request(body, student.cookie, student.token)]);
@@ -100,9 +100,27 @@ it('protects training routes and persists an idempotent completion', async () =>
   expect((await request({ action: 'training.start', trainingId: 'systems-calibration' }, lockedStudent.cookie, lockedStudent.token)).status).toBe(403);
 
   const student = await login('cloe.hacker');
-  for (const missionId of ['mission-1', 'mission-2', 'mission-3']) {
+  for (const missionId of ['mission-1', 'mission-2', 'mission-scroll']) {
     const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
     await request({ action: 'attempt.finish', attemptId: started.attemptId, score: 800, durationSeconds: 60, stats: {} }, student.cookie, student.token);
+  }
+  for (const [mode, missionId] of [['drag_rescue','mission-drag'], ['robot_untangle','mission-context'], ['data-transfer','mission-4'], ['robot_override','mission-3']]) {
+    if (mode === 'robot_override') {
+      const { data: boss } = await (await request({ action: 'attempt.start', missionId: 'mission-recovery' }, student.cookie, student.token)).json();
+      const completed = await request({ action: 'attempt.finish', attemptId: boss.attemptId, score: 800, durationSeconds: 120, stats: { recovery: completedRecoveryEvidence() } }, student.cookie, student.token);
+      expect(completed.status).toBe(200);
+    }
+    if (mode === 'data-transfer') {
+      const { data: run } = await (await request({ action: 'training.start', trainingId: mode }, student.cookie, student.token)).json();
+      const module = getTrainingModule('data-transfer');
+      await request({ action: 'training.finish', attemptId: run.attemptId, evidence: Array.from({ length: run.rounds }, (_, i) => ({ pastedText: module.generateTask(run.seed, i).code })), durationSeconds: 30 }, student.cookie, student.token);
+    } else {
+      const { data: run } = await (await request({ action: 'robot.start', mode }, student.cookie, student.token)).json();
+      const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 10000);
+      try { await request({ action: 'robot.finish', runId: run.runId, result: { mode, victory: true, wavesCompleted: 3, robotsDestroyed: 3 } }, student.cookie, student.token); } finally { clock.mockRestore(); }
+    }
+    const { data: attempt } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
+    await request({ action: 'attempt.finish', attemptId: attempt.attemptId, score: 800, durationSeconds: 30, stats: {} }, student.cookie, student.token);
   }
   const startResponse = await request({ action: 'training.start', trainingId: 'systems-calibration' }, student.cookie, student.token);
   expect(startResponse.status).toBe(201);
@@ -118,3 +136,4 @@ it('protects training routes and persists an idempotent completion', async () =>
   const { data: dashboard } = await (await request({ action: 'student.dashboard' }, student.cookie, student.token)).json();
   expect(dashboard.training[0]).toMatchObject({ completedRuns: 1, creditsEarned: 1, bestAccuracy: 100 });
 });
+import { completedRecoveryEvidence } from './recoveryFixture';

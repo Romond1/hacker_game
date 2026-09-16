@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { ShopItem } from "../../domain/progression";
 import type { SupportLanguage } from "../../domain/mission";
 import { Copy } from "../progression/Copy";
@@ -15,12 +16,21 @@ export function PurchaseReveal({
   onEquip: () => void;
   onReturn: () => void;
 }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const element = dialog.current;
+    if (element?.showModal) element.showModal();
+    else element?.setAttribute('open', '');
+    return () => { if (element?.open && element.close) element.close(); };
+  }, []);
   return (
-    <section
+    <dialog
+      ref={dialog}
       className={`purchase-reveal ${processing ? "processing" : "acquired"} rarity-${item.rarity}`}
       role="dialog"
       aria-modal="true"
       aria-label="Item purchase"
+      onCancel={(event) => { event.preventDefault(); if (!processing) onReturn(); }}
     >
       <div className="purchase-scan" aria-hidden="true" />
       <p className="eyebrow">
@@ -33,7 +43,7 @@ export function PurchaseReveal({
         className={`purchase-item-icon ${item.asset.className ?? ""}`}
         aria-hidden="true"
       >
-        {item.icon}
+        {item.category === "hero" && item.asset.image ? <img src={`${import.meta.env.BASE_URL}${item.asset.image}`} alt="" /> : item.icon}
       </div>
       <small>
         {item.rarity.toUpperCase()} ·{" "}
@@ -55,6 +65,6 @@ export function PurchaseReveal({
           </button>
         </div>
       )}
-    </section>
+    </dialog>
   );
 }

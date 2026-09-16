@@ -3,8 +3,8 @@ import type { LocalizedText, MissionDefinition } from '../domain/mission';
 const t = (en: string, it: string, ja: string): LocalizedText => ({ en, it, ja });
 
 export const missionThree: MissionDefinition = {
-  id: 'mission-3', slug: 'file-detective', number: 3,
-  lifecycle: { prerequisiteMissionId: 'mission-2', associatedTrainingId: 'systems-calibration', replay: 'allowed', difficulty: 'beginner', warningState: 'none', unlocks: ['mission-4'] },
+  id: 'mission-3', slug: 'file-detective', number: 8,
+  lifecycle: { prerequisiteMissionId: 'mission-recovery', associatedTrainingId: 'robot_override', replay: 'allowed', difficulty: 'beginner', warningState: 'none', unlocks: ['systems-calibration'] },
   title: t('File Detective', 'Detective dei file', 'ファイル探偵'),
   story: t('Find the useful report, read its Agent Code, and confirm the code.', 'Trova il rapporto utile, leggi il Codice Agente e confermalo.', '必要なレポートを見つけ、エージェントコードを読んで入力しましょう。'),
   skills: [
@@ -18,13 +18,12 @@ export const missionThree: MissionDefinition = {
     t('Text files contain words you can read.', 'I file di testo contengono parole che puoi leggere.', 'テキストファイルには読める言葉が入っています。'),
   ],
   translations: {
-    objective: t('Find mission-report.txt, read the Agent Code, and confirm it.', 'Trova mission-report.txt, leggi il Codice Agente e confermalo.', 'mission-report.txtを見つけ、エージェントコードを読んで入力してください。'),
+    objective: t('Two levels: read mission-report.txt, then find the ACTIVE code in access-report.txt. Type or paste each code.', 'Trova mission-report.txt, leggi il Codice Agente e confermalo.', 'mission-report.txtを見つけ、エージェントコードを読んで入力してください。'),
     guideExhausted: t('Use the report and the confirmation box to finish your investigation.', 'Usa il rapporto e la casella di conferma per finire l’indagine.', 'レポートと確認ボックスを使って調査を完了しましょう。'),
   },
   tutorial: [
-    { id: 'file-name', title: t('FILE NAME', 'NOME DEL FILE', 'ファイル名'), body: t('The file name can tell you what the file might contain.', 'Il nome può dirti cosa potrebbe contenere il file.', 'ファイル名を見ると、中に何があるか予想できます。'), action: 'continue' },
-    { id: 'text-file', title: t('TEXT FILE', 'FILE DI TESTO', 'テキストファイル'), body: t('A text file contains words you can read.', 'Un file di testo contiene parole che puoi leggere.', 'テキストファイルには読める言葉が入っています。'), action: 'continue' },
-    { id: 'file-icon', title: t('FILE ICON', 'ICONA DEL FILE', 'ファイルアイコン'), body: t('Pictures, music, and text use different icons.', 'Immagini, musica e testo usano icone diverse.', '画像、音楽、テキストには違うアイコンがあります。'), action: 'continue' },
+    { id: 'find-report', title: t('FILE DETECTIVE', 'DETECTIVE DEI FILE', 'ファイル探偵'), body: t('Level 1: double-click Documents, then Investigation, then mission-report.txt. Read the Agent Code and type it into the box below the computer. You can also select, copy and paste it. Confirm to continue.', 'Livello 1: apri Documents, Investigation e mission-report.txt con doppio clic. Leggi il Codice Agente e scrivilo nella casella sotto il computer, oppure selezionalo, copialo e incollalo. Conferma per continuare.', 'レベル1：Documents、Investigation、mission-report.txtをダブルクリックで開きます。コードを読み、下の入力欄に入力するか、選択・コピーして貼り付け、確認します。'), action: 'continue' },
+    { id: 'read-labels', title: t('READ BEFORE YOU TYPE', 'LEGGI PRIMA DI SCRIVERE', '読んでから入力しよう'), body: t('Level 2: find Documents / Verification / access-report.txt. It contains an ACTIVE code and a fake TRAINING code. Submit only the ACTIVE code, including its dash (example: BG-52). Both levels use new codes each attempt.', 'Livello 2: trova Documents / Verification / access-report.txt. Contiene un codice ACTIVE valido e un codice TRAINING finto. Inserisci solo ACTIVE, incluso il trattino (esempio: BG-52). I codici cambiano a ogni tentativo.', 'レベル2：Documents / Verification / access-report.txtを探します。有効なACTIVEコードと偽物のTRAININGコードがあります。ハイフンも含めてACTIVEだけを入力（例：BG-52）。毎回コードが変わります。'), action: 'continue' },
   ],
   filesystem: { id: 'desktop', name: 'Desktop', type: 'folder', children: [
     { id: 'pictures', name: 'Pictures', type: 'folder', children: [] },

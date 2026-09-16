@@ -24,6 +24,8 @@ export type PlayerProgression = {
 };
 
 export function rankFor(completed: number[]) {
+  // Old File Detective graduates retain their earned Operator rank.
+  if (completed.includes(8) && !completed.includes(3)) completed = [...completed, 3];
   return [...ECONOMY.ranks].reverse().find(rank => rank.requiredMissions.every(id => completed.includes(id)))!;
 }
 
@@ -45,7 +47,7 @@ export function rewardAmounts(policy: RewardPolicy, score: number, limits: Rewar
 export type NodeStatus = 'LOCKED' | 'AVAILABLE' | 'ACTIVE' | 'COMPROMISED' | 'SECURED' | 'COMPLETED';
 export function networkNodes(state: PlayerProgression) {
   return ECONOMY.nodes.map(node => {
-    const completed = node.missionIds.every(id => state.completedMissions.includes(Number(id.replace('mission-', ''))));
+    const completed = node.missionIds.every(id => state.completedMissions.includes(ECONOMY.campaign.find(mission => mission.id === id)!.number));
     const unlocked = state.unlockedNodes.includes(node.nodeId);
     const status: NodeStatus = completed ? 'COMPLETED' : unlocked ? 'AVAILABLE' : 'LOCKED';
     const storyState = node.nodeId === 'classified'

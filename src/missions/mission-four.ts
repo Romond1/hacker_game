@@ -4,9 +4,9 @@ const t = (en: string, it: string, ja: string): LocalizedText => ({ en, it, ja }
 const code = 'VX-4821-OMEGA';
 
 export const missionFour: MissionDefinition = {
-  id: 'mission-4', slug: 'intercepted-transmission', number: 4,
+  id: 'mission-4', slug: 'intercepted-transmission', number: 6,
   lifecycle: {
-    prerequisiteMissionId: 'mission-3', associatedTrainingId: 'data-transfer', replay: 'allowed',
+    prerequisiteMissionId: 'mission-context', associatedTrainingId: 'data-transfer', replay: 'allowed',
     difficulty: 'beginner', warningState: 'alert', unlocks: ['data-transfer'],
     storyFlags: ['communicationNodeSecured', 'sourceIdentified', 'unknownNetworkActivityDetected'],
     achievementIds: ['communication-node-secured'],
@@ -32,9 +32,11 @@ export const missionFour: MissionDefinition = {
     guideExhausted: t('Select the code in the file. Right-click Copy, return to the secure channel, then right-click Paste.', 'Seleziona il codice nel file. Fai clic destro su Copia, torna al canale sicuro, poi fai clic destro su Incolla.', 'ファイル内のコードを選択して右クリックでコピーし、安全なチャンネルに戻って右クリックで貼り付けます。'),
   },
   tutorial: [
+    // The final step requires a real practice transfer before the scored attempt.
     { id: 'select', title: t('SELECT INFORMATION', 'SELEZIONA LE INFORMAZIONI', '情報を選択'), body: t('Drag across the exact code so the information is selected.', 'Trascina sul codice esatto per selezionarlo.', '正確なコードの上をドラッグして選択します。'), action: 'continue' },
-    { id: 'copy', title: t('RIGHT-CLICK COPY', 'CLIC DESTRO COPIA', '右クリックでコピー'), body: t('Right-click selected information and choose Copy. Keyboard shortcuts come later.', 'Fai clic destro sulle informazioni selezionate e scegli Copia. Le scorciatoie verranno dopo.', '選択した情報を右クリックして「コピー」を選びます。キーボードショートカットは後で学びます。'), action: 'continue' },
-    { id: 'paste', title: t('RIGHT-CLICK PASTE', 'CLIC DESTRO INCOLLA', '右クリックで貼り付け'), body: t('Navigate to the destination, right-click it, and choose Paste.', 'Vai alla destinazione, fai clic destro e scegli Incolla.', '貼り付け先へ移動し、右クリックして「貼り付け」を選びます。'), action: 'continue' },
+    { id: 'copy', title: t('RIGHT-CLICK COPY', 'CLIC DESTRO COPIA', '右クリックでコピー'), body: t('Right-click selected information to open its menu. Then left-click Copy.', 'Fai clic destro sulle informazioni selezionate per aprire il menu. Poi fai clic sinistro su Copia.', '選択した情報を右クリックしてメニューを開きます。次に「コピー」を左クリックします。'), action: 'continue' },
+    { id: 'paste', title: t('RIGHT-CLICK PASTE', 'CLIC DESTRO INCOLLA', '右クリックで貼り付け'), body: t('Right-click the destination to open its menu. Then left-click Paste.', 'Fai clic destro sulla destinazione per aprire il menu. Poi fai clic sinistro su Incolla.', '貼り付け先を右クリックしてメニューを開きます。次に「貼り付け」を左クリックします。'), action: 'continue' },
+    { id: 'practice-transfer', title: t('TRY COPY AND PASTE', 'PROVA COPIA E INCOLLA', 'コピーと貼り付けを練習'), body: t('Try the practice computer. Right-click opens a menu. Left-click chooses Copy or Paste. Transfer the code to unlock Start Mission.', 'Prova il computer di pratica. Il clic destro apre un menu. Il clic sinistro sceglie Copia o Incolla. Trasferisci il codice per iniziare la missione.', '練習用コンピューターを使いましょう。右クリックでメニューを開き、左クリックでコピーや貼り付けを選びます。コードを移すとミッションを始められます。'), action: 'practice_transfer' },
   ],
   filesystem: { id: 'desktop', name: 'Desktop', type: 'folder', children: [
     { id: 'documents', name: 'Documents', type: 'folder', children: [{ id: 'notes', name: 'Notes.txt', type: 'file', kind: 'text', content: t('Nothing unusual here.', 'Niente di insolito qui.', '異常はありません。') }] },

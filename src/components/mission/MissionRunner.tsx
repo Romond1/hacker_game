@@ -1,3 +1,8 @@
+import { createDetectiveCodes, detectiveLevel } from '../../domain/detective';
+import { ScrollMissionArchive } from './ScrollArchive';
+import { CoreRecovery } from './CoreRecovery';
+import type { RecoveryState } from '../../domain/recovery';
+import { MouseMissionFiles } from './MouseMissionFiles';
 import { useMemo, useRef, useState } from 'react';
 import { api, type SessionUser } from '../../api/client';
 import { calculateScore, findNode, getNextHint, getTranslation, matchesConfirmationCode, matchesObjective, type FileNode, type MissionDefinition, type Objective, type ScoreResult } from '../../domain/mission';
@@ -12,6 +17,8 @@ type MissionRunnerProps = {
   mission: MissionDefinition;
   user: SessionUser;
   attemptId: string;
+  preview?: boolean;
+  muted?: boolean;
   onComplete: (score: ScoreResult, duration: number, stats: MissionResultStats, reward?: RewardReceipt) => void | Promise<void>;
 };
 
@@ -33,7 +40,13 @@ function fileLabel(node: FileNode): string {
   return 'Text file';
 }
 
-export function MissionRunner({ mission, user, attemptId, onComplete }: MissionRunnerProps) {
+export function MissionRunner({ mission: baseMission, user, attemptId, preview = false, muted = true, onComplete }: MissionRunnerProps) {
+  const isDetective = baseMission.id === 'mission-3';
+  const [detectiveCodes] = useState(() => isDetective && !preview ? createDetectiveCodes() : { word: 'ORBIT', code: 'BG-52', decoy: 'AB-12', validFirst: false });
+  const [detectiveStage, setDetectiveStage] = useState(0);
+  const [levelComplete, setLevelComplete] = useState(false);
+  const reportText = useRef<HTMLPreElement>(null);
+  const mission = useMemo(() => isDetective ? detectiveLevel(baseMission, detectiveStage, detectiveCodes) : baseMission, [baseMission, isDetective, detectiveStage, detectiveCodes]);
   const [path, setPath] = useState<string[]>([]);
   const [selectedId, setSelectedId] = useState<string>();
   const [openedFile, setOpenedFile] = useState<FileNode>();
@@ -51,6 +64,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   const [contextMenu, setContextMenu] = useState<'copy' | 'paste'>();
   const startedAt = useMemo(() => Date.now(), []);
   const finished = useRef(false);
+  const recoveryEvidence = useRef<RecoveryState | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
   const pendingResult = useRef<{ score: ScoreResult; duration: number; stats: Record<string, unknown>; resultStats: MissionResultStats } | undefined>(undefined);
@@ -58,6 +72,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   const targetIds = useMemo(() => new Set(mission.objectives.flatMap((objective) => objective.targetId ? [objective.targetId] : [])), [mission]);
 
   async function log(type: EventType, data: Record<string, unknown> = {}) {
+    if (preview) return;
     await api('attempt.event', { attemptId, type, data }, user.csrfToken);
   }
 
@@ -76,16 +91,17 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function finish(nextObjectives: Set<string>, nextCorrect = correct, nextIncorrect = incorrect) {
-    if (finished.current) return;
+    if (preview || finished.current) return;
     finished.current = true;
     const duration = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
     const stats = {
       completed: true, objectivesCompleted: nextObjectives.size, totalObjectives: mission.objectives.length,
       correctActions: nextCorrect, incorrectActions: nextIncorrect, hintsUsed: usedHints.length,
       translationsUsed: translatedIds.size, durationSeconds: duration,
+      ...(recoveryEvidence.current ? { recovery: recoveryEvidence.current, hintsUsed: recoveryEvidence.current.metrics.hints } : {}),
     };
     const score = calculateScore(mission.scoring, stats);
-    pendingResult.current = { score, duration, stats, resultStats: { hints: usedHints.length, translations: translatedIds.size, correct: nextCorrect, incorrect: nextIncorrect } };
+    pendingResult.current = { score, duration, stats, resultStats: { hints: stats.hintsUsed, translations: translatedIds.size, correct: nextCorrect, incorrect: nextIncorrect } };
     await saveResult();
   }
 
@@ -99,8 +115,18 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
     finally { setSaving(false); }
   }
 
+  async function completeMouseAction(sourceId: string) {
+    if (preview || finished.current || !mission.mouseChallenge) return;
+    setCorrect(value => value + 1);
+    const trigger = mission.mouseChallenge.kind === 'drag' ? 'item_dragged' : 'context_action_used';
+    const next = await markObjectives(trigger, sourceId);
+    await log(trigger, { nodeId: sourceId });
+    if (mission.completion.type === 'mouse_action' && next.has(mission.completion.targetObjectiveId) && (!mission.mouseChallenge?.stages || next.size === mission.objectives.length)) await finish(next, correct + 1, incorrect);
+  }
+
   async function openNode(node: FileNode) {
-    if (finished.current) return;
+    if (preview || finished.current || levelComplete) return;
+    setContextMenu(undefined);
     setSelectedId(node.id);
     const helpful = containsTarget(node, targetIds);
     if (node.type === 'folder') {
@@ -123,8 +149,16 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
     }
   }
 
+  async function closeFile() {
+    const file = openedFile; setOpenedFile(undefined); setContextMenu(undefined);
+    if (!file || preview || finished.current || !mission.scrollChallenge) return;
+    const next = await markObjectives('file_closed', file.id);
+    await log('file_closed', { nodeId: file.id });
+    if (mission.completion.type === 'close_files' && next.size === mission.objectives.length) await finish(next);
+  }
+
   async function goBack() {
-    if (finished.current) return;
+    if (preview || finished.current) return;
     if (path.length === 0) return;
     setPath((value) => value.slice(0, -1));
     setOpenedFile(undefined);
@@ -136,14 +170,14 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function translate(textId: string) {
-    if (finished.current) return;
+    if (preview || finished.current) return;
     if (translatedIds.has(textId)) return;
     setTranslatedIds((value) => new Set(value).add(textId));
     await log('translation_used', { textId, missionId: mission.id });
   }
 
   async function hint() {
-    if (finished.current) return;
+    if (preview || finished.current) return;
     const next = getNextHint(mission, usedHints, completedObjectives);
     if (!next) { setGuideMessage(getTranslation(mission, 'guideExhausted', user.supportLanguage)); return; }
     setUsedHints((value) => [...value, next.id]);
@@ -152,6 +186,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function confirmCode() {
+    if (preview || finished.current || levelComplete) return;
     if (mission.completion.type !== 'confirm_code' || !completedObjectivesRef.current.has(mission.completion.targetObjectiveId)) return;
     if (!matchesConfirmationCode(code, mission.completion.code)) {
       setIncorrect((value) => value + 1);
@@ -159,10 +194,12 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
       return;
     }
     setCodeError('');
+    if (isDetective && detectiveStage === 0) { setCorrect(value => value + 1); setLevelComplete(true); return; }
     await finish(completedObjectives, correct + 1, incorrect);
   }
 
   async function selectTransferText() {
+    if (preview) return;
     const expected = mission.transferChallenge?.expectedText;
     const selected = window.getSelection?.()?.toString().trim() ?? '';
     setSelectedText(selected === expected ? selected : '');
@@ -173,6 +210,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function copyTransferText() {
+    if (preview) return;
     const expected = mission.transferChallenge?.expectedText;
     if (!expected || selectedText !== expected) return;
     setClipboard(selectedText);
@@ -182,6 +220,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function pasteTransferText() {
+    if (preview) return;
     const expected = mission.transferChallenge?.expectedText;
     if (!expected || clipboard !== expected) return;
     setContextMenu(undefined);
@@ -191,6 +230,7 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
   }
 
   async function submitTransfer() {
+    if (preview) return;
     if (mission.completion.type !== 'confirm_transfer' || !matchesConfirmationCode(code, mission.completion.code)) {
       setCodeError('Transmission not confirmed. Copy the exact code and try again.');
       return;
@@ -202,17 +242,38 @@ export function MissionRunner({ mission, user, attemptId, onComplete }: MissionR
     await finish(nextObjectives, correct + 1, incorrect);
   }
 
+  function nextDetectiveLevel() {
+    setDetectiveStage(1); setLevelComplete(false); setPath([]); setOpenedFile(undefined); setSelectedId(undefined);
+    setCode(''); setCodeError(''); setClipboard(''); setSelectedText(''); setContextMenu(undefined);
+    completedObjectivesRef.current = new Set(); setCompletedObjectives(new Set());
+    setGuideMessage('Open Documents / Verification / access-report.txt. Read the labels to choose the ACTIVE code.');
+  }
+  function detectiveCopyMenu(event: React.MouseEvent) {
+    event.preventDefault();
+    const selection = window.getSelection();
+    const text = selection && reportText.current?.contains(selection.anchorNode) && reportText.current?.contains(selection.focusNode) ? selection.toString() : '';
+    setSelectedText(text); setContextMenu(text ? 'copy' : undefined);
+  }
   const objectiveTranslated = translatedIds.has('objective');
   const openedTranslationId = openedFile ? `file:${openedFile.id}` : '';
   const canConfirm = mission.completion.type === 'confirm_code' && completedObjectives.has(mission.completion.targetObjectiveId);
   const transfer = mission.transferChallenge;
 
-  return <main className="mission-screen">
+  const missionHeader = <header className="mission-header" inert={saving || saveFailed ? true : undefined}><div><p>MISSION {String(mission.number).padStart(2, '0')}</p><strong>{mission.title.en.toUpperCase()}</strong></div><div className="mission-objective"><span>OBJECTIVE</span><p>{mission.translations.objective.en}</p>{objectiveTranslated && <small lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</small>}</div><button className="translate-button" onClick={() => void translate('objective')} disabled={objectiveTranslated}>◎ {objectiveTranslated ? 'Translated' : 'Translate'}</button><div className="score-live"><span>PROGRESS</span><strong>{completedObjectives.size}/{mission.objectives.length}</strong></div></header>;
+
+  if (mission.recoveryChallenge) return <main className="mission-screen">{missionHeader}<CoreRecovery disabled={preview || saving || saveFailed || finished.current} muted={muted} onCheckpoint={(step, file, state) => { setCompletedObjectives(new Set(state.secured.map(name => `recover-${name}`))); void log('objective_completed', { objectiveId: `${file}:${step}`, skill: step, phase: state.phase + 1 }).catch(() => undefined); }} onComplete={state => {
+    recoveryEvidence.current = state;
+    void finish(new Set(mission.objectives.map(o => o.id)), state.metrics.singleClicks + state.metrics.doubleClicks + state.metrics.wheelSearches + state.metrics.rightClicks + state.metrics.contextChoices, state.metrics.mistakes);
+  }} />{(saving || saveFailed) && <div className="mission-save-overlay" role="dialog" aria-modal="true" aria-label="Saving mission"><div>{saveFailed ? <><p role="alert"><Copy id="saveError" language={user.supportLanguage} /></p><button className="primary-button" onClick={() => void saveResult()}>Retry saving recovery</button></> : <p role="status">Securing your mission report…</p>}</div></div>}</main>;
+
+  return <main className={`mission-screen ${isDetective ? 'detective-mission' : ''}`}>
     {(saving || saveFailed) && <div className="mission-save-overlay" role="dialog" aria-modal="true" aria-label="Saving mission"><div>{saveFailed ? <><p role="alert"><Copy id="saveError" language={user.supportLanguage} /></p><button autoFocus className="primary-button" onClick={() => void saveResult()}><Copy id="retry" language={user.supportLanguage} /></button></> : <p role="status"><Copy id="saving" language={user.supportLanguage} /></p>}</div></div>}
-    <header className="mission-header" inert={saving || saveFailed ? true : undefined}><div><p>MISSION {String(mission.number).padStart(2, '0')}</p><strong>{mission.title.en.toUpperCase()}</strong></div><div className="mission-objective"><span>OBJECTIVE</span><p>{mission.translations.objective.en}</p>{objectiveTranslated && <small lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</small>}</div><button className="translate-button" onClick={() => void translate('objective')} disabled={objectiveTranslated}>◎ {objectiveTranslated ? 'Translated' : 'Translate'}</button><div className="score-live"><span>PROGRESS</span><strong>{completedObjectives.size}/{mission.objectives.length}</strong></div></header>
-    <section className="computer-shell" inert={saving || saveFailed ? true : undefined}><div className="computer-toolbar"><button onClick={() => void goBack()} disabled={path.length === 0}>← <span>Back</span></button><div className="current-path"><span>⌂</span> Desktop {path.map((part) => <b key={part}> &gt; {part}</b>)}</div><div className="view-label">TRAINING COMPUTER</div></div><div className="computer-body"><div className="files-area">{current.children?.length ? current.children.map((node) => <button key={node.id} className={`file-item ${selectedId === node.id ? 'selected' : ''}`} onClick={() => setSelectedId(node.id)} onDoubleClick={() => void openNode(node)}><span className={node.type === 'folder' ? 'folder-icon' : 'file-icon'}>{fileBadge(node)}</span><strong>{node.name}</strong><small>{fileLabel(node)}</small></button>) : <p className="empty-folder">This folder is empty.</p>}</div>{openedFile && <div className="file-modal" role="dialog" aria-label={openedFile.name}><div><span className="file-icon">{fileBadge(openedFile)}</span><strong>{openedFile.name}</strong><button aria-label="Close file" onClick={() => { setOpenedFile(undefined); setContextMenu(undefined); }}>×</button></div>{transfer && openedFile.id === transfer.sourceFileId ? <pre>TRANSMISSION CODE{`\n`}<mark data-testid="transfer-source-text" onMouseUp={() => void selectTransferText()} onContextMenu={(event) => { event.preventDefault(); setContextMenu(selectedText === transfer.expectedText ? 'copy' : undefined); }}>{transfer.expectedText}</mark></pre> : <pre>{openedFile.content?.en}</pre>}{contextMenu === 'copy' && <div className="transfer-context-menu"><button onClick={() => void copyTransferText()} aria-label="Copy selected code">Copy</button></div>}{translatedIds.has(openedTranslationId) && <pre className="file-translation" lang={user.supportLanguage}>{openedFile.content?.[user.supportLanguage]}</pre>}<button className="translate-button file-translate" onClick={() => void translate(openedTranslationId)} disabled={translatedIds.has(openedTranslationId)}>◎ Translate file</button></div>}</div></section>
-    {canConfirm && <section className="code-confirmation" inert={saving || saveFailed ? true : undefined}><label htmlFor="agent-code">Agent Code</label><input id="agent-code" value={code} onChange={(event) => setCode(event.target.value)} autoComplete="off" /><button className="primary-button" onClick={() => void confirmCode()}>Confirm code</button>{codeError && <p role="alert">{codeError}</p>}</section>}
+    {missionHeader}
+    {isDetective && <p className="detective-level">LEVEL {detectiveStage + 1} OF 2 · {detectiveStage === 0 ? 'Find and read the report' : 'Read carefully: choose the ACTIVE code'}</p>}
+    {levelComplete && <div className="mission-save-overlay"><section className="detective-next" role="dialog" aria-modal="true" aria-label="Level 1 complete"><h2>Level 1 complete</h2><p>Next: open Documents / Verification / access-report.txt. Read two codes and choose the one labelled ACTIVE. Type it or copy and paste it, including the dash.</p><button className="primary-button" onClick={nextDetectiveLevel}>Start Level 2 →</button></section></div>}
+    <section className="computer-shell" inert={saving || saveFailed || levelComplete ? true : undefined}><div className="computer-toolbar"><button onClick={() => void goBack()} disabled={path.length === 0}>← <span>Back</span></button><div className="current-path"><span>⌂</span> Desktop {path.map((part) => <b key={part}> &gt; {part}</b>)}</div><div className="view-label">TRAINING COMPUTER</div></div><div className="computer-body"><div className="files-area" inert={isDetective && openedFile ? true : undefined}>{mission.scrollChallenge ? <ScrollMissionArchive files={current.children ?? []} disabled={preview || saving || saveFailed || !!openedFile} visited={mission.objectives.filter(o => completedObjectives.has(o.id)).map(o => o.targetId!)} onOpen={node => void openNode(node)} /> : mission.mouseChallenge ? <MouseMissionFiles nodes={current.children ?? []} challenge={mission.mouseChallenge} language={user.supportLanguage} disabled={preview || saving || saveFailed || !!openedFile} onOpen={node => void openNode(node)} onAction={sourceId => void completeMouseAction(sourceId)} /> : current.children?.length ? current.children.map((node) => <button key={node.id} className={`file-item ${selectedId === node.id ? 'selected' : ''}`} onClick={() => setSelectedId(node.id)} onDoubleClick={() => void openNode(node)}><span className={node.type === 'folder' ? 'folder-icon' : 'file-icon'}>{fileBadge(node)}</span><strong>{node.name}</strong><small>{fileLabel(node)}</small></button>) : <p className="empty-folder">This folder is empty.</p>}</div>{openedFile && <div className="file-modal" role="dialog" aria-label={openedFile.name}><div><span className="file-icon">{fileBadge(openedFile)}</span><strong>{openedFile.name}</strong><button aria-label="Close file" onClick={() => void closeFile()}>×</button></div>{transfer && openedFile.id === transfer.sourceFileId ? <pre>TRANSMISSION CODE{`\n`}<mark data-testid="transfer-source-text" onMouseUp={() => void selectTransferText()} onContextMenu={(event) => { event.preventDefault(); setContextMenu(selectedText === transfer.expectedText ? 'copy' : undefined); }}>{transfer.expectedText}</mark></pre> : <pre ref={isDetective ? reportText : undefined} onContextMenu={isDetective ? detectiveCopyMenu : undefined}>{openedFile.content?.en}</pre>}{contextMenu === 'copy' && <div className="transfer-context-menu"><button onMouseDown={event => event.preventDefault()} onClick={() => { if (isDetective) { setClipboard(selectedText); setContextMenu(undefined); } else void copyTransferText(); }} aria-label="Copy selected code">Copy</button></div>}{translatedIds.has(openedTranslationId) && <pre className="file-translation" lang={user.supportLanguage}>{openedFile.content?.[user.supportLanguage]}</pre>}<button className="translate-button file-translate" onClick={() => void translate(openedTranslationId)} disabled={translatedIds.has(openedTranslationId)}>◎ Translate file</button></div>}</div></section>
+    {canConfirm && <section className="code-confirmation" inert={saving || saveFailed ? true : undefined}><label htmlFor="agent-code">Agent Code</label><input id="agent-code" value={code} onChange={(event) => setCode(event.target.value)} onContextMenu={isDetective ? event => { event.preventDefault(); setContextMenu(clipboard ? 'paste' : undefined); } : undefined} autoComplete="off" />{isDetective && contextMenu === 'paste' && <div className="transfer-context-menu"><button onClick={() => { setCode(clipboard); setContextMenu(undefined); }}>Paste copied code</button></div>}<button className="primary-button" onClick={() => void confirmCode()}>Confirm code</button>{codeError && <p role="alert">{codeError}</p>}</section>}
     {transfer && <section className="code-confirmation transfer-destination" inert={saving || saveFailed ? true : undefined}><label htmlFor="transfer-code">{transfer.destinationLabel}</label><input id="transfer-code" value={code} readOnly onContextMenu={(event) => { event.preventDefault(); setContextMenu(clipboard === transfer.expectedText ? 'paste' : undefined); }} placeholder="Right-click here to Paste" />{contextMenu === 'paste' && <div className="transfer-context-menu"><button onClick={() => void pasteTransferText()} aria-label="Paste copied code">Paste</button></div>}<button className="primary-button" disabled={!completedObjectives.has('paste-code')} onClick={() => void submitTransfer()}>Submit transmission</button>{codeError && <p role="alert">{codeError}</p>}</section>}
-    <aside className="cyber-guide" inert={saving || saveFailed ? true : undefined}><div className="guide-heading"><div className="guide-orb small">CG</div><div><span>CYBER GUIDE</span><small>SCRIPTED TRAINING HELPER</small></div></div><p>{guideMessage}</p><button onClick={() => void hint()}>Ask for next hint <span>＋</span></button></aside><p className="mission-tip">{transfer ? 'Tip: Select the code, then right-click to Copy and Paste.' : 'Tip: Single-click selects. Double-click opens.'}</p>
+    <aside className="cyber-guide" inert={saving || saveFailed ? true : undefined}><div className="guide-heading"><div className="guide-orb small">CG</div><div><span>CYBER GUIDE</span><small>SCRIPTED TRAINING HELPER</small></div></div><p>{guideMessage}</p><button onClick={() => void hint()}>Ask for next hint <span>＋</span></button></aside><p className="mission-tip">{mission.scrollChallenge || mission.mouseChallenge ? mission.translations.objective.en : transfer ? 'Tip: Select the code, then right-click to Copy and Paste.' : 'Tip: Single-click selects. Double-click opens.'}</p>
   </main>;
 }

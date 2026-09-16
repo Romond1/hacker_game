@@ -1,8 +1,9 @@
+import { validRecoveryEvidence, type RecoveryState } from '../src/domain/recovery.ts';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { emptyProgression, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
 import { awardMission, awardReward, createIdentity, purchaseItem, equipItem, ProgressionError } from './progressionCore.ts';
 import { ECONOMY } from '../src/domain/progression.ts';
-import { robotDefenseModes, type RobotDefenseModeId } from '../src/training/robot-defense.ts';
+import { robotDefenseModes, robotDefenseUnlocked, type RobotDefenseModeId } from '../src/training/robot-defense.ts';
 import { emptyTrainingStore, finishTraining as finishTrainingAttempt, startTraining as startTrainingAttempt, type DevTrainingStore } from './trainingCore.ts';
 import { TRAINING_MODULES } from '../src/training/catalog.ts';
 import type { TrainingEvidence } from '../src/training/catalog.ts';
@@ -41,6 +42,7 @@ type Attempt = {
   translationsUsed: number;
   correctActions: number;
   incorrectActions: number;
+  recovery?: RecoveryState;
 };
 
 type MissionProgressState = {
@@ -55,12 +57,7 @@ type MissionProgressState = {
 };
 type RobotRun = { id: string; userId: string; mode: RobotDefenseModeId; startedAt: string; completion?: { reward: RewardReceipt; progression: PlayerProgression } };
 
-const DEV_MISSIONS = [
-  { missionId: 'mission-1', missionNumber: 1 },
-  { missionId: 'mission-2', missionNumber: 2 },
-  { missionId: 'mission-3', missionNumber: 3 },
-  { missionId: 'mission-4', missionNumber: 4 },
-] as const;
+const DEV_MISSIONS = ECONOMY.campaign.map(m => ({ missionId: m.id, missionNumber: m.number, training: m.training }));
 
 export class DevApiError extends Error {
   constructor(public code: 'mission_locked' | 'mission_not_found' | 'student_not_found' | 'forbidden') { super(code); }
@@ -101,9 +98,32 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
   const receipts = new Map<string, RewardReceipt>(saved?.receipts);
   const trainingByUser = new Map<string, DevTrainingStore>(saved?.training);
   const robotRuns = new Map<string, RobotRun>(saved?.robotRuns);
+  // Upgrade numeric display history once; stable attempt/reward IDs never change.
+  for (const state of progressionByUser.values()) {
+    if (!state.storyFlags.mouseProgressionV2) {
+      state.completedMissions = state.completedMissions.map(number => number === 4 ? 6 : number);
+      state.storyFlags.mouseProgressionV2 = true;
+    }
+  }
+  for (const state of progressionByUser.values()) {
+    if (!state.storyFlags.scrollProgressionV3) {
+      state.completedMissions = state.completedMissions.map(number => number === 3 ? 7 : number);
+      state.storyFlags.scrollProgressionV3 = true;
+    }
+  }
+  for (const state of progressionByUser.values()) {
+    if (!state.storyFlags.recoveryProgressionV4) {
+      state.completedMissions = state.completedMissions.map(number => number === 7 ? 8 : number);
+      state.storyFlags.recoveryProgressionV4 = true;
+    }
+  }
   function progressionFor(userId: string) {
     if (!progressionByUser.has(userId)) progressionByUser.set(userId, emptyProgression());
-    return progressionByUser.get(userId)!;
+    const state = progressionByUser.get(userId)!;
+    state.storyFlags.mouseProgressionV2 = true;
+    state.storyFlags.scrollProgressionV3 = true;
+    state.storyFlags.recoveryProgressionV4 = true;
+    return state;
   }
 
   function profileById(id: string) { return STANDARD_DEV_PROFILES.find((profile) => profile.id === id); }
@@ -122,6 +142,24 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       progress = DEV_MISSIONS.map(({ missionId, missionNumber }) => ({ missionId, missionNumber, unlocked: missionNumber === 1, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 }));
       progressByUser.set(userId, progress);
     }
+    // Older persisted saves may predate missions in the current catalog.
+    for (const { missionId, missionNumber, training } of DEV_MISSIONS) {
+      let mission = progress.find(item => item.missionId === missionId);
+      if (!mission) {
+        mission = { missionId, missionNumber, unlocked: missionNumber === 1, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 };
+        progress.push(mission);
+      }
+      mission.missionNumber = missionNumber;
+      const previousId = DEV_MISSIONS.find(item => item.missionNumber === missionNumber - 1)?.missionId;
+      const previousDone = progress.some(item => item.missionId === previousId && item.completed);
+      if (training) {
+        const trained = training === 'data-transfer'
+          ? (trainingByUser.get(userId)?.progress[training]?.completedRuns ?? 0) > 0
+          : [...robotRuns.values()].some(run => run.userId === userId && run.mode === training && run.completion);
+        mission.unlocked = mission.completed || mission.attemptCount > 0 || (progressionFor(userId).missionAttempts[missionId] ?? 0) > 0 || (previousDone && trained);
+      } else if (previousDone) mission.unlocked = true;
+    }
+    progress.sort((a, b) => a.missionNumber - b.missionNumber);
     return progress;
   }
 
@@ -150,7 +188,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       });
       return {
         ...progress,
-        unlocked: module.requiredCompletedMissions.every(id => state.completedMissions.includes(id)),
+        unlocked: (module.id === 'data-transfer' && state.completedMissions.includes(6)) || module.requiredCompletedMissions.every(id => state.completedMissions.includes(id)),
       };
     });
   }
@@ -161,7 +199,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     const completed = missions.filter((mission) => mission.completed);
     const scores = missions.flatMap((mission) => mission.bestScore === null ? [] : [mission.bestScore]);
     const times = missions.flatMap((mission) => mission.bestTimeSeconds === null ? [] : [mission.bestTimeSeconds]);
-    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? 4;
+    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? missions.find(m => !m.completed)?.missionNumber ?? 8;
     return {
       progression: structuredClone(progressionFor(userId)),
       totalPoints: missions.reduce((sum, mission) => sum + mission.totalPoints, 0), rank: 'Rookie Agent', currentMission,
@@ -252,7 +290,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     },
     startRobotTraining(userId: string, modeId: string) {
       const mode = robotDefenseModes.find(item => item.id === modeId);
-      if (!mode || !progressFor(userId).some(item => item.missionNumber === mode.requiredMission && item.completed)) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
+      if (!mode || !robotDefenseUnlocked(mode, progressFor(userId).filter(item => item.completed).map(item => item.missionNumber))) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
       const run: RobotRun = { id: randomUUID(), userId, mode: mode.id, startedAt: new Date().toISOString() };
       robotRuns.set(run.id, run);
       return { runId: run.id, mode: run.mode };
@@ -261,8 +299,8 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       const run = robotRuns.get(runId);
       if (!run || run.userId !== userId) throw new ProgressionError('training_attempt_not_found', 'Training run not found.');
       if (run.completion) return structuredClone(run.completion);
-      const requiredMission = robotDefenseModes.find(item => item.id === run.mode)!.requiredMission;
-      if (!progressFor(userId).some(item => item.missionNumber === requiredMission && item.completed)) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
+      const mode = robotDefenseModes.find(item => item.id === run.mode)!;
+      if (!robotDefenseUnlocked(mode, progressFor(userId).filter(item => item.completed).map(item => item.missionNumber))) throw new ProgressionError('training_locked', 'Complete the linked mission first.');
       if (result.mode !== run.mode || result.victory !== true || !Number.isInteger(result.wavesCompleted) || result.wavesCompleted! < 3 || !Number.isInteger(result.robotsDestroyed) || result.robotsDestroyed! < 1 || Date.now() - Date.parse(run.startedAt) < 8_000) throw new ProgressionError('invalid_training_result', 'Training run is not complete.');
       const state = progressionFor(userId);
       const source = 'robot-training';
@@ -281,7 +319,9 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       const attempt = attempts.get(attemptId);
       if (!attempt || attempt.userId !== userId || attempt.completed) return false;
       if (!Number.isInteger(durationSeconds) || durationSeconds < 1 || durationSeconds > 86400) throw new ProgressionError('validation_failed', 'Invalid mission result.');
+      if (attempt.missionId === 'mission-recovery' && !validRecoveryEvidence(stats.recovery)) throw new ProgressionError('validation_failed', 'Complete all three levels, including file recovery and selected-text transfer.');
       const receipt = awardMission(progressionFor(userId), attempt.missionId, attemptId, score);
+      if (attempt.missionId === 'mission-recovery') attempt.recovery = structuredClone(stats.recovery as RecoveryState);
       receipts.set(`${userId}:${attemptId}`, receipt);
       Object.assign(attempt, { score, durationSeconds, completed: true, completedAt: new Date().toISOString(), hintsUsed: Number(stats.hintsUsed ?? 0), translationsUsed: Number(stats.translationsUsed ?? 0), correctActions: Number(stats.correctActions ?? 0), incorrectActions: Number(stats.incorrectActions ?? 0) });
       const missions = progressFor(userId);
@@ -293,7 +333,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       progress.totalPoints += score;
       progress.attemptCount += 1;
       const next = missions.find((mission) => mission.missionNumber === progress.missionNumber + 1);
-      if (next) next.unlocked = true;
+      if (next && next.missionNumber <= 3) next.unlocked = true;
       return true;
     },
     teacherStudents() { return STANDARD_DEV_PROFILES.filter((profile) => profile.role === 'student').map(teacherStudent); },

@@ -44,7 +44,7 @@ export const systemsCalibration: TrainingModuleDefinition<CalibrationTask, strin
     skill: { en: 'Visual matching', it: 'Abbinamento visivo', ja: '視覚照合' },
   },
   linkedMissionId: 'mission-3',
-  requiredCompletedMissions: [1, 2, 3],
+  requiredCompletedMissions: [8],
   rounds: 5,
   difficulty: 'beginner',
   generatorVersion: 1,

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { api, ApiError, type SessionUser, type StudentDashboard, type TeacherStudent, type TeacherStudentDetail, type ThemeName } from './api/client';
 import { calculateScore, findNode, getNextHint, getTranslation, matchesObjective, type FileNode, type ScoreResult } from './domain/mission';
 import { missionOne } from './missions/mission-one';
@@ -11,6 +11,9 @@ import { TeacherDashboard as MissionControl } from './components/teacher/Teacher
 import { TeacherStudentRecord as StudentRecord } from './components/teacher/TeacherStudentRecord';
 import { emptyProgression, ECONOMY, type PlayerProgression } from './domain/progression';
 import { HackerShop } from './components/progression/HackerShop';
+import { MouseCosmetics } from './components/progression/MouseCosmetics';
+import { trailIntensity, useTrailPreferences } from './components/progression/trailPreferences';
+import { AnimatedCursor } from './components/progression/AnimatedCursor';
 import { IdentityProtocol, Transmission } from './components/progression/IdentityProtocol';
 import { TrainingCenter } from './components/training/TrainingCenter';
 import { RobotDefense } from './components/training/RobotDefense';
@@ -301,8 +304,10 @@ function TeacherStudentRecord({ detail, onBack }: { detail: TeacherStudentDetail
 }
 
 export default function App() {
+  const shellRef = useRef<HTMLDivElement>(null);
   const [screen, setScreen] = useState<Screen>('login');
   const [user, setUser] = useState<SessionUser>();
+  const { preferences: trailPreferences } = useTrailPreferences(user?.id ?? '');
   const [dashboard, setDashboard] = useState<StudentDashboard>(EMPTY_DASHBOARD);
   const [students, setStudents] = useState<TeacherStudent[]>([]);
   const [teacherDetail, setTeacherDetail] = useState<TeacherStudentDetail>();
@@ -312,6 +317,24 @@ export default function App() {
   const [selectedRobotDefenseMode, setSelectedRobotDefenseMode] = useState<RobotDefenseModeId>('base_defense');
   const [robotDefenseReturnScreen, setRobotDefenseReturnScreen] = useState<'home' | 'training-center' | 'teacher'>('training-center');
   const [trainingAttempt, setTrainingAttempt] = useState<TrainingAttemptStart>();
+  const [cursorSize, setCursorSize] = useState<'standard' | 'large'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cyber_hero_cursor_size');
+      if (saved === 'large') return 'large';
+    }
+    return 'standard';
+  });
+
+  useEffect(() => {
+    const handleCursorSizeChange = (e: Event) => {
+      const customEvent = e as CustomEvent<'standard' | 'large'>;
+      if (customEvent.detail) {
+        setCursorSize(customEvent.detail);
+      }
+    };
+    window.addEventListener('cursor-size-changed', handleCursorSizeChange);
+    return () => window.removeEventListener('cursor-size-changed', handleCursorSizeChange);
+  }, []);
 
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -375,6 +398,7 @@ export default function App() {
       progression: completion.progression,
       training: [...(current.training ?? []).filter(item => item.trainingId !== completion.progress.trainingId), completion.progress],
     }));
+    setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken));
     return completion;
   }
 
@@ -392,10 +416,10 @@ export default function App() {
     if (screen === 'settings') return <Settings user={user} onBack={() => setScreen('home')} onSaved={(themeColor) => { setUser({ ...user, themeColor }); setScreen('home'); }} />;
     if (screen === 'mission-template') {
       const progress = dashboard.missions.find(item => item.missionId === selectedMission.id);
-      return progress ? <MissionTemplate mission={selectedMission} user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} progress={progress} progression={progression} onHome={() => { setAttemptId(undefined); setScreen('home'); }} onRewardContinue={pendingIdentity || pendingTransmission ? () => setScreen('home') : undefined} onAttemptChange={setAttemptId} onComplete={async () => setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken))} /> : null;
+      return progress ? <MissionTemplate mission={selectedMission} user={{ ...user, displayName: progression?.hackerCodename ?? 'ANONYMOUS' }} progress={progress} progression={progression} onHome={() => { setAttemptId(undefined); setScreen('home'); }} onRewardContinue={pendingIdentity || pendingTransmission ? () => setScreen('home') : undefined} onShop={() => setScreen('shop')} onKeyboard={() => { const next = dashboard.missions.find(m => m.missionId === 'mission-3'); if (next?.unlocked) { setSelectedMissionId('mission-3'); } else { setSelectedRobotDefenseMode('robot_override'); setRobotDefenseReturnScreen('home'); setScreen('robot-defense'); } }} onAttemptChange={setAttemptId} onComplete={async () => setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken))} /> : null;
     }
     if (screen === 'training-center') return <TrainingCenter language={user.supportLanguage} modules={TRAINING_MODULES} progress={dashboard.training ?? []} completedMissions={dashboard.completedMissions} onStart={(trainingId) => void startTraining(trainingId)} onRobotDefense={(modeId) => { const mode = robotDefenseModes.find(item => item.id === modeId); if (!mode || !robotDefenseUnlocked(mode, dashboard.completedMissions)) return; setSelectedRobotDefenseMode(modeId); setRobotDefenseReturnScreen('training-center'); setScreen('robot-defense'); }} onBack={() => setScreen('home')} />;
-    if (screen === 'robot-defense') return <RobotDefense mode={selectedRobotDefenseMode} language={user.supportLanguage} user={user} teacherPreview={user.role === 'teacher'} backToHome={robotDefenseReturnScreen === 'home'} onAccountUpdate={updateProgression} onBack={() => setScreen(robotDefenseReturnScreen)} />;
+    if (screen === 'robot-defense') return <RobotDefense mode={selectedRobotDefenseMode} language={user.supportLanguage} user={user} progression={progression} teacherPreview={user.role === 'teacher'} backToHome={robotDefenseReturnScreen === 'home'} onAccountUpdate={async (state) => { updateProgression(state); setDashboard(await api<StudentDashboard>('student.dashboard', {}, user.csrfToken)); }} onBack={() => setScreen(robotDefenseReturnScreen)} />;
     if (screen === 'training-session' && selectedTraining && trainingAttempt) return <TrainingSession key={trainingAttempt.attemptId} module={selectedTraining} attempt={trainingAttempt} user={user} finish={finishTraining} onExit={() => setScreen('training-center')} onHome={() => setScreen('home')} onReplay={() => void startTraining(selectedTrainingId)} />;
     if (user.role === 'teacher' && screen === 'teacher-student' && teacherDetail) return <StudentRecord detail={teacherDetail} onBack={() => setScreen('teacher')} onSetBalances={async (changes) => { await api('teacher.setBalances', { studentId: teacherDetail.student.id, ...changes }, user.csrfToken); const detail = await api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken); setTeacherDetail(detail); }} onReset={async (missionId) => { await api('teacher.resetMission', { studentId: teacherDetail.student.id, missionId }, user.csrfToken); const [detail, list] = await Promise.all([api<TeacherStudentDetail>('teacher.student', { studentId: teacherDetail.student.id }, user.csrfToken), api<{ students: TeacherStudent[] }>('teacher.students', {}, user.csrfToken)]); setTeacherDetail(detail); setStudents(list.students); }} />;
     if (screen === 'teacher') return <MissionControl students={students} onPreviewTraining={() => { setSelectedRobotDefenseMode('base_defense'); setRobotDefenseReturnScreen('teacher'); setScreen('robot-defense'); }} onSelect={async (studentId) => { const detail = await api<TeacherStudentDetail>('teacher.student', { studentId }, user.csrfToken); setTeacherDetail(detail); setScreen('teacher-student'); }} />;
@@ -403,5 +427,7 @@ export default function App() {
   })();
 
   const equipmentClasses = Object.values(progression?.equippedItems ?? {}).map(id => ECONOMY.items.find(item => item.itemId === id)?.asset.className ?? '').join(' ');
-  return <div className={`app-shell notranslate ${equipmentClasses}`} translate="no" lang="en" style={{ '--accent': theme.color } as React.CSSProperties}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerIdentityUnlocked ? (progression.hackerCodename ?? '') : '' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
+  const equippedTheme = progression?.equippedItems.terminalTheme;
+  const themeId = equippedTheme === 'orbit-blue-theme' ? 'orbit-blue' : equippedTheme === 'matrix-terminal' ? 'matrix' : equippedTheme === 'solar-amber-theme' ? 'solar-amber' : undefined;
+  return <div ref={shellRef} className={`app-shell notranslate ${equipmentClasses} ${user.role === 'teacher' ? 'is-teacher' : ''}`} data-theme={user.role === 'student' ? themeId : undefined} data-cursor={screen !== 'shop' ? progression?.equippedItems.cursor || undefined : undefined} data-cursor-size={cursorSize} translate="no" lang="en" style={{ '--signal-accent': theme.color } as React.CSSProperties}><Topbar user={user.role === 'student' ? { ...user, displayName: progression?.hackerIdentityUnlocked ? (progression.hackerCodename ?? '') : '' } : user} onHome={() => setScreen(user.role === 'teacher' ? 'teacher' : 'home')} onLogout={() => void logout()} />{user.role === 'student' && screen !== 'shop' && <AnimatedCursor cursor={progression?.equippedItems.cursor} scopeRef={shellRef} />}{user.role === 'student' && screen !== 'shop' && <MouseCosmetics effect={progression?.equippedItems.mouseEffect} animation={progression?.equippedItems.mouseAnimation} intensity={trailIntensity(trailPreferences, progression?.equippedItems.mouseEffect)} />}{content}{progression?.equippedItems.companion === 'mini-drone' && <div className="drone-companion" role="img" aria-label="Mini Drone companion"><i /><span>◉</span><i /></div>}</div>;
 }

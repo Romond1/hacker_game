@@ -1,11 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { dataTransfer } from '../src/training/data-transfer';
+import { describe, expect, it, vi } from 'vitest';
 import { createDevAuthService, type DevCredentialFile } from './authCore';
 
 const credentials: DevCredentialFile = { version: 1, credentials: { student: { salt: 'salt', hash: '' }, teacher: { salt: 'salt', hash: '' } } };
 function setup() {
   const service = createDevAuthService(credentials);
   const complete = (missionId = 'mission-1') => { const { attemptId } = service.startAttempt('dev-test', missionId); service.finishAttempt('dev-test', attemptId, 800, 60, {}); return attemptId; };
-  const graduate = () => ['mission-1','mission-2','mission-3'].forEach(complete);
+  const graduate = () => ['mission-1','mission-2','mission-scroll'].forEach(complete);
   return { service, complete, graduate };
 }
 
@@ -46,6 +47,29 @@ describe('permanent progression economy', () => {
     service.equip('dev-test', '', 'badge');
     expect(service.dashboard('dev-test').progression.equippedItems).toEqual({});
   });
+  it('keeps pointer, trail, and animation as independent equipment slots', () => {
+    const { service, graduate } = setup();
+    graduate();
+    service.setBalances('dev-teacher', 'dev-test', { currentCredits: 500 });
+    for (const itemId of ['tactical-crosshair', 'trail-rainbow-comet', 'animation-sparkle']) service.purchase('dev-test', itemId, true);
+    service.equip('dev-test', 'tactical-crosshair', 'cursor');
+    service.equip('dev-test', 'trail-rainbow-comet', 'mouseEffect');
+    service.equip('dev-test', 'animation-sparkle', 'mouseAnimation');
+    expect(service.dashboard('dev-test').progression.equippedItems).toMatchObject({ cursor: 'tactical-crosshair', mouseEffect: 'trail-rainbow-comet', mouseAnimation: 'animation-sparkle' });
+    service.equip('dev-test', '', 'mouseEffect');
+    expect(service.dashboard('dev-test').progression.equippedItems).toMatchObject({ cursor: 'tactical-crosshair', mouseAnimation: 'animation-sparkle' });
+    expect(service.dashboard('dev-test').progression.equippedItems.mouseEffect).toBeUndefined();
+  });
+  it('purchases and persists imported static and animated pointer designs', () => {
+    const { service, graduate } = setup();
+    graduate();
+    service.setBalances('dev-teacher', 'dev-test', { currentCredits: 400 });
+    service.purchase('dev-test', 'cursor-iceblade', true);
+    service.purchase('dev-test', 'cursor-ani-spark', true);
+    service.equip('dev-test', 'cursor-ani-spark', 'cursor');
+    const restored = createDevAuthService(credentials, service.snapshot());
+    expect(restored.dashboard('dev-test').progression).toMatchObject({ inventory: ['cursor-iceblade', 'cursor-ani-spark'], equippedItems: { cursor: 'cursor-ani-spark' } });
+  });
   it('validates identity and protects story flags', () => {
     const { service, graduate } = setup();
     expect(() => service.identity('dev-test', 'NOVA')).toThrow(); graduate();
@@ -63,13 +87,22 @@ describe('permanent progression economy', () => {
     expect(restored.dashboard('dev-himari').progression.currentCredits).toBe(0);
   });
 
-  it('rewards Mission 4 and persists the secured communication story outcome', () => {
+  it('rewards Mission 6 and persists the secured communication story outcome', () => {
     const { service, complete, graduate } = setup();
     graduate();
+    for (const [mode, missionId] of [['drag_rescue','mission-drag'], ['robot_untangle','mission-context']]) {
+      const start = service.startRobotTraining('dev-test', mode);
+      vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 10000);
+      try { service.finishRobotTraining('dev-test', start.runId, { mode, victory: true, wavesCompleted: 3, robotsDestroyed: 3 }); }
+      finally { vi.restoreAllMocks(); }
+      complete(missionId);
+    }
+    const start = service.startTraining('dev-test', 'data-transfer', 42);
+    service.finishTraining('dev-test', start.attemptId, Array.from({length:5}, (_,i) => ({pastedText:dataTransfer.generateTask(42,i).code})), 30);
     const first = complete('mission-4');
     expect(service.rewardReceipt('dev-test', first)).toMatchObject({ xp: 800, credits: 30 });
     expect(service.dashboard('dev-test')).toMatchObject({
-      completedMissions: [1, 2, 3, 4],
+      completedMissions: [1, 2, 3, 4, 5, 6],
       progression: {
         storyFlags: { communicationNodeSecured: true, sourceIdentified: true, unknownNetworkActivityDetected: true },
       },

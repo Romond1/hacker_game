@@ -21,8 +21,8 @@ describe('training catalog', () => {
     const module = getTrainingModule('systems-calibration')!;
 
     expect(trainingStatus(module, [1, 2], 0)).toBe('locked');
-    expect(trainingStatus(module, [1, 2, 3], 0)).toBe('available');
-    expect(trainingStatus(module, [1, 2, 3], 20)).toBe('reward-complete');
+    expect(trainingStatus(module, [8], 0)).toBe('available');
+    expect(trainingStatus(module, [8], 20)).toBe('reward-complete');
     expect(module.generateTask(42, 0)).toBeDefined();
   });
 
@@ -61,7 +61,7 @@ describe('training catalog', () => {
       credits: 1,
       activityCreditCap: 20,
       linkedMissionId: 'mission-3',
-      requiredCompletedMissions: [1, 2, 3],
+      requiredCompletedMissions: [8],
       speedAchievementSeconds: 30,
     });
     expect(ECONOMY.trainingAchievements).toEqual([
@@ -72,12 +72,12 @@ describe('training catalog', () => {
     ]);
   });
 
-  it('registers Data Transfer after Mission 4 with an independent 20 Credit cap', () => {
+  it('registers Data Transfer before Mission 6 with an independent 20 Credit cap', () => {
     const module = getTrainingModule('data-transfer');
     expect(TRAINING_MODULES.map(item => item.id)).toEqual(['systems-calibration', 'data-transfer']);
-    expect(module).toMatchObject({ kind: 'data-transfer', linkedMissionId: 'mission-4', requiredCompletedMissions: [1, 2, 3, 4], rounds: 5 });
+    expect(module).toMatchObject({ kind: 'data-transfer', linkedMissionId: 'mission-4', requiredCompletedMissions: [1, 2, 3, 4, 5], rounds: 5 });
     expect(module?.reward).toEqual({ xpMax: 150, creditsPerRun: 1, creditCap: 20 });
     expect(trainingStatus(module!, [1, 2, 3], 0)).toBe('locked');
-    expect(trainingStatus(module!, [1, 2, 3, 4], 20)).toBe('reward-complete');
+    expect(trainingStatus(module!, [1, 2, 3, 4, 5], 20)).toBe('reward-complete');
   });
 });

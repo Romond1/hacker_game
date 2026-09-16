@@ -168,3 +168,124 @@ Original prompt: Preserve Mission 1, remove simulated Himari access, add profile
   - `npm run check`: TypeScript compile check passed with 0 errors.
   - `npm run check:server-contract`: Security, session, CSRF, and schema contracts passed.
   - `npm run build`: Production client build and deployment packaging passed cleanly.
+## Cyber Shop pointer and theme correction — 2026-09-14
+
+- Connected saved cursor and theme IDs to the authenticated student app root. Removed the inline signal-color precedence that prevented purchased themes from replacing highlights. Shop trials still override inside the shop only.
+- Added Iceblade, Ember, and Ghost Signal cursor options with local SVG artwork and standard/large sizes. Fixed pointer inheritance over catalog actions and calibration controls; restored English-first trial/equipment labels with profile-language support.
+- Added unified Orbit Blue, Matrix, and Solar Amber palette styling for student screens and the shop, using selected-state colors beyond page backgrounds. Widened the app workspace and dashboard, and refined catalog hierarchy.
+- Extended the existing sandboxed Robot Defense cosmetic bridge to allowlist all three themes and six cursor options; no game rewards or sandbox privileges changed.
+- Browser-checked with a disposable account: Iceblade cursor resolves on the Try/Stop action, its SVG is served successfully, Orbit Blue trial sets the intended accent, desktop shop uses over 90% viewport width, mobile has no horizontal overflow. Screenshots: `output/playwright/shop-polish/`.
+- Automated checks: 275 frontend and 40 development tests, production build, TypeScript, server contract, and the shop browser visual script passed after final changes. The older full progression browser script still refers to `Open Supply Matrix` and fails at that stale selector; it was not treated as a shop regression.
+
+## Mouse Studio desktop expansion — 2026-09-14
+
+- Product direction is desktop-only. The shop's second department is now Mouse Studio, with three subcategories: Pointers, Effects & Trails, and Animation. The existing pointer calibration layout remains in Pointers; the two new categories share a live desktop test field and catalog.
+- Fixed Tactical Crosshair and Plasma Arrow hover behavior: both default and interactive cursor states use their SVG assets, including shop catalog buttons and the Robot Defense iframe. These no longer fall back to the browser plus/hand over those targets.
+- Added four separately equipable trails (Rainbow Comet, Aurora, Solar, Frost) and two restrained animations (Soft Sparkle on movement, Orbit Pulse on click). Pointer, trail, and animation occupy independent equipment slots. In-shop trials remain temporary; purchases and equipment use the existing server-validated catalog flow.
+- Equipped trails and animations run across student screens and inside the sandboxed Robot Defense game; the game receives only allowlisted cosmetic IDs. Canvas overlays do not intercept interaction, particle counts are bounded, and reduced-motion preference disables motion.
+- Added Italian/Japanese supporting descriptions and loadout visibility. Browser verification covers desktop pointer hover assets, trail and animation trials, theme accent, and wide shop layout. Full JavaScript suite: 276 frontend and 41 dev tests passed; TypeScript, production build, and server contract passed. PHP lint could not run locally because `php` is not installed on this host.
+
+## Imported desktop cursor artwork — 2026-09-14
+
+- Reviewed the 10 Windows cursor downloads in `TRAINING CENTER/Assets/Cursors`. Two blue `.cur` files are distinct; the third cyan `.cur` is a byte-level duplicate of the holographic artwork and was omitted. The bulky blue/orange/red animated arrows and the scanline-glitch green pointer were omitted after visual inspection.
+- Added five renamed pointers to Mouse Studio: Glacier Shard and Holo Vector from `.cur`, plus Sparkstorm, Ghostwing, and Photon Sabre from `.ani`. The originals remain in the asset folder. `scripts/import-cursors.py` converts selected frames to transparent PNGs, preserving source hotspots; the shop serves generated browser assets from `public/cursors`.
+- Animated pointers use an overlay synchronized to desktop pointer movement, including over interactive shop controls. Reduced-motion preference falls back to a still cursor. The selected cursor is retained across student screens and passed through the existing allowlisted Robot Defense cosmetic bridge, where the game renders its own overlay inside the iframe.
+- Updated shop card art, enlarged previews, English-first names/descriptions, Italian/Japanese support, and catalog prices. The existing pointer collection remains available.
+- Verification: shop browser check confirms imported cursor assets resolve, static hover shapes persist on action buttons, an animated pointer follows the mouse and changes frames, and the Robot Defense iframe accepts and displays an allowlisted animated design. Production build, server contract, and the full JavaScript suite (277 frontend and 42 dev tests) pass. The imported-pointer persistence test covers purchase, equipment, and account reload.
+
+## Adjustable mouse trails and Rookie mission overlays — 2026-09-14
+
+- Imported cursor prices now form a premium tier (120–175 Credits), while earlier designs remain lower-cost. Cursor art is larger (40px standard, 48px large), and Tactical Crosshair's enlarged preview uses the exact cursor image.
+- Added Rainbow Comet, Solid Signal, and Pixel Burst trail presentation with per-effect 10–100% intensity saved per student. Rainbow uses multicolor comet particles; Solid Signal leaves a short cyan/magenta line; Pixel Burst emits brief arcade squares. The selected intensity is used on student screens and inside Robot Defense. Shop browser verification covers cursor rendering, both trail sliders, persistence, and the game iframe.
+- Added a reusable desktop mission overlay template for Missions 1–3. Dashboard Start Mission opens the real simulated computer underneath a large translucent guide without starting an attempt or timer. Mission 2 uses three concise instruction steps; Mission 1 retains an unscored double-click/Back practice; Mission 3 uses the same template. X starts immediately, and a failed start remains retryable without duplicating an existing attempt.
+- After a server-confirmed finish, Access Granted and Final Score appear over the same inert computer. Score, time, personal best, XP, and Credits use the saved result/receipt; replay restarts the guide. The Mission 3 score action continues into the existing graduation/identity sequence. Locked missions and Mission 4 retain their previous routing.
+- Plan: `docs/superpowers/plans/2026-09-14-rookie-mission-overlays.md`. Desktop browser journey `scripts/verify-mission-overlays.mjs` completes all three missions and checks the graduation handoff; screenshots are in `output/playwright/mission-overlays/`.
+- Final checks: 282 frontend/component tests and 42 development API tests passed, plus TypeScript, production build/deploy packaging, server contract, shop visual checks, and the three-mission desktop browser journey. PHP lint remains unavailable because PHP is not installed on this machine. No commit, push, or deployment was made.
+
+## Mission reveal and kid-focused Home Base pass — 2026-09-14
+
+- Rookie mission guides now pop in, type their English instructions at a readable pace, and animate out between steps and on mission start. Complete text is immediately available to assistive technology, Next/X remain usable without waiting for typing, and reduced-motion preferences show everything immediately.
+- Access Granted is now the celebratory peak: a soft computer-signal flash, large congratulations message, localized unlocked reward, and server-awarded XP/Credits counting from zero with final-number pulses. Final Score is quieter but its total also counts up. Existing mute preference controls completion sounds.
+- Home Base keeps the same overall order. The next mission is named directly beside the player identity and has a prominent Start Mission action; XP/Credits are easier to scan. Training Center and Shop remain beside one another, while gear details are available through a compact Your Gear disclosure. The current-operation title and radar are smaller, and ready training buttons use a slow signal sweep and stronger hover response.
+- Plan: `docs/superpowers/plans/2026-09-14-mission-reveal-dashboard-juice.md`. `scripts/verify-mission-overlays.mjs` checks the slow text reveal, panel transitions, reward count-up, all three mission completions, identity handoff, and desktop Home Base screenshots in `output/playwright/mission-overlays/`.
+- Final checks: 282 frontend/component tests and 42 development API tests passed; TypeScript, production build, server contract, the three-mission desktop journey, and shop visual checks passed. Existing uncommitted shop and cursor work was preserved. No commit, push, or deployment was made.
+
+## 2026-09-14 — Mission 4 release
+- Confirmed live database only had missions 1–3: migration 005 had never been applied. test.hacker had completed missions 1–2, with mission 3 incomplete.
+- Extended the existing introduction / ACCESS GRANTED / FINAL SCORE overlays to mission 4; retained localized transmission epilogue and added matching copy/paste schematic. Compacted its reward layout after screenshot review.
+- Migration 005 now repairs existing locked progress rows. Added CLI-only release_mission_four.php to activate the roster entry, unlock graduates and explicitly unlock test.hacker without changing scores/completions.
+- Backed up live database and site privately in ~/.hacker-backups before applying missing additive migrations 003–007. Published the current tested workspace build (including required reward/training support and assets) to https://beahero.fun/hacker/.
+- Validation: 324 tests passed; server contract and build passed; full browser mission 1–4 journey passed with persisted mission 4 completion and screenshots. Server PHP lint, policy/security tests and isolated reset integration passed. Migration regression with temporary tables confirmed stale lock repair, score preservation, prerequisite enforcement and safe reruns.
+- Live HTTPS dashboard check returned HTTP 200, four missions, and mission-4 unlocked=true / completed=false / attemptCount=0 for test.hacker. Temporary verification sessions destroyed. Live HTML and both hashed assets returned HTTP 200. Existing test student points remain 1000 and 987 for missions 1 and 2.
+- Deployment package now includes the release helper and cursor/hero assets. Normal deploy still does not automatically run database migrations.
+- 2026-09-14 follow-up: Local persisted save still contained only three missions. Added catalog reconciliation to dev auth progress loading, preserving existing records and unlocking released missions when prerequisites are completed. Migrated the actual local save with a backup; test student mission 4 is now present/unlocked, prior mission records byte-equivalent. All 43 dev tests and TypeScript check passed. Triggered Vite configuration reload.
+
+## 2026-09-14 — Mission 4 mouse practice
+- Implemented the approved tutorial mini-game as a fourth intro step: select STAR-7, right-click source, left-click Copy, right-click destination, left-click Paste.
+- Practice uses isolated component state and no game API/clipboard calls, timer, points, or penalties. Start and the intro skip control remain locked until one successful practice transfer. Practice Again supports unlimited repetition; replaying the mission requires practice again.
+- Added English/Italian/Japanese instruction feedback, highlighted target boxes and a mouse-button illustration; made the practice step footer sticky so Start remains reachable.
+- Regression covers incorrect initial right-click, left-click not opening menus, right-click not activating Copy, the successful sequence, no attempt before success, and mission completion/replay.
+- Full suite: 283 frontend/domain plus 43 development tests passed. TypeScript passed. Browser mission 1–4 journey passed with new practice screenshots; final layout recheck pending below. This iteration is for local review; no new live deployment.
+- Final browser rerun passed after compact layout and sticky footer changes; screenshot reviewed with practice computer and enabled Start Mission visible together. Final production build passed.
+
+## 2026-09-14 — Watch-first copy/paste demonstration
+- Added an automatically played visual simulation before the Mission 4 practice: pointer moves to code, holds LEFT, drags a progressively highlighted selection, releases, RIGHT-clicks, LEFT-clicks Copy, moves down and LEFT-clicks destination, RIGHT-clicks, then LEFT-clicks Paste.
+- Mouse diagram highlights the active button; English plus Italian/Japanese captions explain each action. Pause, Next action and Watch again support slower viewing. Your turn appears enabled only after the demonstration finishes; watching never awards practice success or starts an attempt.
+- Practice retains unlimited retries and now offers Watch again. Existing required successful transfer still gates mission start.
+- 327 tests passed; TypeScript/build passed. Browser journey includes automatic demonstration, partial-selection and Copy-menu screenshots, then successful child practice and mission completion. Visually inspected the simulated pointer/selection and mouse-button cues. Local preview only; no live deployment in this iteration.
+
+## 2026-09-15 · Mouse progression after Mission 3
+- Inspected mission and training catalogs, iframe robot engine, local/PHP APIs, economy snapshots, migrations, tutorial overlays, teacher records and existing uncommitted work before implementation.
+- Kept Intercepted Transmission at stable ID `mission-4`, now display Mission 6. Added `mission-drag` (4) and `mission-context` (5); existing interactive copy/paste tutorial remains intact.
+- Added shared campaign ID/number mapping, persisted train-before-apply gates, one-time numeric history conversion and additive migration 008. Legacy scores, rewards and equipment remain attached to original keys. No live DB or real local save was touched.
+- Added drag-rescue and context-untangle robot-engine variants, bilingual guidance, unlimited movement time, existing results/HUD/cosmetics and account rewards. Mission 4 requires dragging into Safe Storage; Mission 5 requires Restore from a right-click menu.
+- Verification: 290 main tests and 45 separate local-service tests passed; build and static backend contracts passed. Disposable browser journey verified real Trainings/Missions 4–6, including retained demo/practice, saved rewards, negative mouse interactions, and narrow layout. Skill action client also ran; screenshots inspected.
+- PHP executable is absent (Windows and WSL); runtime PHP/MySQL migration validation remains for staging. See docs/superpowers/plans/2026-09-15-mouse-progression.md. No deployment performed.
+
+## 2026-09-15 — Training 4 / Mission 4 follow-up
+- Inspected the original TutorialEngine demonstration/practice/completion flow, shared GameEngine difficulty controls, scoring/results/host completion payload, and mouse mission components before editing.
+- Training 4 alternates the supplied transparent boulder assets. Reuses TutorialEngine overlay, cursor, timers and exit controls for watch → practice → start; practice earns no score or campaign completion.
+- Restored all six difficulty choices. Wave counts 5/6/7/8/9/10; robots per wave 1/1/2/3/3/4; threats 1/1/2/2/3/3. Easy+ varies safe/danger positions; Hard/Ultra fall faster. Safety shield gives unlimited recovery time. Shorter 1.25-second success transitions.
+- Enlarged Training 4 result card, reward values and rescue-specific victory copy while retaining original star, audio, confetti and authenticated reward flow. Fixed total wave reporting; Drag Rescue Ultra is a finite ten-wave run.
+- Mission 4 uses three staged layouts: one file, two files, then two good/two corrupted files sorted into Safe Storage/Quarantine. Requires all seven moves; rejects wrong folders; preserves mission-drag save ID and reward architecture. Added stage instructions and hints. Rectangle selection remains deferred as requested.
+- Verification: 290 existing frontend tests + 45 dev tests passed; new three-stage/wrong-folder test passed (4 component tests total); final targeted tests and production build passed. Existing cursor asset build warnings remain.
+- Real-browser checks passed: tutorial/practice → five-wave victory; every difficulty picker, robot/threat/wave count, pause/resume and next wave; narrow screenshot; full authenticated Mission 4–6 progression and rewards. No browser JS errors. Screenshots in output/drag-*.png and output/playwright/mouse-progression/. Skill Playwright client run and screenshot inspected.
+- No deployment or saved-player identifier migration performed for this follow-up.
+
+## 2026-09-15 — Scrolling Mission 3 / preserved Mission 7
+- Inspected mission/training registries, MissionIntroOverlay/MissionRunner, campaign policy, both backend progression paths, save migrations, and Mission 3 content before editing.
+- New stable ID mission-scroll is display Mission 3. Five robot reports lie above/below a 50% starting position in a long vertical archive. Native wheel scroll drives a large visible scrollbar; reports require double-click and close to count. Existing mission lifecycle, events, scoring and rewards are reused.
+- Existing intro overlay now supports a wheel demonstration and hands-on up/down practice before starting. The separate scrolling training game is left for Gemini. Scoped responsive styles prevent the guide from covering the scrollbar.
+- Preserved File Detective internal ID mission-3, moved display to 7. Robot Override is Training 7 after Mission 6; Systems Calibration remains associated with File Detective and opens after Mission 7. No robot gameplay rewrite.
+- New Mission 3 remains the identity/shop/dashboard graduation milestone. Migration 009 changes display order and inserts the new mission without rewriting historical attempts/rewards. scrollProgressionV3 maps old numeric history 3→7 once; existing identities, balances, Operator rank and Robot Override eligibility remain intact. No fabricated scroll completion.
+- Verification: full 293-test suite + separate 47-test development suite passed. Final targeted progression tests passed. Build and server contract check passed. Real-browser disposable-account script verify-scroll-mission.mjs passed at 1440 and 760 widths, including tutorial wheel practice, all five reports, close-only completion, and graduation rewards. Reviewed screenshots and corrected guide overlap / narrow tutorial width.
+- Handoff: docs/scroll-mission-handoff.md describes Gemini integration and migration. SQL migration is prepared but unapplied; PHP/MariaDB runtime verification remains for deployment environment. No deployment.
+
+
+## 2026-09-16 — Mission 7 Core Recovery boss
+- Implemented the supplied capstone brief using the existing mission lifecycle, introduction/outcome overlays, scoring, sounds, attempt saves, rewards and shop. New stable ID mission-recovery is display 7; File Detective stays mission-3 and becomes display 8. Keyboard gameplay is unchanged; Robot Override is Training 8 after boss completion.
+- Added three phases (1/2/3 files), twelve ordered action checkpoints per recovery, meaningful wheel displacement assessment, selection/open distinction, safe context-menu mistakes, Copy/Paste/verification, progressive reminders, configurable generous timers, and retry of only the current phase. Assessment metrics persist in the existing attempt report.
+- Added a one-time 100-Credit boss policy, Cyber Operative rank, Mouse Master achievement, four existing cosmetics and Rare shop clearance. Local/PHP services enforce the same policy. Existing owned equipment stays usable; replays grant no extra boss Credits or duplicate items.
+- Added one-time numeric history upgrade recoveryProgressionV4 and additive migration 010; historical keyboard IDs, scores and reward keys remain intact. Fixed replay overlay transition reset while integrating the boss. No deployment or migration executed; test fixtures used temporary accounts/saves.
+- Verification: 303 main tests and 51 separate development tests passed; TypeScript/build and static server contracts passed. Real-browser checks passed for Missions 1–2, Mission 3 scrolling, Missions 4–6, and all six boss recovery sequences including wrong actions, timeout/retry, normal-account shop access, reload, full replay and preserved Mission 8 keyboard completion. Reviewed intro/gameplay/reward/narrow screenshots in output/playwright/core-recovery. Required skill client ran (fresh login has the expected session 401); authenticated gameplay had no page errors.
+- PHP executable is unavailable: PHP lint/policy/MySQL migration integration remains for staging. Existing build asset/chunk-size warnings remain. Handoff: docs/core-recovery-handoff.md. Phase progress is retained during an active attempt; unfinished attempts restart on reload. Earlier workspace changes preserved.
+
+## Mission 7 revision — 2026-09-16
+- Replaced repetitive six-file challenge with three untimed levels: file transfer, selected-text transfer, combined recovery.
+- Restored shared translatable mission header and Windows-style simulator; checklist is on the right and follows the active step.
+- Every source/recovered file opens with text; Back navigation is required; removed hidden pointer-position gate; context menus use a body portal.
+- Updated versioned evidence contract in local/PHP services without changing stable mission IDs, migration or earned rewards.
+- Verified 303 main tests + 51 development-service tests; production build and static server contracts passed. Real browser run completed all levels, saved rewards, replayed without duplicates, checked narrow layout and completed keyboard Mission 8. PHP runtime remains unavailable locally.
+
+## Mission 7 usability fixes — 2026-09-16
+- Fixed the actual theme cascade causing transparent report windows: opaque white document surface overrides equipped-theme glass styling, with underlying files inert while reading.
+- Compact two-page briefing removes repeated objectives/decorative art; footer remains visible at 1366x768. Instructions name the exact paths/files and codes for all three levels.
+- Phase-specific checklist and hints name folders/files. Right-click auto-selects files and advances selection/context checkpoints together; menu Open is accepted.
+- Added File Explorer title bar, compact Windows navigation controls and document close styling. Targeted tests (23) and production build passed; browser assertions cover opaque background, compact briefing and direct right-click Copy/Open.
+
+## Mission 8 two-level File Detective — 2026-09-16
+- Fixed opaque Windows desktop/document surfaces, readable text/inputs, blue selection, and moved hint panel below the answer area.
+- Level 1 retains Documents / Investigation / mission-report.txt, with a random word code per attempt. Level 2 uses Documents / Verification / access-report.txt and randomized ACTIVE vs fake TRAINING letter/digit codes with a dash; code order also varies.
+- Both typed answers and native/simulated text Copy/Paste remain available. Wrong/decoy answers retry without finishing. Level 1 success opens a next-level dialog; rewards are saved only after Level 2. Replay remounts fresh codes.
+- Replaced generic three-step intro with compact two-page bilingual guide for the two levels. Mission stable ID/progression/rewards retained.
+- Verification: 305 main tests and 51 service tests pass; production build passes. Full browser journey completes Mission 7 then both detective levels with real text selection/Copy/Paste and fake-code rejection. Dedicated verify-detective.mjs checks desktop/document opacity, blue selection and fresh replay code.

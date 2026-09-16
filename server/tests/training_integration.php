@@ -53,7 +53,7 @@ try {
 $pdo->beginTransaction();
 lock_student_progress($pdo, 'training-test');
 $state = economy_load_locked($pdo, 'training-test');
-$state['completedMissions'] = [1,2,3];
+$state['completedMissions'] = [1,2,3,4,5,6,8];
 economy_milestones($pdo, 'training-test', $state);
 economy_save($pdo, 'training-test', $state);
 $pdo->commit();
@@ -94,7 +94,7 @@ foreach (['first-training','perfect-calibration','speed-operator','training-mast
 
 try {
     training_start($pdo, 'training-test', 'data-transfer');
-    throw new RuntimeException('data transfer started before Mission 4');
+    throw new RuntimeException('data transfer started before Mission 5');
 } catch (TrainingError $expected) {
     training_expect($expected->getMessage() === 'training_locked', 'data transfer locked reason');
 }
@@ -102,7 +102,7 @@ try {
 $pdo->beginTransaction();
 lock_student_progress($pdo, 'training-test');
 $state = economy_load_locked($pdo, 'training-test');
-$state['completedMissions'] = [1,2,3,4];
+$state['completedMissions'] = [1,2,3,4,5];
 economy_milestones($pdo, 'training-test', $state);
 economy_save($pdo, 'training-test', $state);
 $pdo->commit();

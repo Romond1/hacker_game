@@ -22,7 +22,7 @@ describe('TrainingCenter', () => {
     expect(screen.queryByRole('button', { name: /Train Robot Override/i })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Train Base Defense/i }));
     expect(onRobotDefense).toHaveBeenCalledWith('base_defense');
-    view.rerender(<TrainingCenter language="it" modules={TRAINING_MODULES} progress={[]} completedMissions={[1, 2, 3]} onStart={vi.fn()} onRobotDefense={onRobotDefense} onBack={vi.fn()} />);
+    view.rerender(<TrainingCenter language="it" modules={TRAINING_MODULES} progress={[]} completedMissions={[1, 2, 3, 4, 5, 6, 7]} onStart={vi.fn()} onRobotDefense={onRobotDefense} onBack={vi.fn()} />);
     expect(screen.getByRole('button', { name: /Train Reinforcements/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Train Robot Override/i })).toBeInTheDocument();
   });
@@ -52,8 +52,8 @@ describe('TrainingCenter', () => {
 
   it('explains locked modules without a start control', () => {
     render(<TrainingCenter language="ja" modules={TRAINING_MODULES} progress={[progress({ unlocked: false, creditsEarned: 0, completedRuns: 0 })]} onStart={vi.fn()} onBack={vi.fn()} />);
-    expect(screen.getByText(/Complete Mission 3/i)).toBeInTheDocument();
-    expect(screen.getByText(/ミッション3を完了/i)).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText(/Complete Mission 8/i)).toBeInTheDocument();
+    expect(screen.getByText(/ミッション8を完了/i)).toHaveAttribute('lang', 'ja');
     expect(screen.queryByRole('button', { name: /Systems Calibration/i })).not.toBeInTheDocument();
   });
 });

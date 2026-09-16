@@ -27,7 +27,7 @@ export const dataTransfer: TrainingModuleDefinition<DataTransferTask, string, Da
     skill: { en: 'Text copy and paste', it: 'Copia e incolla del testo', ja: 'テキストのコピーと貼り付け' },
   },
   linkedMissionId: 'mission-4',
-  requiredCompletedMissions: [1, 2, 3, 4],
+  requiredCompletedMissions: [1, 2, 3, 4, 5],
   rounds: 5,
   difficulty: 'beginner',
   generatorVersion: 1,

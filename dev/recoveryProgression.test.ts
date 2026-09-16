@@ -1,0 +1,34 @@
+import { expect, it } from 'vitest';
+import { awardMission, purchaseItem } from './progressionCore';
+import { ECONOMY, emptyProgression } from '../src/domain/progression';
+import { createDevAuthService, type DevCredentialFile } from './authCore';
+const credentials: DevCredentialFile = { version: 1, credentials: { student: { salt: 'x', hash: '00' }, teacher: { salt: 'x', hash: '00' } } };
+it('keeps keyboard IDs and converts numeric history once without awarding boss rewards', () => {
+  const service = createDevAuthService(credentials);
+  service.dashboard('dev-test');
+  const saved = service.snapshot();
+  const state = saved.progression.find(([id]) => id === 'dev-test')![1];
+  state.completedMissions = [1,2,3,6,7]; state.currentCredits = 83;
+  delete state.storyFlags.recoveryProgressionV4;
+  const restored = createDevAuthService(credentials, saved);
+  expect(restored.dashboard('dev-test').progression.completedMissions).toEqual([1,2,3,6,8]);
+  expect(restored.dashboard('dev-test').progression.currentCredits).toBe(83);
+  expect(restored.dashboard('dev-test').progression.achievements).not.toContain('mouse-master');
+  expect(createDevAuthService(credentials, restored.snapshot()).dashboard('dev-test').progression.completedMissions).toEqual([1,2,3,6,8]);
+  expect(ECONOMY.campaign.find(m => m.id === 'mission-3')?.number).toBe(8);
+});
+it('awards a boss bundle once and opens rare purchases', () => {
+  const state = emptyProgression(); state.completedMissions = [1,2,3,4,5,6]; state.storyFlags.shopUnlocked = true; state.currentCredits = 200;
+  expect(() => purchaseItem(state, 'plasma-arrow')).toThrow(/Mission 7/);
+  const first = awardMission(state, 'mission-recovery', 'first', 900);
+  expect(first.credits).toBe(100);
+  expect(state.playerRank).toBe('cyber-operative');
+  expect(state.achievements).toContain('mouse-master');
+  expect(state.inventory).toEqual(expect.arrayContaining(['hero-wolf-rare', 'plasma-arrow', 'frame-prism', 'matrix-terminal']));
+  const inventory = [...state.inventory];
+  const second = awardMission(state, 'mission-recovery', 'replay', 1000);
+  expect(second.credits).toBe(0);
+  expect(state.inventory).toEqual(inventory);
+  expect(state.achievements.filter(id => id === 'mouse-master')).toHaveLength(1);
+  expect(() => purchaseItem(state, 'cursor-ember')).not.toThrow();
+});

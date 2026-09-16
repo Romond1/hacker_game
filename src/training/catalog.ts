@@ -22,7 +22,7 @@ export function trainingStatus(
   completedMissions: number[],
   activityCreditsEarned: number,
 ): TrainingStatus {
-  if (!module.requiredCompletedMissions.every(id => completedMissions.includes(id))) {
+  if (!(module.id === 'data-transfer' && completedMissions.includes(6)) && !module.requiredCompletedMissions.every(id => completedMissions.includes(id))) {
     return 'locked';
   }
   return activityCreditsEarned >= module.reward.creditCap ? 'reward-complete' : 'available';

@@ -63,13 +63,16 @@ try {
             $missionProgress = db()->prepare('SELECT m.id mission_id, m.mission_number, COALESCE(up.unlocked, IF(m.mission_number = 1, 1, 0)) unlocked, COALESCE(up.completed, 0) completed, up.best_score, up.best_time_seconds, COALESCE(up.total_points, 0) total_points, COALESCE(up.attempt_count, 0) attempt_count FROM missions m LEFT JOIN user_progress up ON up.mission_id = m.id AND up.user_id = ? WHERE m.is_active = 1 ORDER BY m.mission_number');
             $missionProgress->execute([$user['id']]);
             $missionRows = $missionProgress->fetchAll();
+            foreach ($missionRows as &$missionRow) $missionRow['unlocked'] = campaign_mission_unlocked(db(), $user['id'], $missionRow['mission_id'], (bool) $missionRow['unlocked']);
+            unset($missionRow);
+            $pending = array_values(array_filter($missionRows, fn($row) => !$row['completed']));
             $missionOne = array_values(array_filter($rows, fn(array $row): bool => $row['mission_id'] === 'mission-1'))[0] ?? null;
             respond([
                 'totalPoints' => array_sum(array_map(fn(array $row): int => (int) $row['total_points'], $rows)),
                 'rank' => 'Rookie Agent',
                 'progression' => economy_transaction(db(), $user['id']),
-                'currentMission' => (int) $user['current_mission'],
-                'completedMissions' => array_values(array_map(fn(array $row): int => (int) str_replace('mission-', '', $row['mission_id']), array_filter($rows, fn(array $row): bool => (bool) $row['completed']))),
+                'currentMission' => (int) ($pending[0]['mission_number'] ?? 7),
+                'completedMissions' => array_values(array_map(fn(array $row): int => campaign_number($row['mission_id']), array_filter($rows, fn(array $row): bool => (bool) $row['completed']))),
                 'bestScore' => $missionOne ? (int) $missionOne['best_score'] : null,
                 'bestTimeSeconds' => $missionOne ? (int) $missionOne['best_time_seconds'] : null,
                 'missions' => array_map(fn(array $row): array => [
@@ -116,7 +119,7 @@ try {
             $mission->execute([$user['id'], $missionId]);
             $missionRow = $mission->fetch();
             if (!$missionRow) { db()->rollBack(); fail('mission_not_found', 'Mission is unavailable.', 404); }
-            if (!(bool) $missionRow['unlocked']) { db()->rollBack(); fail('mission_locked', 'Complete the previous mission first.', 403); }
+            if (!campaign_mission_unlocked(db(), $user['id'], $missionRow['id'], (bool) $missionRow['unlocked'])) { db()->rollBack(); fail('mission_locked', 'Complete the previous mission first.', 403); }
             $attemptId = uuid_v4();
             db()->prepare('INSERT INTO attempts (id, user_id, mission_id, started_at) VALUES (?, ?, ?, UTC_TIMESTAMP())')->execute([$attemptId, $user['id'], $missionId]);
             db()->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, JSON_OBJECT())')->execute([$attemptId, 'mission_started']);
@@ -129,7 +132,7 @@ try {
             $attemptId = require_string($input, 'attemptId', 36);
             assert_owned_attempt($attemptId, $user['id'], true);
             $type = require_string($input, 'type', 50);
-            $allowed = ['tutorial_completed', 'folder_opened', 'file_opened', 'back_used', 'text_selected', 'copy_used', 'paste_used', 'code_submitted', 'translation_used', 'hint_used', 'objective_completed', 'mission_completed', 'mission_abandoned'];
+            $allowed = ['tutorial_completed', 'file_closed', 'folder_opened', 'file_opened', 'back_used', 'text_selected', 'copy_used', 'paste_used', 'code_submitted', 'item_dragged', 'context_action_used', 'translation_used', 'hint_used', 'objective_completed', 'mission_completed', 'mission_abandoned'];
             if (!in_array($type, $allowed, true)) fail('validation_failed', 'Unknown event type.', 422);
             $data = $input['data'] ?? [];
             if (!is_array($data)) fail('validation_failed', 'Event data must be an object.', 422);
@@ -164,8 +167,9 @@ try {
                     $pdo->commit();
                     respond(['score' => (int) $attempt['score'], 'reward' => $reward]);
                 }
+                if ($attempt['mission_id'] === 'mission-recovery' && !valid_recovery_evidence($stats['recovery'] ?? null)) { $pdo->rollBack(); fail('validation_failed', 'Complete all three levels, including file recovery and selected-text transfer.', 422); }
                 $pdo->prepare('UPDATE attempts SET completed_at = UTC_TIMESTAMP(), duration_seconds = ?, score = ?, completed = 1, hint_count = ?, translation_count = ?, correct_actions = ?, incorrect_actions = ? WHERE id = ? AND user_id = ? AND completed = 0')->execute([$duration, $score, $hints, $translations, $correct, $incorrect, $attemptId, $user['id']]);
-                $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration], JSON_THROW_ON_ERROR)]);
+                $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration, 'recovery' => $stats['recovery'] ?? null], JSON_THROW_ON_ERROR)]);
                 $pdo->prepare('INSERT INTO user_progress (user_id, mission_id, unlocked, completed, best_score, best_time_seconds, total_points, attempt_count, completed_at) VALUES (?, ?, 1, 1, ?, ?, ?, 1, UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE unlocked = 1, completed = 1, best_score = GREATEST(COALESCE(best_score, 0), VALUES(best_score)), best_time_seconds = IF(best_time_seconds IS NULL, VALUES(best_time_seconds), LEAST(best_time_seconds, VALUES(best_time_seconds))), total_points = total_points + VALUES(total_points), attempt_count = attempt_count + 1, completed_at = COALESCE(completed_at, UTC_TIMESTAMP())')->execute([$user['id'], $attempt['mission_id'], $score, $duration, $score]);
                 $rewardId = match ($attempt['mission_id']) { 'mission-1' => 'agent-card', 'mission-2' => 'pathfinder', 'mission-3' => 'file-detective', 'mission-4' => 'communication-node-secured', default => null };
                 if ($rewardId !== null) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, ?)')->execute([$user['id'], $rewardId, $attemptId]);

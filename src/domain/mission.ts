@@ -18,7 +18,7 @@ export type FileNode = {
 export type Objective = {
   id: string;
   text: LocalizedText;
-  trigger: 'folder_opened' | 'file_opened' | 'back_used' | 'text_selected' | 'copy_used' | 'paste_used' | 'code_submitted';
+  trigger: 'file_verified' | 'file_closed' | 'folder_opened' | 'file_opened' | 'back_used' | 'text_selected' | 'copy_used' | 'paste_used' | 'code_submitted' | 'item_dragged' | 'context_action_used';
   targetId?: string;
   requires?: string[];
 };
@@ -33,7 +33,7 @@ export type TutorialStep = {
   id: string;
   title: LocalizedText;
   body: LocalizedText;
-  action: 'continue' | 'open_practice' | 'go_back';
+  action: 'continue' | 'open_practice' | 'go_back' | 'practice_transfer' | 'practice_scroll' | 'practice_mouse';
 };
 
 export type ScoringRules = {
@@ -77,10 +77,15 @@ export type MissionDefinition = {
   scoring: ScoringRules;
   reward: LocalizedText;
   completion: MissionCompletion;
+  mouseChallenge?: { kind: 'drag' | 'context'; sourceId: string; destinationId?: string; command?: LocalizedText; stages?: { title: LocalizedText; nodes: FileNode[]; destinations?: Record<string, string>; targetIds?: string[] }[] };
+  scrollChallenge?: { targetIds: string[] };
+  recoveryChallenge?: boolean;
   transferChallenge?: { sourceFileId: string; expectedText: string; destinationLabel: string };
 };
 
 export type MissionCompletion =
+  | { type: 'close_files' }
+  | { type: 'mouse_action'; targetObjectiveId: string }
   | { type: 'open_file'; targetObjectiveId: string }
   | { type: 'confirm_code'; targetObjectiveId: string; code: string }
   | { type: 'confirm_transfer'; targetObjectiveId: string; code: string };

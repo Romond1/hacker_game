@@ -86,9 +86,9 @@
     #game-container {
       position: relative;
       width: 100%;
-      max-width: 1680px;
+      max-width: 980px;
       height: 100%;
-      max-height: 100%;
+      max-height: 740px;
       background-color: var(--bg-space);
       border: 2px solid #1e293b;
       box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
@@ -1437,7 +1437,7 @@
       top: 52px;
       left: 0;
       right: 0;
-      bottom: 26px;
+      bottom: 0;
       background-color: rgba(7, 11, 20, 0.88);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -1471,15 +1471,6 @@
       align-items: center;
       gap: 15px;
     }
-    #screen-start .screen-card { position: relative; max-width: 760px; padding: clamp(26px, 3vw, 48px); background: rgba(11, 25, 40, .91); border-color: rgba(0, 240, 255, .5); box-shadow: 0 24px 70px rgba(0,0,0,.65); }
-    #screen-start .screen-card::before { content:""; position:absolute; inset:0; padding:2px; border-radius:inherit; background:linear-gradient(var(--training-outline-angle),#ff8c00,#00f0ff,#af62ff,#10b981,#ff8c00); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; animation:training-outline 32s linear infinite; }
-    @property --training-outline-angle { syntax:"<angle>"; initial-value:0deg; inherits:false; }
-    @keyframes training-outline { to { --training-outline-angle:360deg; } }
-    #screen-start .screen-title { color:#fff; text-shadow:none; font-size:clamp(2rem,3vw,3rem); }
-    #screen-start .screen-title .sub-lang { color:var(--cyan-main); }
-    #screen-start .screen-subtitle { color:#d1dde5; font-size:clamp(1rem,1.2vw,1.25rem); }
-    #screen-start .play-game-hero-btn { background:linear-gradient(100deg,#ff8c00,#00bde0); color:#07111a; box-shadow:none; }
-    @media (prefers-reduced-motion:reduce) { #screen-start .screen-card::before { animation:none; } }
 
     .screen-title {
       font-size: 32px;
@@ -2317,6 +2308,1214 @@
       box-shadow: 0 0 10px rgba(0, 240, 255, 0.8);
       animation: announcePop 0.3s ease-out;
     }
+
+    /* ==========================================================================
+       MISSION 3: SCROLL TRAINING STYLES
+       ========================================================================== */
+    body.scroll-training-mode #playfield {
+      background-image: none !important;
+      background-color: #050811 !important;
+    }
+    body.scroll-training-mode #base-defense,
+    body.scroll-training-mode #lanes-container,
+    body.scroll-training-mode #circuit-snap-layer {
+      display: none !important;
+    }
+    
+    .scroll-training-root {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #050811;
+    }
+
+    .scroll-training-viewport {
+      position: absolute;
+      inset: 0;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: auto;
+    }
+    .scroll-training-viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scroll-training-world {
+      position: relative;
+      width: 100%;
+      min-height: 2200px;
+      background-color: #050814;
+      background-image:
+        radial-gradient(ellipse at 50% 50%, rgba(0, 240, 255, 0.12) 0%, transparent 65%),
+        linear-gradient(rgba(0, 240, 255, 0.04) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1.5px, transparent 1.5px);
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+    }
+
+    /* Environmental Architectural Decor */
+    .facility-decor-line {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), transparent);
+      pointer-events: none;
+    }
+    .facility-sector-banner {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: rgba(0, 240, 255, 0.65);
+      text-transform: uppercase;
+      padding: 4px 18px;
+      background: rgba(13, 21, 39, 0.75);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+    .facility-conduit {
+      position: absolute;
+      width: 8px;
+      background: repeating-linear-gradient(180deg, #091c2e, #091c2e 8px, #00f0ff 8px, #00f0ff 10px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .facility-conduit.left { left: 24px; top: 0; bottom: 0; }
+    .facility-conduit.right { right: 24px; top: 0; bottom: 0; }
+
+    /* Central Command Base (Part of the Scrolling World) */
+    .scroll-central-base {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .scroll-base-radar-ring {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border: 2px dashed rgba(0, 240, 255, 0.35);
+      border-radius: 50%;
+      animation: radarSpin 14s linear infinite;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.15);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+    .scroll-central-base.firing-circuit .scroll-base-radar-ring {
+      border-color: #ffffff;
+      box-shadow: 0 0 60px #00f0ff, 0 0 100px rgba(0, 240, 255, 0.85);
+      transform: scale(1.18);
+    }
+    @keyframes radarSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .scroll-base-tag {
+      background: rgba(9, 28, 46, 0.95);
+      border: 2px solid var(--cyan-main);
+      border-radius: 16px;
+      padding: 5px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--cyan-main);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .scroll-base-tag small {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .scroll-base-img {
+      width: clamp(140px, 18vw, 190px);
+      height: auto;
+      filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.45));
+    }
+    .scroll-base-divider {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86%;
+      max-width: 780px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), transparent);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+    .scroll-base-divider.above { top: -45px; }
+    .scroll-base-divider.below { bottom: -45px; }
+    .scroll-base-divider span {
+      background: #050814;
+      padding: 2px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: rgba(0, 240, 255, 0.7);
+      border-radius: 4px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    /* Infected & Restored Robots */
+    .scroll-robot-entity {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 15;
+      touch-action: manipulation;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+      background: transparent;
+      border: none;
+      padding: 0;
+      outline: none;
+    }
+    .scroll-robot-entity:hover {
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+    .scroll-robot-entity.infected {
+      filter: drop-shadow(0 0 16px rgba(255, 140, 0, 0.95)) drop-shadow(0 0 30px rgba(255, 100, 0, 0.5));
+      animation: robotHoverIdle 2.6s ease-in-out infinite alternate;
+    }
+    @keyframes robotHoverIdle {
+      0% { transform: translate(-50%, -50%) translateY(-4px); }
+      100% { transform: translate(-50%, -50%) translateY(4px); }
+    }
+    .scroll-robot-entity.single-clicked {
+      animation: robotJolt 0.28s ease-in-out;
+    }
+    @keyframes robotJolt {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      30% { transform: translate(-50%, -50%) scale(0.92) rotate(-3deg); }
+      70% { transform: translate(-50%, -50%) scale(1.06) rotate(3deg); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+    .scroll-robot-entity.restored {
+      filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.95)) drop-shadow(0 0 35px rgba(0, 240, 255, 0.55)) brightness(1.2);
+      animation: robotRestoredCelebration 0.6s ease-out;
+      cursor: default;
+      pointer-events: none;
+    }
+    @keyframes robotRestoredCelebration {
+      0% { transform: translate(-50%, -50%) scale(0.85); }
+      45% { transform: translate(-50%, -50%) scale(1.25); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+    .scroll-robot-entity.purge-flash {
+      filter: brightness(2.6) drop-shadow(0 0 35px #00f0ff) drop-shadow(0 0 18px #ffffff) !important;
+      transition: filter 0.2s ease-out;
+    }
+    .scroll-robot-img {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      pointer-events: none;
+      transition: filter 0.25s ease;
+    }
+    .scroll-robot-badge {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      margin-bottom: 3px;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+    .scroll-robot-badge.infected {
+      background: rgba(255, 140, 0, 0.25);
+      border: 1.5px solid var(--orange-main);
+      color: #ffedd5;
+      text-shadow: 0 0 8px rgba(255, 140, 0, 0.8);
+    }
+    .scroll-robot-badge.restored {
+      background: rgba(0, 240, 255, 0.25);
+      border: 1.5px solid var(--cyan-main);
+      color: #efffff;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+    }
+    .click-again-hint {
+      position: absolute;
+      bottom: -24px;
+      background: #ff8c00;
+      color: #070b14;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .click-again-hint.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Live Animated Mouse-Wheel Training Widget */
+    .scroll-mouse-wheel-widget {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      z-index: 45;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      background: rgba(9, 28, 46, 0.92);
+      border: 1.5px solid rgba(0, 240, 255, 0.45);
+      border-radius: 14px;
+      padding: 7px 12px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 14px rgba(0, 240, 255, 0.25);
+      backdrop-filter: blur(4px);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .scroll-mouse-wheel-widget.wheel-pulse {
+      border-color: #00f0ff;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.6), 0 0 18px rgba(0, 240, 255, 0.4);
+    }
+    .widget-mouse-body {
+      position: relative;
+      width: 42px;
+      height: 64px;
+      border: 2px solid rgba(0, 240, 255, 0.65);
+      border-radius: 20px 20px 18px 18px;
+      background: #081022;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 4px;
+      overflow: hidden;
+    }
+    .widget-mouse-buttons-split {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      display: flex;
+      border-bottom: 1.5px solid rgba(0, 240, 255, 0.3);
+    }
+    .widget-mouse-btn-left,
+    .widget-mouse-btn-right {
+      flex: 1;
+      height: 100%;
+    }
+    .widget-mouse-btn-left {
+      border-right: 1px solid rgba(0, 240, 255, 0.3);
+    }
+    .widget-wheel-housing {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 24px;
+      background: #03060d;
+      border: 1.5px solid rgba(0, 240, 255, 0.5);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+    }
+    .widget-wheel-roller {
+      width: 8px;
+      height: 14px;
+      background: linear-gradient(180deg, #00f0ff, #0284c7, #00f0ff);
+      background-size: 100% 200%;
+      border-radius: 4px;
+      box-shadow: 0 0 6px #00f0ff;
+      transition: transform 0.12s ease, filter 0.15s ease;
+    }
+    .scroll-mouse-wheel-widget.scrolling-up .widget-wheel-roller {
+      transform: translateY(-3px);
+      filter: brightness(1.4) drop-shadow(0 0 8px #00f0ff);
+      background-position: 0 0;
+    }
+    .scroll-mouse-wheel-widget.scrolling-down .widget-wheel-roller {
+      transform: translateY(3px);
+      filter: brightness(1.4) drop-shadow(0 0 8px #00f0ff);
+      background-position: 0 100%;
+    }
+    .widget-wheel-arrow {
+      font-size: 10px;
+      line-height: 1;
+      color: rgba(0, 240, 255, 0.35);
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+    .widget-wheel-arrow.up { margin-bottom: 2px; }
+    .widget-wheel-arrow.down { margin-top: 2px; }
+    .scroll-mouse-wheel-widget.scrolling-up .widget-wheel-arrow.up {
+      color: #00f0ff;
+      transform: scale(1.35) translateY(-2px);
+      text-shadow: 0 0 8px #00f0ff;
+    }
+    .scroll-mouse-wheel-widget.scrolling-down .widget-wheel-arrow.down {
+      color: #00f0ff;
+      transform: scale(1.35) translateY(2px);
+      text-shadow: 0 0 8px #00f0ff;
+    }
+    .widget-wheel-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--cyan-main);
+      letter-spacing: 0.5px;
+      text-align: center;
+    }
+
+    /* Stylized Cyber Scrollbar / Minimap */
+    .scroll-cyber-track {
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      right: 12px;
+      width: 24px;
+      z-index: 45;
+      background: rgba(8, 16, 34, 0.90);
+      border: 1.5px solid rgba(0, 240, 255, 0.45);
+      border-radius: 12px;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      overflow: visible;
+      touch-action: none;
+    }
+    .track-arrow-btn {
+      font-size: 10px;
+      color: rgba(0, 240, 255, 0.7);
+      line-height: 1;
+      padding: 4px 0;
+      pointer-events: none;
+    }
+    .track-body {
+      position: relative;
+      flex: 1;
+      width: 100%;
+    }
+    .track-base-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      color: #00f0ff;
+      text-shadow: 0 0 6px #00f0ff;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .track-base-marker::after {
+      content: '';
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      top: 50%;
+      height: 1px;
+      background: rgba(0, 240, 255, 0.5);
+      z-index: -1;
+    }
+    .scroll-cyber-thumb {
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      background: rgba(0, 240, 255, 0.35);
+      border: 1.5px solid #00f0ff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.45);
+      cursor: grab;
+      touch-action: none;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+      min-height: 28px;
+    }
+    .scroll-cyber-thumb:hover,
+    .scroll-cyber-thumb.active {
+      background: rgba(0, 240, 255, 0.55);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.85);
+    }
+    .scroll-cyber-thumb:active {
+      cursor: grabbing;
+    }
+
+    /* Facility Radar Minimap Blips along Track */
+    .track-minimap-blips {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .track-minimap-blip {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    }
+    .track-minimap-blip.infected {
+      background-color: #ff7700;
+      border: 1.5px solid #ffeaa7;
+      box-shadow: 0 0 6px #ff7700, 0 0 10px rgba(255, 119, 0, 0.85);
+      animation: radarBlipPulse 1.2s ease-in-out infinite alternate;
+    }
+    .track-minimap-blip.restored {
+      background-color: #00f0ff;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 0 6px #00f0ff;
+      animation: none;
+      transform: translate(-50%, -50%) scale(0.9);
+      opacity: 0.85;
+    }
+    @keyframes radarBlipPulse {
+      0% {
+        transform: translate(-50%, -50%) scale(0.85);
+        box-shadow: 0 0 4px #ff7700;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.3);
+        box-shadow: 0 0 8px #ff7700, 0 0 14px rgba(255, 119, 0, 0.95);
+      }
+    }
+
+    /* Scroll Wheel Micro-Dots on Mouse Widget */
+    .widget-wheel-minimap-dots {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      pointer-events: none;
+      z-index: 7;
+    }
+    .widget-wheel-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .widget-wheel-dot.infected {
+      background-color: #ff7700;
+      box-shadow: 0 0 4px #ff7700;
+    }
+    .widget-wheel-dot.restored {
+      background-color: #00f0ff;
+      box-shadow: 0 0 4px #00f0ff;
+    }
+
+    /* Circuit Lightning Flash Layer in World */
+    .scroll-circuit-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 22;
+      overflow: visible;
+    }
+
+    /* Coaching Toast Banner */
+    .scroll-coach-toast {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(9, 28, 46, 0.95);
+      border: 1.5px solid #ff8c00;
+      border-radius: 20px;
+      padding: 7px 20px;
+      color: #ffedd5;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.7), 0 0 16px rgba(255, 140, 0, 0.45);
+      z-index: 50;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: coachPop 0.35s ease-out;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .scroll-coach-toast.fade-out {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    @keyframes coachPop {
+      0% { transform: translateX(-50%) scale(0.85); opacity: 0; }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    }
+
+    /* Top HUD Timer Badge */
+    .timer-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1.5px solid var(--green-shield);
+      padding: 5px 16px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green-shield);
+      transition: all 0.25s ease;
+      transform-origin: center center;
+    }
+    .timer-badge.timer-warning {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #ef4444;
+      color: #fca5a5;
+      animation: timerPulseWarning 0.8s ease-in-out infinite alternate;
+    }
+    .timer-badge.timer-critical {
+      background: rgba(239, 68, 68, 0.45);
+      border-color: #ff2b2b;
+      border-width: 2px;
+      color: #ffffff;
+      animation: timerPulseCritical 0.42s ease-in-out infinite alternate;
+      z-index: 10;
+    }
+    .timer-badge.timer-critical .main-en {
+      text-shadow: 0 0 10px #ef4444, 0 0 20px #ff0000;
+      font-weight: 900;
+    }
+    @keyframes timerPulseWarning {
+      0% {
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+        transform: scale(1);
+      }
+      100% {
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.9);
+        transform: scale(1.05);
+      }
+    }
+    @keyframes timerPulseCritical {
+      0% {
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.7), inset 0 0 6px rgba(239, 68, 68, 0.3);
+        transform: scale(1.14);
+      }
+      100% {
+        box-shadow: 0 0 26px rgba(239, 68, 68, 1), 0 0 42px rgba(239, 68, 68, 0.65), inset 0 0 12px rgba(239, 68, 68, 0.55);
+        transform: scale(1.26);
+      }
+    }
+
+    /* ==========================================================================
+       MISSION 7 TRAINING: MOUSE BOSS FIGHT CSS
+       ========================================================================== */
+    body.mouse-boss-mode #lanes-container,
+    body.mouse-boss-mode #circuit-snap-layer,
+    body.mouse-boss-mode #base-defense,
+    body.mouse-boss-mode #defense-line {
+      display: none !important;
+    }
+
+    .mouse-boss-root {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      background: #030611;
+    }
+
+    .mouse-boss-viewport {
+      position: absolute;
+      inset: 0;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: auto;
+    }
+    .mouse-boss-viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mouse-boss-world {
+      position: relative;
+      width: 100%;
+      min-height: 2200px;
+      background-color: #030612;
+      background-image:
+        radial-gradient(ellipse at 50% 50%, rgba(0, 240, 255, 0.09) 0%, transparent 70%),
+        linear-gradient(rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 42px 42px, 42px 42px;
+    }
+
+    /* SVG Circuit overlay for base restoration lightning */
+    .mouse-boss-circuit-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    /* Base at the bottom of the world */
+    .mouse-boss-base {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 12;
+    }
+    .mouse-boss-base-radar {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border: 2px dashed rgba(0, 240, 255, 0.4);
+      border-radius: 50%;
+      animation: radarSpin 12s linear infinite;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.2);
+      transition: all 0.2s ease;
+    }
+    .mouse-boss-base.firing-lightning .mouse-boss-base-radar {
+      border-color: #ffffff;
+      box-shadow: 0 0 70px #00f0ff, 0 0 120px rgba(0, 240, 255, 0.9);
+      transform: scale(1.22);
+    }
+    .mouse-boss-base-tag {
+      background: rgba(9, 28, 46, 0.95);
+      border: 2px solid var(--cyan-main);
+      border-radius: 16px;
+      padding: 5px 18px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--cyan-main);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.4);
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+      text-align: center;
+    }
+    .mouse-boss-base-tag small {
+      font-size: 11px;
+      color: #94a3b8;
+      display: block;
+    }
+    .mouse-boss-base-img {
+      width: clamp(140px, 18vw, 190px);
+      height: auto;
+      filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.5));
+    }
+
+    /* Robot Entity */
+    .boss-robot-entity {
+      position: absolute;
+      width: clamp(75px, 11vw, 105px);
+      height: clamp(90px, 14vw, 130px);
+      transform: translate(-50%, -50%);
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      outline: none;
+      transition: filter 0.2s ease, transform 0.15s ease;
+      touch-action: none;
+    }
+    .boss-robot-entity:hover {
+      filter: brightness(1.15);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+    .boss-robot-img {
+      width: 100%;
+      height: 75%;
+      object-fit: contain;
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+    }
+    .boss-robot-badge {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 3px;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .boss-robot-badge.infected {
+      background: rgba(234, 88, 12, 0.9);
+      color: #fff;
+      border: 1px solid #ffedd5;
+      text-shadow: 0 0 6px rgba(0,0,0,0.7);
+    }
+    .boss-robot-badge.locked {
+      background: rgba(220, 38, 38, 0.9);
+      color: #fff;
+      border: 1px solid #fecaca;
+    }
+    .boss-robot-badge.tangled,
+    .boss-robot-badge.linked {
+      background: rgba(217, 119, 6, 0.9);
+      color: #fff;
+      border: 1px solid #fef3c7;
+    }
+    .boss-robot-badge.friendly {
+      background: rgba(6, 182, 212, 0.9);
+      color: #fff;
+      border: 1px solid #cffafe;
+    }
+    .boss-robot-badge.restored {
+      background: rgba(16, 185, 129, 0.9);
+      color: #fff;
+      border: 1px solid #a7f3d0;
+    }
+    .boss-robot-entity.single-clicked {
+      animation: bossBotJolt 0.28s ease-out;
+    }
+    @keyframes bossBotJolt {
+      0%, 100% { transform: translate(-50%, -50%); }
+      25% { transform: translate(-53%, -48%) rotate(-3deg); }
+      75% { transform: translate(-47%, -52%) rotate(3deg); }
+    }
+    .boss-robot-entity.restored-anim {
+      animation: bossRestoreFlash 0.4s ease-out forwards;
+    }
+    @keyframes bossRestoreFlash {
+      0% { filter: brightness(2.2) drop-shadow(0 0 35px #00f0ff); transform: translate(-50%, -50%) scale(1.15); }
+      100% { filter: brightness(1) drop-shadow(0 0 15px rgba(0,240,255,0.4)); transform: translate(-50%, -50%) scale(1); }
+    }
+
+    /* Cyber Lock Overlay */
+    .boss-lock-overlay {
+      position: absolute;
+      inset: -4px;
+      border: 2px dashed #ef4444;
+      border-radius: 14px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(239, 68, 68, 0.15);
+      animation: lockPulse 1.2s infinite alternate ease-in-out;
+    }
+    .boss-lock-icon {
+      font-size: 26px;
+      filter: drop-shadow(0 0 8px #ff2222);
+    }
+    @keyframes lockPulse {
+      0% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+      100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.85); border-color: #ff8888; }
+    }
+
+    /* Linked & Tangled Pair Connection Cable */
+    .boss-tangled-cable,
+    .boss-linked-cable {
+      position: absolute;
+      height: 6px;
+      background: repeating-linear-gradient(90deg, #f59e0b, #f59e0b 10px, #ef4444 10px, #ef4444 20px);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.9), 0 0 25px rgba(239, 68, 68, 0.6);
+      border-radius: 3px;
+      z-index: 18;
+      pointer-events: auto;
+      cursor: context-menu;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: left center;
+    }
+    .boss-tangled-badge,
+    .boss-linked-badge {
+      background: #0d1527;
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+    }
+
+    /* Robot Floating Hint / Tooltip */
+    .boss-robot-hint {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(9, 28, 46, 0.95);
+      border: 1px solid var(--cyan-main);
+      color: #efffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 25;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    }
+    .boss-robot-hint.visible {
+      opacity: 1;
+    }
+
+    /* In-Game Cyber Context Menu */
+    .boss-context-menu {
+      position: absolute;
+      z-index: 100;
+      background: #0b1528;
+      border: 1.5px solid #00f0ff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.85), 0 0 16px rgba(0,240,255,0.4);
+      padding: 5px;
+      min-width: 155px;
+      pointer-events: auto;
+      animation: menuPop 0.15s ease-out;
+    }
+    @keyframes menuPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .boss-context-btn {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      color: #efffff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 6px 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+    .boss-context-btn:hover, .boss-context-btn:focus {
+      background: rgba(0, 240, 255, 0.25);
+      color: #00f0ff;
+      outline: none;
+    }
+    .boss-context-btn small {
+      font-size: 10px;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-top: 1px;
+    }
+    .boss-context-btn:hover small {
+      color: #e0f2fe;
+    }
+
+    /* Security Relay Gate Barrier & Interfaces */
+    .boss-relay-gate {
+      position: absolute;
+      left: 3%;
+      right: 3%;
+      transform: translateY(-50%);
+      z-index: 22;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+    .boss-gate-barrier {
+      width: 100%;
+      height: 18px;
+      background: repeating-linear-gradient(90deg, rgba(239, 68, 68, 0.8), rgba(239, 68, 68, 0.8) 20px, rgba(220, 38, 38, 0.25) 20px, rgba(220, 38, 38, 0.25) 40px);
+      border-top: 2px solid #ef4444;
+      border-bottom: 2px solid #ef4444;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #ff0000;
+      transition: all 0.5s ease;
+    }
+    .boss-relay-gate.unlocked .boss-gate-barrier {
+      background: repeating-linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.4) 20px, rgba(16, 185, 129, 0.1) 20px, rgba(16, 185, 129, 0.1) 40px);
+      border-color: #10b981;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+      opacity: 0.35;
+    }
+    .boss-gate-interface {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: stretch;
+      width: 100%;
+      max-width: 680px;
+      background: rgba(7, 14, 28, 0.95);
+      border: 1.5px solid rgba(0, 240, 255, 0.45);
+      border-radius: 12px;
+      padding: 12px 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8), 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+    .boss-gate-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .boss-panel-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #00f0ff;
+      text-transform: uppercase;
+    }
+    .boss-panel-sub {
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .boss-source-code {
+      display: inline-block;
+      padding: 6px 14px;
+      background: #030816;
+      border: 1.5px dashed #00f0ff;
+      border-radius: 6px;
+      color: #efffff;
+      font-family: monospace;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      user-select: text;
+      -webkit-user-select: text;
+      cursor: text;
+      box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.2);
+      outline: none;
+    }
+    .boss-source-code::selection {
+      background: #00f0ff;
+      color: #000;
+    }
+    .boss-dest-input {
+      padding: 7px 12px;
+      background: #030816;
+      border: 1.5px solid rgba(0, 240, 255, 0.5);
+      border-radius: 6px;
+      color: #00f0ff;
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .boss-dest-input:focus {
+      border-color: #00f0ff;
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.6);
+    }
+    .boss-dest-input.accepted {
+      border-color: #10b981 !important;
+      color: #10b981 !important;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.8) !important;
+    }
+    .boss-dest-input.invalid {
+      border-color: #ef4444 !important;
+      color: #ef4444 !important;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.8) !important;
+      animation: bossBotJolt 0.3s ease-out;
+    }
+
+    /* Mini Checklist on each Gate */
+    .boss-gate-mini-checklist {
+      display: flex;
+      gap: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-top: 4px;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
+    .boss-gate-mini-checklist.collapsed {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .boss-mini-step.done {
+      color: #10b981;
+    }
+
+    /* Primary Command Relay (Wave 4 Summit) */
+    .boss-primary-relay {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 24;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+    .boss-primary-core {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border: 3px solid #00f0ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.25) 0%, rgba(3, 8, 22, 0.9) 70%);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
+      transition: all 0.3s ease;
+    }
+    .boss-primary-relay.armed .boss-primary-core {
+      border-color: #facc15;
+      box-shadow: 0 0 50px #facc15, 0 0 80px rgba(0, 240, 255, 0.8);
+      animation: coreArmedPulse 0.8s infinite alternate ease-in-out;
+    }
+    @keyframes coreArmedPulse {
+      0% { transform: scale(1); filter: brightness(1.2); }
+      100% { transform: scale(1.08); filter: brightness(1.6); }
+    }
+    .boss-primary-rings {
+      position: absolute;
+      inset: -14px;
+      border: 2px dashed rgba(0, 240, 255, 0.5);
+      border-radius: 50%;
+      animation: radarSpin 8s linear infinite;
+    }
+    .boss-primary-label {
+      background: #091c2e;
+      border: 1px solid #00f0ff;
+      color: #00f0ff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 3px 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+    .boss-primary-prompt {
+      position: absolute;
+      top: -34px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 3px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      animation: timerPulse 0.8s infinite alternate ease-in-out;
+      display: none;
+    }
+    .boss-primary-relay.armed .boss-primary-prompt {
+      display: block;
+      background: #10b981;
+      border: 1px solid #ffffff;
+    }
+
+    /* Bottom Docked Mouse Mastery Checklist Bar */
+    .boss-mastery-checklist {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(6, 13, 27, 0.95);
+      border: 1.5px solid rgba(0, 240, 255, 0.5);
+      border-radius: 12px;
+      padding: 5px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #efffff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.85), 0 0 14px rgba(0, 240, 255, 0.25);
+      z-index: 48;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      max-width: calc(100% - 90px);
+      box-sizing: border-box;
+      backdrop-filter: blur(6px);
+    }
+    .boss-mastery-title {
+      font-size: 9.5px;
+      letter-spacing: 1.5px;
+      color: #00f0ff;
+      font-weight: 900;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.25);
+      padding-bottom: 2px;
+      margin-bottom: 2px;
+    }
+    .boss-checklist-items {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 3px 14px;
+    }
+    .boss-chk-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
+      font-size: 10.5px;
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+    .boss-chk-row.checked {
+      color: #38bdf8;
+    }
+    .boss-chk-box {
+      font-weight: 900;
+      width: 12px;
+    }
+    .boss-chk-row.checked .boss-chk-box {
+      color: #10b981;
+    }
   </style>
 </head>
 <body class="lang-en">
@@ -2344,6 +3543,12 @@
         <div class="score-badge dual-label">
           <span class="main-en" id="hud-score-text">SCORE: 0</span>
           <span class="sub-lang" id="hud-score-sub">スコア: 0</span>
+        </div>
+
+        <!-- Mission 3 Scroll Training Timer Badge -->
+        <div class="timer-badge dual-label" id="hud-timer-badge" style="display: none;">
+          <span class="main-en" id="hud-timer-text">⏱️ <span id="hud-timer-value">01:05</span></span>
+          <span class="sub-lang" id="hud-timer-sub">のこり じかん</span>
         </div>
 
         <!-- Extra Help Status -->
@@ -2566,7 +3771,7 @@
 
         <div class="btn-row start-actions-row">
           <button class="primary-btn play-game-hero-btn dual-label" id="start-play-btn">
-            <span class="main-en">Start Training</span>
+            <span class="main-en">Play Game</span>
             <span class="sub-lang" data-i18n="playGame">ゲームスタート</span>
           </button>
         </div>
@@ -2785,7 +3990,7 @@
 
         <div class="btn-row">
           <button class="primary-btn dual-label" id="res-replay-btn">
-            <span class="main-en">Train Again</span>
+            <span class="main-en">Play Again</span>
             <span class="sub-lang" data-i18n="playAgain">もういちど あそぶ</span>
           </button>
           <button class="secondary-btn dual-label" id="res-menu-btn">
@@ -2859,7 +4064,7 @@
         ultraStar1Rank: "エキスパート せいかん！",
         ultraDefeatTitle: "ウルトラ くんれん しゅうりょう",
         ultraWavesSurvived: "{n} ウェーブ せいかん！",
-        playGame: "くんれんを はじめる",
+        playGame: "ゲームスタート",
         practiceFirst: "チュートリアル と れんしゅう",
         playFirstBadge: "さいしょに これ！",
         wave: "ウェーブ",
@@ -2877,7 +4082,7 @@
         victoryMsg: "すばらしい！ すべての ロボットを やっつけたよ！",
         defeatTitle: "ロボットが とおりぬけた！",
         defeatMsg: "もういちど たたかう？ なんども れんしゅうすれば、かならず うまくなるよ！",
-        playAgain: "もういちど くんれん",
+        playAgain: "もういちど あそぶ",
         changeDiff: "むずかしさを かえる",
         tryExtraHelp: "シールド＋２で リトライ (+2シールド＆ゆっくり)",
         extraShieldsBadge: "エクストラ シールド",
@@ -2976,7 +4181,20 @@
         tutOverrideBothFrozenTip: "りょうほう とまったよ！ キーボードを みて キーを おそう：[{key1}] と [{key2}]！",
         tutOverrideTryMultiHalfTip: "１たい なおったよ！ つぎの キーを おそう：[{key}]！",
         tutOverrideSuccessTitle: "やったね！ だいせいこう！",
-        tutOverrideSuccessTip: "キーボードで ロボットを オーバーライドできたね！ ほんばんの たたかいに いこう！"
+        tutOverrideSuccessTip: "キーボードで ロボットを オーバーライドできたね！ ほんばんの たたかいに いこう！",
+        modeScrollTraining: "スクロール くんれん",
+        modeMouseBoss: "マウスボスバトル",
+        scrollStartSubtitle: "しせつを うえしたに スクロール！ オレンジのロボットを さがして ダブルクリックで なおそう！",
+        tryMouseWheel: "マウスホイールを つかってみよう！",
+        useWheelPrompt: "ロボットを みつけたね！ つぎは マウスホイールを まわしてみよう！",
+        scrollMouseWheel: "マウスホイール",
+        robotsRestoredLabel: "なおした ロボット",
+        scrollTimeRemaining: "のこり じかん",
+        scrollUp: "うえへ",
+        scrollDown: "したへ",
+        scrollCenterBase: "しれい きティ",
+        timeExpiredTitle: "じかんぎれ！",
+        timeExpiredMsg: "すべての ロボットを なおせなかったよ。 もういちど チャレンジしよう！"
       },
       it: {
         gameTitle: "Difesa Doppio-Clic",
@@ -2998,7 +4216,7 @@
         ultraStar1Rank: "SUPERSTITE ESPERTO!",
         ultraDefeatTitle: "Addestramento Ultra Completato!",
         ultraWavesSurvived: "{n} Ondata/e Sopravvissuta/e!",
-        playGame: "Inizia l'addestramento",
+        playGame: "Gioca",
         practiceFirst: "Tutorial e Pratica",
         playFirstBadge: "GIOCA PRIMA QUESTO!",
         wave: "Ondata",
@@ -3016,7 +4234,7 @@
         victoryMsg: "Riflessi eccezionali! Tutti i robot sono stati ripristinati.",
         defeatTitle: "I Robot Sono Passati!",
         defeatMsg: "Pronto a difendere di nuovo? Ogni tentativo migliora i tuoi riflessi.",
-        playAgain: "Ripeti l'addestramento",
+        playAgain: "Gioca di Nuovo",
         changeDiff: "Cambia Difficoltà",
         tryExtraHelp: "Prova con Scudi Extra (+2 Scudi & Nemici più Lenti)",
         extraShieldsBadge: "Scudi Extra",
@@ -3115,7 +4333,20 @@
         tutOverrideBothFrozenTip: "Entrambi bloccati! Ora guarda la tastiera e premi i loro tasti: [{key1}] e [{key2}]!",
         tutOverrideTryMultiHalfTip: "Un mecha ripristinato! Ora premi il tasto successivo: [{key}]!",
         tutOverrideSuccessTitle: "Grandioso! Ce l'hai fatta!",
-        tutOverrideSuccessTip: "Hai imparato l'override con la tastiera! Pronto per la vera missione?"
+        tutOverrideSuccessTip: "Hai imparato l'override con la tastiera! Pronto per la vera missione?",
+        modeScrollTraining: "Addestramento Rotella",
+        modeMouseBoss: "Scontro Boss Mouse",
+        scrollStartSubtitle: "Scorri la base in ALTO e in BASSO con la rotella! Trova i robot arancioni e fai doppio clic per ripararli prima dello scadere del tempo!",
+        tryMouseWheel: "Prova la rotella del mouse!",
+        useWheelPrompt: "Ottimo lavoro! Ora usa la rotella del mouse per completare!",
+        scrollMouseWheel: "ROTELLA MOUSE",
+        robotsRestoredLabel: "Robot Riparati",
+        scrollTimeRemaining: "Tempo Rimasto",
+        scrollUp: "SU",
+        scrollDown: "GIÙ",
+        scrollCenterBase: "Base di Comando",
+        timeExpiredTitle: "TEMPO SCADUTO!",
+        timeExpiredMsg: "Non tutti i robot sono stati ripristinati in tempo. Riprova!"
       },
       en: {
         ultraPromptTitle: "Expert Trainee Warning",
@@ -3183,7 +4414,20 @@
         tutOverrideBothFrozenTip: "Both frozen! Now look at your keyboard and type their letters: [{key1}] and [{key2}]!",
         tutOverrideTryMultiHalfTip: "One mecha restored! Now type the next key: [{key}]!",
         tutOverrideSuccessTitle: "Awesome! You Did It!",
-        tutOverrideSuccessTip: "You learned how to override mechas using your keyboard! Ready for the real mission?"
+        tutOverrideSuccessTip: "You learned how to override mechas using your keyboard! Ready for the real mission?",
+        modeScrollTraining: "Scroll Training",
+        modeMouseBoss: "Mouse Boss Fight",
+        scrollStartSubtitle: "Scroll UP and DOWN through the facility! Search for orange infected robots and DOUBLE-CLICK each one to restore it before time runs out.",
+        tryMouseWheel: "Try the mouse wheel!",
+        useWheelPrompt: "Great job finding the robots! Now try using the mouse wheel.",
+        scrollMouseWheel: "MOUSE WHEEL",
+        robotsRestoredLabel: "Robots Restored",
+        scrollTimeRemaining: "Time Remaining",
+        scrollUp: "UP",
+        scrollDown: "DOWN",
+        scrollCenterBase: "COMMAND CENTER",
+        timeExpiredTitle: "TIME EXPIRED!",
+        timeExpiredMsg: "Not all robots were restored in time. Let's try again!"
       }
     };
 
@@ -3263,10 +4507,49 @@
         },
         allowedRobots: ["override", "standard"],
         mechanic: "override_keyboard"
+      },
+      scroll_training: {
+        id: "scroll_training",
+        mission: 3,
+        name: "Scroll Training",
+        titleEn: "Mission 3 Training · Scroll Training",
+        titleSub: { en: "Scroll Training", ja: "ミッション 3: スクロール くんれん", it: "Missione 3: Addestramento Rotella" },
+        subtitleEn: "Scroll UP and DOWN through the facility! Search for orange infected robots and DOUBLE-CLICK each one to restore it before time runs out.",
+        subtitleSub: {
+          en: "Scroll up and down to find and double-click infected robots!",
+          ja: "マウスホイールで うえしたに スクロール！ オレンジのロボットを さがして ダブルクリックで なおそう！",
+          it: "Usa la rotella del mouse per scorrere in ALTO e in BASSO. Trova i robot arancioni e fai doppio clic per ripararli!"
+        },
+        allowedRobots: ["standard"],
+        mechanic: "mouse_wheel_scroll"
+      },
+      mouse_boss: {
+        id: "mouse_boss",
+        mission: 7,
+        name: "Mouse Boss Fight",
+        titleEn: "Mission 7 Training · Mouse Boss Fight",
+        titleSub: {
+          en: "Mouse Boss Fight",
+          ja: "ミッション 7: マウスボスバトル",
+          it: "Missione 7: Scontro Boss Mouse"
+        },
+        subtitleEn: "Master all mouse skills! Scroll through the cyber facility, restore infected robots, unlock restraints, untangle pairs, and copy/paste access keys into security gates to restore the primary relay.",
+        subtitleSub: {
+          en: "Scroll, double-click, untangle, and copy/paste security keys!",
+          ja: "スクロール、ダブルクリック、かいじょ、そしてコピー＆ペーストで きティのネットワークを ふっきゅうせよ！",
+          it: "Scorri, fai doppio clic, sblocca e copia/incolla le chiavi per ripristinare il relay!"
+        },
+        allowedRobots: ["standard"],
+        mechanic: "mouse_boss_mastery"
       }
     };
     GAME_MODES.baseDefense = GAME_MODES.base_defense;
     GAME_MODES.robotOverride = GAME_MODES.robot_override;
+    GAME_MODES.scrollTraining = GAME_MODES.scroll_training;
+    GAME_MODES.scroll = GAME_MODES.scroll_training;
+    GAME_MODES.mouseBoss = GAME_MODES.mouse_boss;
+    GAME_MODES.mouse_boss_fight = GAME_MODES.mouse_boss;
+    GAME_MODES.mouseBossFight = GAME_MODES.mouse_boss;
 
     const DIFFICULTY_SETTINGS = {
       veryEasy: {
@@ -5595,6 +6878,2618 @@
       }
     }
 
+    /**
+     * =========================================================================
+     * SECTION 5: MISSION 3 SCROLL TRAINING ENGINE
+     * =========================================================================
+     * Mechanics: Vertical Scroll + Visual Search + Double Click
+     * Viewport starts centered on Central Base (BASE = HOME).
+     * Level 1: 4 robots (2 above base, 2 below base)
+     * Level 2: 6 robots (3 above base, 3 below base)
+     * Level 3: 8 robots (4 above base, 4 below base)
+     */
+    class ScrollTrainingLevel {
+      constructor(game) {
+        this.game = game;
+        this.active = false;
+        this.currentWave = 1;
+        this.totalWaves = 3;
+        this.timerSec = this.getTimeLimitSec(1);
+        this.timerInterval = null;
+        this.robots = [];
+        this.robotsRestored = 0;
+        this.robotsTotal = 4;
+
+        // Input tracking
+        this.wheelEvents = 0;
+        this.wheelDistance = 0;
+        this.totalScrollDistance = 0;
+        this.lastScrollTop = 0;
+        this.hasUsedWheel = false;
+        this.coachingShown = false;
+        this.waitingForWheel = false;
+        this.isDraggingThumb = false;
+        this.wheelActiveTimeout = null;
+
+        // Level Configurations (configurable constants)
+        this.levels = [
+          {
+            level: 1,
+            robotCount: 4,
+            above: 2,
+            below: 2,
+            timeLimitSec: 70,
+            worldHeight: 2400,
+            minWheelEvents: 4
+          },
+          {
+            level: 2,
+            robotCount: 6,
+            above: 3,
+            below: 3,
+            timeLimitSec: 60,
+            worldHeight: 2800,
+            minWheelEvents: 6
+          },
+          {
+            level: 3,
+            robotCount: 8,
+            above: 4,
+            below: 4,
+            timeLimitSec: 55,
+            worldHeight: 3400,
+            minWheelEvents: 8
+          }
+        ];
+
+        this.mount();
+      }
+
+      mount() {
+        this.dispose();
+        this.active = true;
+
+        // Container root inside playfield
+        this.root = document.createElement("div");
+        this.root.className = "scroll-training-root";
+        this.game.playfieldEl.appendChild(this.root);
+
+        // Viewport
+        this.viewport = document.createElement("div");
+        this.viewport.className = "scroll-training-viewport";
+        this.root.appendChild(this.viewport);
+
+        // World
+        this.world = document.createElement("div");
+        this.world.className = "scroll-training-world";
+        this.viewport.appendChild(this.world);
+
+        // Build Environment Background & Central Base
+        this.buildWorldEnvironment();
+
+        // Build Live Animated Mouse-Wheel Indicator Widget
+        this.buildMouseWheelWidget();
+
+        // Build Stylized Cyber Scrollbar
+        this.buildCyberScrollbar();
+
+        // Build Coaching Banner
+        this.buildCoachBanner();
+
+        // Bind scroll & wheel listeners
+        this.bindEvents();
+      }
+
+      buildWorldEnvironment() {
+        const cfg = this.levels[this.currentWave - 1] || this.levels[0];
+        this.world.style.minHeight = `${cfg.worldHeight}px`;
+        this.world.innerHTML = "";
+
+        // Decorative background sector lines & conduits
+        const conduitL = document.createElement("div");
+        conduitL.className = "facility-conduit left";
+        const conduitR = document.createElement("div");
+        conduitR.className = "facility-conduit right";
+        this.world.appendChild(conduitL);
+        this.world.appendChild(conduitR);
+
+        // Upper Sector Header
+        const topBanner = document.createElement("div");
+        topBanner.className = "facility-sector-banner";
+        topBanner.style.top = "40px";
+        topBanner.textContent = "▲ SECTOR 01: UPPER CORRIDOR ▲";
+        this.world.appendChild(topBanner);
+
+        // Lower Sector Header
+        const btmBanner = document.createElement("div");
+        btmBanner.className = "facility-sector-banner";
+        btmBanner.style.bottom = "40px";
+        btmBanner.textContent = "▼ SECTOR 03: SUB-LEVEL DEPTHS ▼";
+        this.world.appendChild(btmBanner);
+
+        // Central Base (Physically in center of the world, scrolls with world)
+        this.centralBase = document.createElement("div");
+        this.centralBase.className = "scroll-central-base";
+        this.centralBase.id = "scroll-central-base";
+        this.centralBase.innerHTML = `
+          <div class="scroll-base-radar-ring"></div>
+          <div class="scroll-base-divider above"><span>▲ UPPER TERRITORY</span></div>
+          <div class="scroll-base-tag">
+            <span>DEFENSE COMMAND BASE</span>
+            <small>📍 HOME BASE / きティ</small>
+          </div>
+          <img class="scroll-base-img" src="../ART/base.png" alt="Command Base" draggable="false" />
+          <div class="scroll-base-divider below"><span>▼ LOWER TERRITORY</span></div>
+        `;
+        this.world.appendChild(this.centralBase);
+
+        // Circuit Flash Layer (Stepped orthogonal digital lightning from Base to Robots)
+        this.circuitLayer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.circuitLayer.setAttribute("class", "scroll-circuit-layer");
+        this.world.appendChild(this.circuitLayer);
+      }
+
+      buildMouseWheelWidget() {
+        this.wheelWidget = document.createElement("div");
+        this.wheelWidget.className = "scroll-mouse-wheel-widget";
+        this.wheelWidget.setAttribute("aria-hidden", "true");
+        this.wheelWidget.innerHTML = `
+          <div class="widget-wheel-arrow up">▲</div>
+          <div class="widget-mouse-body">
+            <div class="widget-mouse-buttons-split">
+              <div class="widget-mouse-btn-left"></div>
+              <div class="widget-mouse-btn-right"></div>
+            </div>
+            <div class="widget-wheel-housing">
+              <div class="widget-wheel-minimap-dots" id="widget-wheel-dots"></div>
+              <div class="widget-wheel-roller" id="widget-wheel-roller"></div>
+            </div>
+          </div>
+          <div class="widget-wheel-arrow down">▼</div>
+          <div class="widget-wheel-label">${this.text("MOUSE WHEEL", "マウスホイール", "ROTELLA")}</div>
+        `;
+        this.root.appendChild(this.wheelWidget);
+        this.wheelDotsContainer = this.wheelWidget.querySelector("#widget-wheel-dots");
+      }
+
+      buildCyberScrollbar() {
+        this.track = document.createElement("div");
+        this.track.className = "scroll-cyber-track";
+        this.track.title = "Scroll Minimap";
+        this.track.innerHTML = `
+          <div class="track-arrow-btn">▲</div>
+          <div class="track-body" id="scroll-track-body">
+            <div class="track-minimap-blips" id="track-minimap-blips"></div>
+            <div class="track-base-marker" title="Central Base">🛡️</div>
+            <div class="scroll-cyber-thumb" id="scroll-cyber-thumb"></div>
+          </div>
+          <div class="track-arrow-btn">▼</div>
+        `;
+        this.root.appendChild(this.track);
+        this.trackBody = this.track.querySelector("#scroll-track-body");
+        this.thumb = this.track.querySelector("#scroll-cyber-thumb");
+        this.minimapBlipsContainer = this.track.querySelector("#track-minimap-blips");
+
+        this.bindTrackEvents();
+      }
+
+      buildCoachBanner() {
+        this.coachBanner = document.createElement("div");
+        this.coachBanner.className = "scroll-coach-toast fade-out";
+        this.coachBanner.setAttribute("role", "status");
+        this.coachBanner.innerHTML = `<span>🖱️</span> <span>${this.text("Try the mouse wheel!", "マウスホイールを つかってみよう！", "Prova la rotella del mouse!")}</span>`;
+        this.root.appendChild(this.coachBanner);
+      }
+
+      bindTrackEvents() {
+        const handleDrag = (e) => {
+          if (!this.isDraggingThumb || !this.trackBody) return;
+          const rect = this.trackBody.getBoundingClientRect();
+          const thumbHeight = this.thumb.clientHeight || 30;
+          const maxThumbTop = rect.height - thumbHeight;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const relativeY = Math.max(0, Math.min(maxThumbTop, clientY - rect.top - thumbHeight / 2));
+          const ratio = maxThumbTop > 0 ? (relativeY / maxThumbTop) : 0;
+          
+          const maxScroll = this.world.clientHeight - this.viewport.clientHeight;
+          this.viewport.scrollTop = ratio * maxScroll;
+        };
+
+        const stopDrag = () => {
+          this.isDraggingThumb = false;
+          if (this.thumb) this.thumb.classList.remove("active");
+          window.removeEventListener("pointermove", handleDrag);
+          window.removeEventListener("pointerup", stopDrag);
+        };
+
+        this.thumb.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+          this.isDraggingThumb = true;
+          this.thumb.classList.add("active");
+          window.addEventListener("pointermove", handleDrag);
+          window.addEventListener("pointerup", stopDrag);
+        });
+
+        this.trackBody.addEventListener("pointerdown", (e) => {
+          const rect = this.trackBody.getBoundingClientRect();
+          const thumbHeight = this.thumb.clientHeight || 30;
+          const maxThumbTop = rect.height - thumbHeight;
+          const relativeY = Math.max(0, Math.min(maxThumbTop, e.clientY - rect.top - thumbHeight / 2));
+          const ratio = maxThumbTop > 0 ? (relativeY / maxThumbTop) : 0;
+          const maxScroll = this.world.clientHeight - this.viewport.clientHeight;
+          this.viewport.scrollTop = ratio * maxScroll;
+        });
+      }
+
+      bindEvents() {
+        this.onWheel = (e) => {
+          this.wheelEvents++;
+          this.wheelDistance += Math.abs(e.deltaY);
+          this.hasUsedWheel = true;
+
+          // Animate mouse wheel widget
+          if (this.wheelWidget) {
+            this.wheelWidget.classList.add("wheel-pulse");
+            if (e.deltaY < 0) {
+              this.wheelWidget.classList.add("scrolling-up");
+              this.wheelWidget.classList.remove("scrolling-down");
+            } else if (e.deltaY > 0) {
+              this.wheelWidget.classList.add("scrolling-down");
+              this.wheelWidget.classList.remove("scrolling-up");
+            }
+
+            clearTimeout(this.wheelActiveTimeout);
+            this.wheelActiveTimeout = setTimeout(() => {
+              if (this.wheelWidget) {
+                this.wheelWidget.classList.remove("scrolling-up", "scrolling-down", "wheel-pulse");
+              }
+            }, 260);
+          }
+
+          this.playWheelTick();
+
+          // If coach banner visible, dismiss it
+          if (this.coachBanner && !this.coachBanner.classList.contains("fade-out")) {
+            this.coachBanner.classList.add("fade-out");
+          }
+
+          // If student was waiting for wheel usage to clear the level:
+          const cfg = this.levels[this.currentWave - 1] || this.levels[0];
+          if (this.waitingForWheel && this.wheelEvents >= cfg.minWheelEvents) {
+            this.waitingForWheel = false;
+            this.onLevelCleared();
+          }
+        };
+
+        this.onScroll = () => {
+          const st = this.viewport.scrollTop;
+          const dY = Math.abs(st - this.lastScrollTop);
+          this.totalScrollDistance += dY;
+          this.lastScrollTop = st;
+
+          this.updateScrollbarThumb();
+
+          // Check if player moved significantly without wheel
+          const cfg = this.levels[this.currentWave - 1] || this.levels[0];
+          if (this.totalScrollDistance > 550 && this.wheelEvents === 0 && !this.coachingShown) {
+            this.showCoaching(this.text("Try the mouse wheel!", "マウスホイールを つかってみよう！", "Prova la rotella del mouse!"));
+            this.coachingShown = true;
+          }
+        };
+
+        this.viewport.addEventListener("wheel", this.onWheel, { passive: true });
+        this.viewport.addEventListener("scroll", this.onScroll, { passive: true });
+      }
+
+      updateScrollbarThumb() {
+        if (!this.thumb || !this.trackBody) return;
+        const vh = this.viewport.clientHeight || 500;
+        const wh = this.world.clientHeight || 2200;
+        const trackH = this.trackBody.clientHeight || 400;
+
+        const thumbHeight = Math.max(30, (vh / wh) * trackH);
+        this.thumb.style.height = `${thumbHeight}px`;
+
+        const maxScroll = wh - vh;
+        const maxThumbTop = trackH - thumbHeight;
+        if (maxScroll <= 0 || maxThumbTop <= 0) {
+          this.thumb.style.top = "0px";
+          return;
+        }
+
+        const ratio = Math.max(0, Math.min(1, this.viewport.scrollTop / maxScroll));
+        this.thumb.style.top = `${ratio * maxThumbTop}px`;
+      }
+
+      playWheelTick() {
+        try {
+          const am = this.game.audioManager;
+          if (!am || am.muted) return;
+          const ctx = am.ctx;
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(950, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.025);
+          gain.gain.setValueAtTime(0.04, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.025);
+        } catch (e) {}
+      }
+
+      showCoaching(text) {
+        if (!this.coachBanner) return;
+        this.coachBanner.innerHTML = `<span>🖱️</span> <span>${text}</span>`;
+        this.coachBanner.classList.remove("fade-out");
+        if (this.wheelWidget) this.wheelWidget.classList.add("wheel-pulse");
+
+        clearTimeout(this.coachTimeout);
+        this.coachTimeout = setTimeout(() => {
+          if (this.coachBanner) this.coachBanner.classList.add("fade-out");
+        }, 4500);
+      }
+
+      getTimeLimitSec(waveNum) {
+        const levels = this.levels || [
+          { timeLimitSec: 70 },
+          { timeLimitSec: 60 },
+          { timeLimitSec: 55 }
+        ];
+        const cfg = levels[waveNum - 1] || levels[0];
+        const base = (cfg && cfg.timeLimitSec) || 70;
+        const diff = (this.game && this.game.selectedDifficulty) || "normal";
+        const modifiers = {
+          veryEasy: 30,
+          easy: 15,
+          normal: 0,
+          difficult: -10,
+          hard: -15,
+          ultra: -15
+        };
+        const mod = modifiers[diff] !== undefined ? modifiers[diff] : 0;
+        return Math.max(25, base + mod);
+      }
+
+      startWave(waveNum) {
+        this.currentWave = waveNum;
+        const cfg = this.levels[waveNum - 1] || this.levels[0];
+        this.robotsTotal = cfg.robotCount;
+        this.robotsRestored = 0;
+        this.timerSec = this.getTimeLimitSec(waveNum);
+        this.wheelEvents = 0;
+        this.totalScrollDistance = 0;
+        this.coachingShown = false;
+        this.waitingForWheel = false;
+
+        // Rebuild world height & decorations
+        this.buildWorldEnvironment();
+        this.clearRobots();
+
+        // Centering viewport on base (BASE = HOME)
+        requestAnimationFrame(() => {
+          const vh = this.viewport.clientHeight || 600;
+          const initialTop = Math.max(0, (cfg.worldHeight - vh) / 2);
+          this.viewport.scrollTop = initialTop;
+          this.lastScrollTop = initialTop;
+          this.updateScrollbarThumb();
+        });
+
+        // Spawn robots strictly divided above and below base
+        this.spawnRobots(cfg);
+
+        // Start countdown timer
+        this.startTimer();
+        this.game.updateHUD();
+
+        // Announcement banner
+        const titleEn = `Level ${waveNum}`;
+        const titleSub = (this.game.currentLanguage === "ja") ? `レベル ${waveNum}` : (this.game.currentLanguage === "it" ? `Livello ${waveNum}` : `Level ${waveNum}`);
+        const calloutEn = waveNum === 1 ? "FIND 4 INFECTED ROBOTS" : (waveNum === 2 ? "FIND 6 INFECTED ROBOTS" : "FIND 8 INFECTED ROBOTS");
+        const calloutSub = (this.game.currentLanguage === "ja") ? "うえしたを スクロールして さがそう！" : "Scorri in alto e in basso!";
+        if (typeof this.game.showAnnouncement === "function") {
+          this.game.showAnnouncement(titleEn, titleSub, calloutEn, calloutSub);
+        }
+      }
+
+      spawnRobots(cfg) {
+        this.clearRobots();
+        const types = ["robot1", "robot2", "robot3", "robot4"];
+        const worldW = this.viewport.clientWidth || 940;
+        const worldH = cfg.worldHeight;
+
+        // Above Base Zone: Y from 140px to (worldH * 0.40)
+        const aboveMinY = 140;
+        const aboveMaxY = worldH * 0.40;
+        // Below Base Zone: Y from (worldH * 0.60) to (worldH - 160px)
+        const belowMinY = worldH * 0.60;
+        const belowMaxY = worldH - 160;
+
+        const positions = [];
+        const isTooClose = (x, y) => {
+          for (let p of positions) {
+            if (Math.hypot(p.x - x, p.y - y) < 260) return true;
+          }
+          return false;
+        };
+
+        // Pick Above positions
+        const aboveStep = (aboveMaxY - aboveMinY) / cfg.above;
+        for (let i = 0; i < cfg.above; i++) {
+          let attempts = 0;
+          let px, py;
+          do {
+            const laneRatio = 0.16 + Math.random() * 0.68;
+            px = worldW * laneRatio;
+            const yBandMin = aboveMinY + i * aboveStep;
+            py = yBandMin + 20 + Math.random() * Math.max(30, aboveStep - 40);
+            attempts++;
+          } while (isTooClose(px, py) && attempts < 25);
+          positions.push({ x: px, y: py, zone: "above" });
+        }
+
+        // Pick Below positions
+        const belowStep = (belowMaxY - belowMinY) / cfg.below;
+        for (let i = 0; i < cfg.below; i++) {
+          let attempts = 0;
+          let px, py;
+          do {
+            const laneRatio = 0.16 + Math.random() * 0.68;
+            px = worldW * laneRatio;
+            const yBandMin = belowMinY + i * belowStep;
+            py = yBandMin + 20 + Math.random() * Math.max(30, belowStep - 40);
+            attempts++;
+          } while (isTooClose(px, py) && attempts < 25);
+          positions.push({ x: px, y: py, zone: "below" });
+        }
+
+        // Clear any previous minimap blips
+        if (this.minimapBlipsContainer) this.minimapBlipsContainer.innerHTML = "";
+        if (this.wheelDotsContainer) this.wheelDotsContainer.innerHTML = "";
+
+        // Create Robot DOM elements
+        positions.forEach((pos, idx) => {
+          const type = types[idx % types.length];
+          const botBtn = document.createElement("button");
+          botBtn.className = "scroll-robot-entity infected";
+          botBtn.style.left = `${pos.x}px`;
+          botBtn.style.top = `${pos.y}px`;
+          botBtn.setAttribute("data-robot-id", String(idx + 1));
+          botBtn.setAttribute("aria-label", "Infected Robot");
+
+          const badge = document.createElement("div");
+          badge.className = "scroll-robot-badge infected";
+          badge.textContent = this.text("INFECTED", "ハックちゅう", "INFETTO");
+
+          const img = document.createElement("img");
+          img.className = "scroll-robot-img";
+          img.src = `../ART/robots/hacked-restored/${type}-hacked.png`;
+          img.alt = "Robot";
+          img.draggable = false;
+
+          const hint = document.createElement("div");
+          hint.className = "click-again-hint";
+          hint.textContent = this.text("Double-click to restore!", "ダブルクリック！", "Fai doppio clic!");
+
+          botBtn.append(badge, img, hint);
+          this.world.appendChild(botBtn);
+
+          const botData = {
+            id: idx + 1,
+            type,
+            element: botBtn,
+            badge,
+            img,
+            hint,
+            x: pos.x,
+            y: pos.y,
+            zone: pos.zone,
+            restored: false,
+            lastClickTime: 0
+          };
+
+          // Minimap Blip on Cyber Scrollbar Track
+          if (this.minimapBlipsContainer) {
+            const blip = document.createElement("div");
+            blip.className = "track-minimap-blip infected";
+            blip.setAttribute("data-robot-id", String(idx + 1));
+            blip.title = `Robot ${idx + 1} (${pos.zone})`;
+            const topPercent = Math.max(3, Math.min(97, (pos.y / cfg.worldHeight) * 100));
+            blip.style.top = `${topPercent}%`;
+            this.minimapBlipsContainer.appendChild(blip);
+            botData.minimapBlip = blip;
+          }
+
+          // Micro-dot on Mouse Wheel Widget
+          if (this.wheelDotsContainer) {
+            const wDot = document.createElement("div");
+            wDot.className = "widget-wheel-dot infected";
+            wDot.setAttribute("data-robot-id", String(idx + 1));
+            this.wheelDotsContainer.appendChild(wDot);
+            botData.wheelDot = wDot;
+          }
+
+          // Single click: subtle response + jolt + hint, does NOT restore
+          botBtn.addEventListener("click", (e) => {
+            if (botData.restored) return;
+            const now = performance.now();
+            if (now - botData.lastClickTime < 380) {
+              return;
+            }
+            botData.lastClickTime = now;
+            this.handleSingleClick(botData);
+          });
+
+          // Double click: Restores the robot!
+          botBtn.addEventListener("dblclick", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (botData.restored) return;
+            this.restoreRobot(botData, e.clientX, e.clientY);
+          });
+
+          this.robots.push(botData);
+        });
+      }
+
+      handleSingleClick(botData) {
+        if (botData.restored) return;
+        if (this.game.audioManager && typeof this.game.audioManager.playKeyClick === "function") {
+          this.game.audioManager.playKeyClick();
+        }
+        botData.element.classList.remove("single-clicked");
+        void botData.element.offsetWidth; // trigger reflow
+        botData.element.classList.add("single-clicked");
+
+        botData.hint.classList.add("visible");
+        clearTimeout(botData.hintTimeout);
+        botData.hintTimeout = setTimeout(() => {
+          if (botData.hint) botData.hint.classList.remove("visible");
+        }, 1300);
+      }
+
+      restoreRobot(botData, clientX, clientY) {
+        if (botData.restored) return;
+        botData.restored = true;
+
+        botData.element.classList.remove("infected", "single-clicked");
+        botData.element.classList.add("restored", "purge-flash");
+        setTimeout(() => {
+          if (botData.element) botData.element.classList.remove("purge-flash");
+        }, 320);
+
+        botData.badge.className = "scroll-robot-badge restored";
+        botData.badge.textContent = this.text("RESTORED!", "あんぜん！", "RIPARATO!");
+        botData.img.src = `../ART/robots/hacked-restored/${botData.type}-restored.png`;
+        if (botData.hint) botData.hint.classList.remove("visible");
+
+        // 1. Update Minimap Blips (Switch from Orange to Cyan)
+        if (botData.minimapBlip) {
+          botData.minimapBlip.classList.remove("infected");
+          botData.minimapBlip.classList.add("restored");
+        }
+        if (botData.wheelDot) {
+          botData.wheelDot.classList.remove("infected");
+          botData.wheelDot.classList.add("restored");
+        }
+
+        // 2. Circular Circuit Aura wrapping the robot during restoration
+        const aura = document.createElement("div");
+        aura.className = "restoration-circuit-aura";
+        aura.innerHTML = `
+          <svg viewBox="0 0 120 120" width="100%" height="100%" style="overflow: visible;">
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#00f0ff" stroke-width="2" stroke-dasharray="8 6" opacity="0.85" />
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.65" />
+            <path d="M 60 8 L 60 22 L 72 22" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="72" cy="22" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 60 112 L 60 98 L 48 98" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="48" cy="98" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 8 60 L 22 60 L 22 48" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="22" cy="48" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 112 60 L 98 60 L 98 72" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="98" cy="72" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+          </svg>
+        `;
+        botData.element.appendChild(aura);
+        setTimeout(() => {
+          if (aura.parentNode) aura.parentNode.removeChild(aura);
+        }, 800);
+
+        // 3. Fire Cyber Circuit Flash from Central Base to Robot!
+        const cfg = this.levels[this.currentWave - 1] || this.levels[0];
+        const baseX = (this.world.clientWidth || 940) / 2;
+        const baseY = cfg.worldHeight / 2;
+        const robotX = botData.x;
+        const robotY = botData.y;
+        this.triggerCircuitSnap(baseX, baseY, robotX, robotY);
+
+        // 4. Sounds: Circuit Snap Zap & Restoration Chime
+        if (this.game.audioManager) {
+          if (typeof this.game.audioManager.playCircuitSnap === "function") {
+            this.game.audioManager.playCircuitSnap();
+          } else if (typeof this.game.audioManager.playLockOn === "function") {
+            this.game.audioManager.playLockOn();
+          }
+          if (typeof this.game.audioManager.playRestoreChime === "function") {
+            setTimeout(() => this.game.audioManager.playRestoreChime(), 140);
+          }
+        }
+
+        // 5. Sparks & Score Callout
+        if (this.game.effects && typeof this.game.effects.spawnSparks === "function") {
+          const rect = botData.element.getBoundingClientRect();
+          const cx = clientX || (rect.left + rect.width / 2);
+          const cy = clientY || (rect.top + rect.height / 2);
+          this.game.effects.spawnSparks(cx, cy, 22, ["#00f0ff", "#38bdf8", "#ffffff", "#10b981"]);
+          if (typeof this.game.effects.spawnFloatingScore === "function") {
+            this.game.effects.spawnFloatingScore(cx, cy - 20, "+150", "#00f0ff");
+          }
+        }
+
+        this.robotsRestored++;
+        this.game.score = (this.game.score || 0) + 150;
+        this.game.robotsDestroyed = (this.game.robotsDestroyed || 0) + 1;
+        this.game.updateHUD();
+
+        // Check if all robots in this wave are restored
+        if (this.robotsRestored >= this.robotsTotal) {
+          this.stopTimer();
+          if (this.wheelEvents < cfg.minWheelEvents) {
+            this.waitingForWheel = true;
+            this.showCoaching(this.text("Great job! Now try using the mouse wheel!", "ロボットを みつけたね！ つぎは マウスホイールを まわしてみよう！", "Ottimo lavoro! Ora usa la rotella del mouse!"));
+          } else {
+            setTimeout(() => this.onLevelCleared(), 150);
+          }
+        }
+      }
+
+      triggerCircuitSnap(startX, startY, endX, endY) {
+        const svg = this.circuitLayer;
+        if (!svg) return;
+
+        if (this.circuitTimer1) clearTimeout(this.circuitTimer1);
+        if (this.circuitTimer2) clearTimeout(this.circuitTimer2);
+        if (this.circuitTimer3) clearTimeout(this.circuitTimer3);
+        if (this.circuitTimer4) clearTimeout(this.circuitTimer4);
+        svg.innerHTML = "";
+
+        // Energize Central Base radar ring if present
+        if (this.centralBase) {
+          this.centralBase.classList.remove("firing-circuit");
+          void this.centralBase.offsetWidth;
+          this.centralBase.classList.add("firing-circuit");
+          setTimeout(() => {
+            if (this.centralBase) this.centralBase.classList.remove("firing-circuit");
+          }, 480);
+        }
+
+        const dy = endY - startY;
+        const dx = endX - startX;
+        const y1 = startY + dy * 0.22;
+        const x1 = startX + dx * 0.35;
+        const y2 = startY + dy * 0.52;
+        const x2 = startX + dx * 0.72;
+        const y3 = startY + dy * 0.78;
+
+        // Stepped orthogonal PCB bus trace from Base to Robot
+        const dPath = `M ${startX} ${startY} L ${startX} ${y1} L ${x1} ${y1} L ${x1} ${y2} L ${x2} ${y2} L ${x2} ${y3} L ${endX} ${y3} L ${endX} ${endY}`;
+
+        // Parallel micro-trace
+        const pOffset = dx >= 0 ? 6 : -6;
+        const parallelPath = `M ${x1 + pOffset} ${y1 + pOffset} L ${x1 + pOffset} ${y2 - pOffset} L ${x2} ${y2 - pOffset}`;
+
+        const dirSign = dy >= 0 ? 1 : -1;
+        // 4 Branch traces with connection pads
+        const b1x = x1 + (dx >= 0 ? -36 : 36);
+        const branch1 = `M ${x1} ${y1} L ${b1x} ${y1} L ${b1x} ${y1 - dirSign * 20}`;
+
+        const b2x = x2 + (dx >= 0 ? 34 : -34);
+        const branch2 = `M ${x2} ${y2} L ${b2x} ${y2} L ${b2x} ${y2 + dirSign * 22}`;
+
+        const b3x = endX + (dx >= 0 ? -30 : 30);
+        const branch3 = `M ${endX} ${y3} L ${b3x} ${y3} L ${b3x} ${y3 - dirSign * 18}`;
+
+        const b4x = startX + (dx >= 0 ? 28 : -28);
+        const branch4 = `M ${startX} ${startY + dy * 0.12} L ${b4x} ${startY + dy * 0.12} L ${b4x} ${startY + dy * 0.12 - dirSign * 16}`;
+
+        const renderPulse = (mainWidth, glowWidth, opacity) => {
+          svg.innerHTML = `
+            <defs>
+              <filter id="scroll-circuit-glow-filter" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- Base Core Emitter Flash -->
+            <circle cx="${startX}" cy="${startY}" r="32" fill="#00f0ff" opacity="${opacity * 0.9}" filter="url(#scroll-circuit-glow-filter)" />
+            <circle cx="${startX}" cy="${startY}" r="14" fill="#ffffff" opacity="${opacity}" />
+
+            <!-- Target Robot Impact Flash Ring -->
+            <circle cx="${endX}" cy="${endY}" r="48" fill="none" stroke="#00f0ff" stroke-width="3.5" opacity="${opacity * 0.9}" />
+            <circle cx="${endX}" cy="${endY}" r="22" fill="#00f0ff" opacity="${opacity * 0.6}" filter="url(#scroll-circuit-glow-filter)" />
+            <circle cx="${endX}" cy="${endY}" r="10" fill="#ffffff" opacity="${opacity}" />
+
+            <!-- Outer Glowing Cyan Circuit Bus -->
+            <path d="${dPath}" fill="none" stroke="#00f0ff" stroke-width="${glowWidth}" stroke-linecap="square" stroke-linejoin="miter" opacity="${opacity * 0.95}" filter="url(#scroll-circuit-glow-filter)" />
+            
+            <!-- Inner White Data Pulse -->
+            <path d="${dPath}" fill="none" stroke="#ffffff" stroke-width="${mainWidth}" stroke-linecap="square" stroke-linejoin="miter" opacity="${opacity}" />
+
+            <!-- Secondary Micro Trace -->
+            <path d="${parallelPath}" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" opacity="${opacity * 0.8}" />
+
+            <!-- Branch Circuits & Solder Nodes -->
+            <path d="${branch1}" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="${opacity * 0.85}" />
+            <circle cx="${b1x}" cy="${y1 - dirSign * 20}" r="4" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" opacity="${opacity}" />
+
+            <path d="${branch2}" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="${opacity * 0.85}" />
+            <circle cx="${b2x}" cy="${y2 + dirSign * 22}" r="4" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" opacity="${opacity}" />
+
+            <path d="${branch3}" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="${opacity * 0.85}" />
+            <circle cx="${b3x}" cy="${y3 - dirSign * 18}" r="4" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" opacity="${opacity}" />
+
+            <path d="${branch4}" fill="none" stroke="#00f0ff" stroke-width="2" opacity="${opacity * 0.8}" />
+            <circle cx="${b4x}" cy="${startY + dy * 0.12 - dirSign * 16}" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" opacity="${opacity}" />
+          `;
+        };
+
+        // Phase 1: High-intensity primary surge (0 - 140ms)
+        renderPulse(4.0, 14, 1.0);
+
+        // Phase 2: Secondary voltage oscillation (140 - 280ms)
+        this.circuitTimer1 = setTimeout(() => {
+          renderPulse(2.8, 8, 0.85);
+        }, 140);
+
+        // Phase 3: Sustained data flicker (280 - 390ms)
+        this.circuitTimer2 = setTimeout(() => {
+          renderPulse(1.8, 5, 0.55);
+        }, 280);
+
+        // Phase 4: Lingering trace (390 - 460ms)
+        this.circuitTimer3 = setTimeout(() => {
+          renderPulse(1.0, 3, 0.3);
+        }, 390);
+
+        // Phase 5: Clear SVG
+        this.circuitTimer4 = setTimeout(() => {
+          svg.innerHTML = "";
+        }, 460);
+      }
+
+      onLevelCleared() {
+        this.stopTimer();
+        if (this.game.audioManager && typeof this.game.audioManager.playVictory === "function") {
+          this.game.audioManager.playVictory();
+        }
+
+        const dict = TRANSLATIONS[this.game.currentLanguage] || {};
+        const titleEn = `Level ${this.currentWave} Cleared!`;
+        const titleSub = (this.game.currentLanguage === "ja") ? `レベル ${this.currentWave} クリア！` : (this.game.currentLanguage === "it" ? `Livello ${this.currentWave} Completato!` : titleEn);
+
+        if (this.currentWave < this.totalWaves) {
+          // Advance to next wave
+          this.game.state = GAME_STATES.INTERMISSION;
+          if (typeof this.game.showWaveStars === "function") {
+            this.game.showWaveStars(this.currentWave, titleEn, titleSub, () => {
+              this.game.startWave(this.currentWave + 1);
+            }, 1800);
+          } else {
+            setTimeout(() => this.game.startWave(this.currentWave + 1), 1600);
+          }
+        } else {
+          // All 3 Levels Defended!
+          this.game.state = GAME_STATES.INTERMISSION;
+          const finalTitleEn = "All Robots Restored!";
+          const finalTitleSub = (this.game.currentLanguage === "ja") ? "すべての ロボットを なおしたよ！" : (this.game.currentLanguage === "it" ? "Tutti i robot sono stati ripristinati!" : finalTitleEn);
+          if (typeof this.game.showWaveStars === "function") {
+            this.game.showWaveStars(3, finalTitleEn, finalTitleSub, () => {
+              this.game.endGame(true);
+            }, 1800);
+          } else {
+            setTimeout(() => this.game.endGame(true), 1600);
+          }
+        }
+      }
+
+      startTimer() {
+        this.stopTimer();
+        this.timerInterval = setInterval(() => {
+          if (this.game.state !== GAME_STATES.ACTIVE) return;
+          this.timerSec--;
+          this.game.updateHUD();
+
+          if (this.timerSec <= 0) {
+            this.stopTimer();
+            this.onTimeExpired();
+          }
+        }, 1000);
+      }
+
+      stopTimer() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      }
+
+      pause() {
+        this.stopTimer();
+      }
+
+      resume() {
+        if (this.active && this.timerSec > 0) {
+          this.startTimer();
+        }
+      }
+
+      onTimeExpired() {
+        this.stopTimer();
+        this.game.endGame(false);
+      }
+
+      clearRobots() {
+        this.robots.forEach(r => {
+          if (r.element && r.element.parentNode) {
+            r.element.parentNode.removeChild(r.element);
+          }
+        });
+        this.robots = [];
+        if (this.minimapBlipsContainer) {
+          this.minimapBlipsContainer.innerHTML = "";
+        }
+        if (this.wheelDotsContainer) {
+          this.wheelDotsContainer.innerHTML = "";
+        }
+      }
+
+      update(dtSec) {
+        // Continuous per-frame checks if needed
+      }
+
+      dispose() {
+        this.active = false;
+        this.stopTimer();
+        clearTimeout(this.coachTimeout);
+        clearTimeout(this.wheelActiveTimeout);
+        if (this.circuitTimer1) clearTimeout(this.circuitTimer1);
+        if (this.circuitTimer2) clearTimeout(this.circuitTimer2);
+        if (this.circuitTimer3) clearTimeout(this.circuitTimer3);
+        if (this.circuitTimer4) clearTimeout(this.circuitTimer4);
+        if (this.circuitLayer) this.circuitLayer.innerHTML = "";
+        this.clearRobots();
+
+        if (this.viewport && this.onWheel) {
+          this.viewport.removeEventListener("wheel", this.onWheel);
+        }
+        if (this.viewport && this.onScroll) {
+          this.viewport.removeEventListener("scroll", this.onScroll);
+        }
+
+        if (this.root && this.root.parentNode) {
+          this.root.remove();
+          this.root = null;
+        }
+
+        const baseDef = document.getElementById("base-defense");
+        if (baseDef) baseDef.style.display = "";
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (timerBadge) {
+          timerBadge.style.display = "none";
+          timerBadge.classList.remove("timer-warning", "timer-critical");
+        }
+      }
+
+      text(en, ja, it) {
+        const lang = this.game.currentLanguage || "en";
+        return lang === "ja" ? ja : (lang === "it" ? it : en);
+      }
+    }
+
+    /**
+     * =========================================================================
+     * MISSION 7 TRAINING: MOUSE BOSS FIGHT LEVEL ENGINE
+     * =========================================================================
+     * Combines all mouse mechanics (scrolling, double-click, right-click,
+     * lock release, untangling, drag-to-select, copy and paste) into a
+     * vertical scrolling cyber facility boss challenge.
+     */
+    class MouseBossLevel {
+      constructor(game) {
+        this.game = game;
+        this.active = false;
+        this.currentWave = 1;
+        this.totalWaves = 4;
+        this.timerSec = this.getTimeLimitSec(1);
+        this.timerInterval = null;
+
+        this.robots = [];
+        this.robotsRestored = 0;
+        this.robotsTotal = 0;
+
+        this.gates = [];
+        this.gatesOpened = 0;
+        this.totalGates = 0;
+
+        this.pairs = [];
+        this.tangledPairs = this.pairs;
+
+        this.primaryRelay = null;
+        this.primaryRelayRestored = false;
+        this.clipboard = "";
+        this.activeContextMenu = null;
+
+        // Input & skill metrics
+        this.wheelEvents = 0;
+        this.wheelDistance = 0;
+        this.singleClicks = 0;
+        this.doubleClicks = 0;
+        this.rightClicks = 0;
+        this.textSelections = 0;
+        this.copies = 0;
+        this.pastes = 0;
+        this.releases = 0;
+        this.untangles = 0;
+
+        // Checkpoint tracking
+        this.checkpoints = {
+          scrolled: false,
+          restoredInfected: false,
+          releasedLocked: false,
+          unlinkedPair: false,
+          untangledPair: false,
+          selectedCode: false,
+          copiedCode: false,
+          pastedCode: false,
+          gateUnlocked: false,
+          primaryRelayRestored: false
+        };
+
+        // 4 Waves Configuration
+        this.waves = [
+          {
+            wave: 1,
+            titleEn: "Wave 1 · Sector Clearance",
+            titleSub: { en: "Wave 1", ja: "ウェーブ 1: セクター かいじょ", it: "Ondata 1: Bonifica Settore" },
+            worldHeight: 2200,
+            timeLimitSec: 120,
+            moveSpeed: 18,
+            gates: [
+              { id: "gate-1", yPercent: 48, key: "CYAN" }
+            ],
+            robots: [
+              { type: "infected", botType: "robot1", xPercent: 32, yPercent: 76 },
+              { type: "infected", botType: "robot2", xPercent: 68, yPercent: 70 },
+              { type: "locked",   botType: "robot3", xPercent: 50, yPercent: 60 },
+              { type: "infected", botType: "robot4", xPercent: 28, yPercent: 32 },
+              { type: "infected", botType: "robot1", xPercent: 72, yPercent: 18 }
+            ]
+          },
+          {
+            wave: 2,
+            titleEn: "Wave 2 · Relay Cascade",
+            titleSub: { en: "Wave 2", ja: "ウェーブ 2: リレー れんけい", it: "Ondata 2: Cascata di Relay" },
+            worldHeight: 3000,
+            timeLimitSec: 140,
+            moveSpeed: 22,
+            gates: [
+              { id: "gate-1", yPercent: 65, key: "NODE7" },
+              { id: "gate-2", yPercent: 34, key: "BLUE42" }
+            ],
+            robots: [
+              { type: "infected", botType: "robot1", xPercent: 25, yPercent: 84 },
+              { type: "locked",   botType: "robot2", xPercent: 65, yPercent: 76 },
+              { type: "friendly", botType: "robot3", xPercent: 45, yPercent: 79 },
+              { type: "infected", botType: "robot3", xPercent: 30, yPercent: 52 },
+              { type: "infected", botType: "robot4", xPercent: 72, yPercent: 45 },
+              { type: "locked",   botType: "robot1", xPercent: 50, yPercent: 40 },
+              { type: "infected", botType: "robot2", xPercent: 35, yPercent: 22 },
+              { type: "infected", botType: "robot4", xPercent: 65, yPercent: 14 }
+            ]
+          },
+          {
+            wave: 3,
+            titleEn: "Wave 3 · Linked Systems",
+            titleSub: { en: "Wave 3", ja: "ウェーブ 3: リンクした システム", it: "Ondata 3: Sistemi Collegati" },
+            worldHeight: 3800,
+            timeLimitSec: 160,
+            moveSpeed: 26,
+            gates: [
+              { id: "gate-1", yPercent: 72, key: "K7X2" },
+              { id: "gate-2", yPercent: 48, key: "NODE-31" },
+              { id: "gate-3", yPercent: 24, key: "CYAN42" }
+            ],
+            robots: [
+              { type: "infected", botType: "robot1", xPercent: 30, yPercent: 88 },
+              { type: "locked",   botType: "robot2", xPercent: 68, yPercent: 82 },
+              { type: "tangled",  botType: "robot3", botType2: "robot4", xPercent: 50, yPercent: 60, dist: 130 },
+              { type: "friendly", botType: "robot1", xPercent: 24, yPercent: 54 },
+              { type: "infected", botType: "robot2", xPercent: 32, yPercent: 40 },
+              { type: "locked",   botType: "robot3", xPercent: 70, yPercent: 34 },
+              { type: "infected", botType: "robot4", xPercent: 45, yPercent: 28 },
+              { type: "friendly", botType: "robot2", xPercent: 72, yPercent: 18 },
+              { type: "infected", botType: "robot1", xPercent: 35, yPercent: 12 }
+            ]
+          },
+          {
+            wave: 4,
+            titleEn: "Wave 4 · Primary Relay Boss Challenge",
+            titleSub: { en: "Wave 4", ja: "ウェーブ 4: メイン リレー ボスバトル", it: "Ondata 4: Sfida Boss Relay Primario" },
+            worldHeight: 4600,
+            timeLimitSec: 180,
+            moveSpeed: 30,
+            isBossWave: true,
+            gates: [
+              { id: "gate-1", yPercent: 76, key: "CORE-X" },
+              { id: "gate-2", yPercent: 52, key: "HEX-88" },
+              { id: "gate-3", yPercent: 28, key: "CYBER-9" }
+            ],
+            primaryRelay: {
+              id: "primary-relay",
+              yPercent: 7.5,
+              key: "MASTER-CORE"
+            },
+            robots: [
+              { type: "infected", botType: "robot1", xPercent: 32, yPercent: 90 },
+              { type: "locked",   botType: "robot2", xPercent: 68, yPercent: 84 },
+              { type: "tangled",  botType: "robot3", botType2: "robot4", xPercent: 50, yPercent: 66, dist: 130 },
+              { type: "friendly", botType: "robot1", xPercent: 22, yPercent: 60 },
+              { type: "infected", botType: "robot2", xPercent: 75, yPercent: 58 },
+              { type: "locked",   botType: "robot3", xPercent: 35, yPercent: 43 },
+              { type: "infected", botType: "robot4", xPercent: 65, yPercent: 38 },
+              { type: "friendly", botType: "robot2", xPercent: 24, yPercent: 35 },
+              { type: "tangled",  botType: "robot1", botType2: "robot2", xPercent: 50, yPercent: 19, dist: 130 },
+              { type: "infected", botType: "robot4", xPercent: 30, yPercent: 13 }
+            ]
+          }
+        ];
+
+        this.mount();
+      }
+
+      text(en, ja, it) {
+        const lang = this.game.currentLanguage || "en";
+        return lang === "ja" ? ja : (lang === "it" ? it : en);
+      }
+
+      get gatesOpen() {
+        return this.gates ? this.gates.filter(g => g.unlocked).length : 0;
+      }
+
+      get gatesTotal() {
+        return this.gates ? this.gates.length : 0;
+      }
+
+      mount() {
+        this.dispose();
+        this.active = true;
+
+        this.root = document.createElement("div");
+        this.root.className = "mouse-boss-root";
+        this.game.playfieldEl.appendChild(this.root);
+
+        this.viewport = document.createElement("div");
+        this.viewport.className = "mouse-boss-viewport";
+        this.root.appendChild(this.viewport);
+
+        this.world = document.createElement("div");
+        this.world.className = "mouse-boss-world";
+        this.viewport.appendChild(this.world);
+
+        // SVG Circuit Layer for Base Restoration Lightning
+        this.circuitLayer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.circuitLayer.setAttribute("class", "mouse-boss-circuit-layer");
+        this.world.appendChild(this.circuitLayer);
+
+        this.buildMasteryChecklist();
+        this.buildCyberScrollbar();
+        this.bindEvents();
+      }
+
+      buildWorldEnvironment(cfg) {
+        this.world.style.minHeight = `${cfg.worldHeight}px`;
+        this.circuitLayer.setAttribute("height", `${cfg.worldHeight}`);
+        this.circuitLayer.innerHTML = "";
+
+        // Remove old world elements except circuit layer
+        Array.from(this.world.children).forEach(ch => {
+          if (ch !== this.circuitLayer) ch.remove();
+        });
+
+        // Top summit header
+        const topBanner = document.createElement("div");
+        topBanner.className = "facility-sector-banner";
+        topBanner.style.top = "30px";
+        topBanner.textContent = cfg.isBossWave ? "▲ PRIMARY COMMAND SECTOR ▲" : "▲ UPPER FACILITY CORRIDOR ▲";
+        this.world.appendChild(topBanner);
+
+        // Command Base (Belongs to the world, placed near bottom)
+        this.baseEl = document.createElement("div");
+        this.baseEl.className = "mouse-boss-base";
+        const baseY = cfg.worldHeight - 220;
+        this.baseEl.style.top = `${baseY}px`;
+        this.baseY = baseY;
+
+        this.baseEl.innerHTML = `
+          <div class="mouse-boss-base-radar"></div>
+          <div class="mouse-boss-base-tag">
+            <span>DEFENSE COMMAND BASE</span>
+            <small>📍 HOME BASE / きティ</small>
+          </div>
+          <img class="mouse-boss-base-img" src="../ART/base.png" alt="Command Base" draggable="false" />
+        `;
+        this.world.appendChild(this.baseEl);
+      }
+
+      buildMasteryChecklist() {
+        this.checklistEl = document.createElement("div");
+        this.checklistEl.className = "boss-mastery-checklist";
+        this.checklistEl.innerHTML = `
+          <div class="boss-mastery-title">★ MOUSE MASTERY ★</div>
+          <div class="boss-checklist-items">
+            <div class="boss-chk-row" id="chk-scroll"><span class="boss-chk-box">□</span><span>Scroll sector</span></div>
+            <div class="boss-chk-row" id="chk-restore"><span class="boss-chk-box">□</span><span>Restore infected</span></div>
+            <div class="boss-chk-row" id="chk-release"><span class="boss-chk-box">□</span><span>Release locked</span></div>
+            <div class="boss-chk-row" id="chk-untangle"><span class="boss-chk-box">□</span><span>Unlink robot pair</span></div>
+            <div class="boss-chk-row" id="chk-select"><span class="boss-chk-box">□</span><span>Select code</span></div>
+            <div class="boss-chk-row" id="chk-copy"><span class="boss-chk-box">□</span><span>Copy code</span></div>
+            <div class="boss-chk-row" id="chk-paste"><span class="boss-chk-box">□</span><span>Paste code</span></div>
+            <div class="boss-chk-row" id="chk-gate"><span class="boss-chk-box">□</span><span>Unlock gate</span></div>
+            <div class="boss-chk-row" id="chk-relay" style="display:none;"><span class="boss-chk-box">□</span><span>Restore Primary Relay</span></div>
+          </div>
+        `;
+        this.root.appendChild(this.checklistEl);
+      }
+
+      updateChecklistUI() {
+        if (!this.checklistEl) return;
+        const setRow = (id, checked) => {
+          const row = this.checklistEl.querySelector(`#${id}`);
+          if (row) {
+            row.classList.toggle("checked", checked);
+            const box = row.querySelector(".boss-chk-box");
+            if (box) box.textContent = checked ? "✓" : "□";
+          }
+        };
+
+        setRow("chk-scroll", this.checkpoints.scrolled);
+        setRow("chk-restore", this.checkpoints.restoredInfected);
+        setRow("chk-release", this.checkpoints.releasedLocked);
+        setRow("chk-untangle", this.checkpoints.untangledPair);
+        setRow("chk-select", this.checkpoints.selectedCode);
+        setRow("chk-copy", this.checkpoints.copiedCode);
+        setRow("chk-paste", this.checkpoints.pastedCode);
+        setRow("chk-gate", this.checkpoints.gateUnlocked);
+
+        const relayRow = this.checklistEl.querySelector("#chk-relay");
+        if (relayRow) {
+          relayRow.style.display = (this.currentWave === 4) ? "flex" : "none";
+          setRow("chk-relay", this.checkpoints.primaryRelayRestored);
+        }
+      }
+
+      buildCyberScrollbar() {
+        this.track = document.createElement("div");
+        this.track.className = "scroll-cyber-track";
+        this.track.title = "Scroll Minimap";
+        this.track.innerHTML = `
+          <div class="track-arrow-btn">▲</div>
+          <div class="track-body" id="boss-track-body">
+            <div class="track-minimap-blips" id="boss-minimap-blips"></div>
+            <div class="scroll-cyber-thumb" id="boss-cyber-thumb"></div>
+          </div>
+          <div class="track-arrow-btn">▼</div>
+        `;
+        this.root.appendChild(this.track);
+        this.trackBody = this.track.querySelector("#boss-track-body");
+        this.thumb = this.track.querySelector("#boss-cyber-thumb");
+        this.minimapBlipsContainer = this.track.querySelector("#boss-minimap-blips");
+
+        let isDragging = false;
+        const handleDrag = (e) => {
+          if (!isDragging || !this.trackBody) return;
+          const rect = this.trackBody.getBoundingClientRect();
+          const thumbHeight = this.thumb.clientHeight || 30;
+          const maxThumbTop = rect.height - thumbHeight;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          const relativeY = Math.max(0, Math.min(maxThumbTop, clientY - rect.top - thumbHeight / 2));
+          const ratio = maxThumbTop > 0 ? (relativeY / maxThumbTop) : 0;
+          const maxScroll = this.world.clientHeight - this.viewport.clientHeight;
+          this.viewport.scrollTop = ratio * maxScroll;
+        };
+
+        const stopDrag = () => {
+          isDragging = false;
+          if (this.thumb) this.thumb.classList.remove("active");
+          window.removeEventListener("pointermove", handleDrag);
+          window.removeEventListener("pointerup", stopDrag);
+        };
+
+        this.thumb.addEventListener("pointerdown", (e) => {
+          e.stopPropagation();
+          isDragging = true;
+          this.thumb.classList.add("active");
+          window.addEventListener("pointermove", handleDrag);
+          window.addEventListener("pointerup", stopDrag);
+        });
+
+        this.trackBody.addEventListener("pointerdown", (e) => {
+          const rect = this.trackBody.getBoundingClientRect();
+          const thumbHeight = this.thumb.clientHeight || 30;
+          const maxThumbTop = rect.height - thumbHeight;
+          const relativeY = Math.max(0, Math.min(maxThumbTop, e.clientY - rect.top - thumbHeight / 2));
+          const ratio = maxThumbTop > 0 ? (relativeY / maxThumbTop) : 0;
+          const maxScroll = this.world.clientHeight - this.viewport.clientHeight;
+          this.viewport.scrollTop = ratio * maxScroll;
+        });
+      }
+
+      updateScrollbarThumb() {
+        if (!this.thumb || !this.trackBody) return;
+        const vh = this.viewport.clientHeight || 500;
+        const wh = this.world.clientHeight || 2200;
+        const trackH = this.trackBody.clientHeight || 400;
+
+        const thumbHeight = Math.max(30, (vh / wh) * trackH);
+        this.thumb.style.height = `${thumbHeight}px`;
+
+        const maxScroll = wh - vh;
+        const maxThumbTop = trackH - thumbHeight;
+        if (maxScroll <= 0 || maxThumbTop <= 0) {
+          this.thumb.style.top = "0px";
+          return;
+        }
+
+        const ratio = Math.max(0, Math.min(1, this.viewport.scrollTop / maxScroll));
+        this.thumb.style.top = `${ratio * maxThumbTop}px`;
+      }
+
+      bindEvents() {
+        this.onWheel = (e) => {
+          this.wheelEvents++;
+          this.wheelDistance += Math.abs(e.deltaY);
+          if (this.wheelDistance > 180 && !this.checkpoints.scrolled) {
+            this.checkpoints.scrolled = true;
+            this.updateChecklistUI();
+          }
+          this.playWheelTick();
+        };
+
+        this.onScroll = () => {
+          let st = this.viewport.scrollTop;
+          const currentCfg = this.waves[this.currentWave - 1] || this.waves[0];
+          const worldH = currentCfg.worldHeight;
+
+          // Closed Security Gate Scroll Barrier:
+          // Player starts at bottom (high scrollTop). Upward progression decreases scrollTop.
+          // The first locked gate the player encounters has the lowest altitude (largest pixelY).
+          const lockedGates = this.gates.filter(g => !g.unlocked);
+          if (lockedGates.length > 0) {
+            const lowestLockedGate = lockedGates.reduce((prev, curr) => curr.pixelY > prev.pixelY ? curr : prev, lockedGates[0]);
+            const minAllowedScroll = Math.max(0, lowestLockedGate.pixelY - 140);
+            if (st < minAllowedScroll) {
+              this.viewport.scrollTop = minAllowedScroll;
+              st = minAllowedScroll;
+              this.showGateBlockedFeedback(lowestLockedGate);
+            }
+          }
+
+          this.updateScrollbarThumb();
+        };
+
+        this.viewport.addEventListener("wheel", this.onWheel, { passive: true });
+        this.viewport.addEventListener("scroll", this.onScroll, { passive: true });
+
+        // Global dismiss for context menus
+        this.onDocClick = (e) => {
+          if (this.activeContextMenu && !this.activeContextMenu.contains(e.target)) {
+            this.closeContextMenu();
+          }
+        };
+        this.onDocKey = (e) => {
+          if (e.key === "Escape") {
+            this.closeContextMenu();
+          }
+        };
+        document.addEventListener("pointerdown", this.onDocClick);
+        document.addEventListener("keydown", this.onDocKey);
+      }
+
+      showGateBlockedFeedback(gate) {
+        if (!gate || gate._warnTimeout) return;
+        gate.element.classList.add("blocked-warn");
+        gate._warnTimeout = setTimeout(() => {
+          gate.element.classList.remove("blocked-warn");
+          gate._warnTimeout = null;
+        }, 600);
+        this.showCoachToast(this.text("SECURITY RELAY LOCKED: Select, copy & paste access key to advance!", "リレーが ロックされているよ！ アクセスキーを コピー＆ペーストして かいじょしよう！", "RELAY BLOCCATO: Copia e incolla la chiave per avanzare!"));
+      }
+
+      getTimeLimitSec(waveNum) {
+        const waves = this.waves || [
+          { timeLimitSec: 120 },
+          { timeLimitSec: 140 },
+          { timeLimitSec: 160 },
+          { timeLimitSec: 180 }
+        ];
+        const cfg = waves[waveNum - 1] || waves[0];
+        const base = (cfg && cfg.timeLimitSec) || 120;
+        const diff = (this.game && this.game.selectedDifficulty) || "normal";
+        const modifiers = {
+          veryEasy: 60,
+          easy: 30,
+          normal: 0,
+          difficult: -25,
+          hard: -40,
+          ultra: -40
+        };
+        const mod = modifiers[diff] !== undefined ? modifiers[diff] : 0;
+        return Math.max(45, base + mod);
+      }
+
+      startWave(waveNum) {
+        this.currentWave = waveNum;
+        const cfg = this.waves[waveNum - 1] || this.waves[0];
+        this.timerSec = this.getTimeLimitSec(waveNum);
+        this.robotsRestored = 0;
+        this.gatesOpened = 0;
+        this.primaryRelayRestored = false;
+        this.closeContextMenu();
+
+        this.buildWorldEnvironment(cfg);
+        this.spawnRobotsAndGates(cfg);
+        this.updateChecklistUI();
+
+        // Position viewport at the bottom on the Command Base
+        requestAnimationFrame(() => {
+          const vh = this.viewport.clientHeight || 600;
+          const initialTop = Math.max(0, cfg.worldHeight - vh);
+          this.viewport.scrollTop = initialTop;
+          this.updateScrollbarThumb();
+        });
+
+        this.startTimer();
+        this.game.updateHUD();
+
+        // Announcement banner
+        const titleEn = cfg.titleEn;
+        const titleSub = (cfg.titleSub && cfg.titleSub[this.game.currentLanguage]) || cfg.titleEn;
+        const calloutEn = cfg.isBossWave ? "RESTORE PRIMARY RELAY AT THE SUMMIT" : `SECTOR GATE PROTOCOL ONLINE`;
+        const calloutSub = (this.game.currentLanguage === "ja") ? "すべての ロボットと リレーを ふっきゅうせよ！" : "Ripristina tutti i robot e i relay!";
+        if (typeof this.game.showAnnouncement === "function") {
+          this.game.showAnnouncement(titleEn, titleSub, calloutEn, calloutSub);
+        }
+      }
+
+      spawnRobotsAndGates(cfg) {
+        this.clearRobotsAndGates();
+        const worldW = this.viewport.clientWidth || 940;
+        const worldH = cfg.worldHeight;
+
+        // Minimap setup
+        if (this.minimapBlipsContainer) this.minimapBlipsContainer.innerHTML = "";
+
+        // Base Blip on minimap
+        if (this.minimapBlipsContainer) {
+          const baseBlip = document.createElement("div");
+          baseBlip.className = "track-base-marker";
+          baseBlip.title = "Command Base";
+          baseBlip.textContent = "🛡️";
+          baseBlip.style.top = "95%";
+          this.minimapBlipsContainer.appendChild(baseBlip);
+        }
+
+        // 1. Spawn Security Relay Gates
+        this.gates = [];
+        this.totalGates = cfg.gates.length;
+        cfg.gates.forEach((gCfg, idx) => {
+          const pixelY = worldH * (gCfg.yPercent / 100);
+          const gateEl = document.createElement("div");
+          gateEl.className = "boss-relay-gate";
+          gateEl.style.top = `${pixelY}px`;
+          gateEl.setAttribute("data-gate-id", gCfg.id);
+
+          gateEl.innerHTML = `
+            <div class="boss-gate-barrier">⚡ SECURITY GATE ${idx + 1} · ACCESS KEY REQUIRED ⚡</div>
+            <div class="boss-gate-interface">
+              <div class="boss-gate-panel source-panel">
+                <div class="boss-panel-title">1 · ACCESS KEY</div>
+                <div class="boss-panel-sub">${this.text("Drag across text to select", "ドラッグして えらんでね", "Trascina sul testo per selezionare")}</div>
+                <div><span class="boss-source-code" tabIndex="0">${gCfg.key}</span></div>
+              </div>
+              <div class="boss-gate-panel dest-panel">
+                <div class="boss-panel-title">2 · DESTINATION FIELD</div>
+                <div class="boss-panel-sub">${this.text("Click then Right-Click to Paste", "クリックして みぎクリックで はりつけ", "Clicca poi Clic Destro per Incollare")}</div>
+                <div><input class="boss-dest-input" readOnly placeholder="${this.text("CLICK THEN RIGHT-CLICK PASTE", "ここをクリックして みぎクリック", "CLICCA POI CLIC DESTRO")}" /></div>
+              </div>
+            </div>
+            <div class="boss-gate-mini-checklist">
+              <span class="boss-mini-step step-select">□ 1. ${this.text("Select", "えらぶ", "Seleziona")}</span>
+              <span class="boss-mini-step step-copy">□ 2. ${this.text("Copy", "コピー", "Copia")}</span>
+              <span class="boss-mini-step step-focus">□ 3. ${this.text("Click Input", "クリック", "Clic")}</span>
+              <span class="boss-mini-step step-paste">□ 4. ${this.text("Paste", "はりつけ", "Incolla")}</span>
+              <span class="boss-mini-step step-unlock">□ 5. ${this.text("Unlock", "かいじょ", "Sblocca")}</span>
+            </div>
+          `;
+          this.world.appendChild(gateEl);
+
+          const gateData = {
+            id: gCfg.id,
+            key: gCfg.key,
+            pixelY,
+            unlocked: false,
+            element: gateEl,
+            sourceCodeEl: gateEl.querySelector(".boss-source-code"),
+            destInputEl: gateEl.querySelector(".boss-dest-input"),
+            checklistEl: gateEl.querySelector(".boss-gate-mini-checklist"),
+            steps: { select: false, copy: false, focus: false, paste: false, unlock: false }
+          };
+
+          // Gate Minimap Marker
+          if (this.minimapBlipsContainer) {
+            const gBlip = document.createElement("div");
+            gBlip.className = "track-minimap-blip gate-marker";
+            gBlip.title = `Gate ${idx + 1}`;
+            gBlip.style.top = `${gCfg.yPercent}%`;
+            this.minimapBlipsContainer.appendChild(gBlip);
+            gateData.minimapBlip = gBlip;
+          }
+
+          this.bindGateEvents(gateData);
+          this.gates.push(gateData);
+        });
+
+        // 2. Spawn Primary Command Relay (Wave 4 Summit)
+        if (cfg.isBossWave && cfg.primaryRelay) {
+          const prCfg = cfg.primaryRelay;
+          const pixelY = worldH * (prCfg.yPercent / 100);
+
+          const pEl = document.createElement("div");
+          pEl.className = "boss-primary-relay";
+          pEl.style.top = `${pixelY}px`;
+          pEl.innerHTML = `
+            <div class="boss-primary-prompt">⚡ DOUBLE-CLICK PRIMARY RELAY! ⚡</div>
+            <div class="boss-primary-core">
+              <div class="boss-primary-rings"></div>
+              <span style="font-size: 34px;">💠</span>
+            </div>
+            <div class="boss-primary-label">PRIMARY COMMAND RELAY</div>
+            <div class="boss-gate-interface" style="margin-top: 14px; max-width: 580px;">
+              <div class="boss-gate-panel source-panel">
+                <div class="boss-panel-title">MASTER OVERRIDE CODE</div>
+                <div class="boss-panel-sub">${this.text("Drag across text to select", "ドラッグして えらんでね", "Trascina per selezionare")}</div>
+                <div><span class="boss-source-code" tabIndex="0">${prCfg.key}</span></div>
+              </div>
+              <div class="boss-gate-panel dest-panel">
+                <div class="boss-panel-title">PRIMARY RELAY INPUT</div>
+                <div class="boss-panel-sub">${this.text("Click then Right-Click to Paste", "クリックして みぎクリックで はりつけ", "Clicca poi Clic Destro")}</div>
+                <div><input class="boss-dest-input" readOnly placeholder="${this.text("PASTE MASTER CODE", "マスターコードを はりつけ", "INCOLLA CODICE")}"/></div>
+              </div>
+            </div>
+            <div class="boss-gate-mini-checklist" style="margin-top: 6px;">
+              <span class="boss-mini-step step-select">□ 1. Select</span>
+              <span class="boss-mini-step step-copy">□ 2. Copy</span>
+              <span class="boss-mini-step step-focus">□ 3. Click</span>
+              <span class="boss-mini-step step-paste">□ 4. Paste</span>
+              <span class="boss-mini-step step-unlock">□ 5. Double-Click Core</span>
+            </div>
+          `;
+          this.world.appendChild(pEl);
+
+          this.primaryRelay = {
+            id: prCfg.id,
+            key: prCfg.key,
+            pixelY,
+            element: pEl,
+            sourceCodeEl: pEl.querySelector(".boss-source-code"),
+            destInputEl: pEl.querySelector(".boss-dest-input"),
+            checklistEl: pEl.querySelector(".boss-gate-mini-checklist"),
+            steps: { select: false, copy: false, focus: false, paste: false, unlock: false },
+            armed: false,
+            restored: false
+          };
+
+          this.bindPrimaryRelayEvents(this.primaryRelay);
+        }
+
+        // 3. Spawn Robots
+        this.robots = [];
+        this.pairs = [];
+        this.tangledPairs = this.pairs;
+        let nonFriendlyCount = 0;
+
+        cfg.robots.forEach((rCfg, idx) => {
+          const pixelY = worldH * (rCfg.yPercent / 100);
+          const pixelX = (worldW * (rCfg.xPercent / 100));
+
+          if (rCfg.type === "tangled" || rCfg.type === "linked") {
+            // Linked Robot Pair (2 Robots moving in tandem linked together)
+            nonFriendlyCount += 2;
+            const dist = rCfg.dist || 130;
+            const pairCenterX = pixelX;
+            const bot1X = Math.max(70, Math.min(worldW - 70 - dist, pairCenterX - dist / 2));
+            const bot2X = bot1X + dist;
+            const pairVx = (Math.random() > 0.5 ? 1 : -1) * (cfg.moveSpeed || 24);
+
+            const bot1 = this.createRobotElement(idx * 2 + 1, rCfg.botType, "linked", bot1X, pixelY, cfg.moveSpeed, "LINKED #1");
+            const bot2 = this.createRobotElement(idx * 2 + 2, rCfg.botType2 || rCfg.botType, "linked", bot2X, pixelY, cfg.moveSpeed, "LINKED #2");
+            bot1.vx = pairVx;
+            bot2.vx = pairVx;
+
+            // Energy Link Cable between bot1 and bot2
+            const cableEl = document.createElement("div");
+            cableEl.className = "boss-tangled-cable boss-linked-cable";
+            cableEl.style.top = `${pixelY}px`;
+            cableEl.style.left = `${bot1X}px`;
+            cableEl.style.width = `${dist}px`;
+            cableEl.innerHTML = `<span class="boss-tangled-badge boss-linked-badge">🔗 UNLINK</span>`;
+            this.world.appendChild(cableEl);
+
+            const pairData = {
+              bot1,
+              bot2,
+              botA: bot1,
+              botB: bot2,
+              cableEl,
+              dist,
+              y: pixelY,
+              x: bot1X,
+              vx: pairVx,
+              minX: 70,
+              maxX: Math.max(70, worldW - 70 - dist),
+              unlinked: false,
+              untangled: false
+            };
+            bot1.linkedPair = pairData;
+            bot2.linkedPair = pairData;
+            bot1.tangledPair = pairData;
+            bot2.tangledPair = pairData;
+            this.pairs.push(pairData);
+
+            cableEl.addEventListener("contextmenu", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.openContextMenu(e, "linked", pairData);
+            });
+
+            this.robots.push(bot1, bot2);
+          } else {
+            // Single Robot (Infected, Locked, or Friendly Decoy)
+            if (rCfg.type !== "friendly") nonFriendlyCount++;
+            const badgeLabel = rCfg.type === "friendly" ? "FRIENDLY" : (rCfg.type === "locked" ? "LOCKED" : "INFECTED");
+            const bot = this.createRobotElement(idx + 1, rCfg.botType, rCfg.type, pixelX, pixelY, cfg.moveSpeed, badgeLabel);
+            this.robots.push(bot);
+          }
+        });
+
+        this.robotsTotal = nonFriendlyCount;
+        this.game.updateHUD();
+      }
+
+      createRobotElement(id, botType, stateType, x, y, speed, badgeText) {
+        const btn = document.createElement("button");
+        btn.className = `boss-robot-entity ${stateType}`;
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+        btn.setAttribute("data-robot-id", String(id));
+        btn.setAttribute("aria-label", `${stateType} robot`);
+
+        const badge = document.createElement("div");
+        badge.className = `boss-robot-badge ${stateType}`;
+        badge.textContent = badgeText;
+
+        const isRestored = stateType === "friendly";
+        const img = document.createElement("img");
+        img.className = "boss-robot-img";
+        img.src = `../ART/robots/hacked-restored/${botType}-${isRestored ? "restored" : "hacked"}.png`;
+        img.alt = "Robot";
+        img.draggable = false;
+
+        const hint = document.createElement("div");
+        hint.className = "boss-robot-hint";
+        hint.textContent = (stateType === "locked") ? this.text("Right-click to release!", "みぎクリックで かいじょ！", "Clic destro per sbloccare!")
+          : ((stateType === "tangled" || stateType === "linked") ? this.text("Right-click to unlink!", "みぎクリックで リンクを かいじょ！", "Clic destro per scollegare!")
+          : (stateType === "friendly" ? this.text("Friendly unit!", "みかただよ！", "Unità amica!")
+          : this.text("Double-click to restore!", "ダブルクリックで なおそう！", "Doppio clic per riparare!")));
+
+        btn.append(badge, img, hint);
+
+        // Cyber Lock Padlock Overlay
+        let lockOverlay = null;
+        if (stateType === "locked") {
+          lockOverlay = document.createElement("div");
+          lockOverlay.className = "boss-lock-overlay";
+          lockOverlay.innerHTML = `<span class="boss-lock-icon">🔒</span>`;
+          btn.appendChild(lockOverlay);
+        }
+
+        this.world.appendChild(btn);
+
+        const worldW = this.viewport.clientWidth || 940;
+        const botData = {
+          id,
+          botType,
+          state: stateType, // 'infected', 'locked', 'tangled', 'friendly', 'restored'
+          element: btn,
+          badge,
+          img,
+          hint,
+          lockOverlay,
+          x,
+          y,
+          vx: (Math.random() > 0.5 ? 1 : -1) * (speed || 20),
+          minX: Math.max(60, x - 160),
+          maxX: Math.min(worldW - 60, x + 160),
+          restored: stateType === "friendly",
+          friendly: stateType === "friendly",
+          lastClickTime: 0
+        };
+
+        // Minimap Blip
+        if (this.minimapBlipsContainer) {
+          const blip = document.createElement("div");
+          blip.className = `track-minimap-blip ${stateType === "friendly" ? "restored" : "infected"}`;
+          blip.title = `Robot ${id} (${stateType})`;
+          const currentCfg = this.waves[this.currentWave - 1] || this.waves[0];
+          blip.style.top = `${Math.max(3, Math.min(97, (y / currentCfg.worldHeight) * 100))}%`;
+          this.minimapBlipsContainer.appendChild(blip);
+          botData.minimapBlip = blip;
+        }
+
+        // Single click handler
+        btn.addEventListener("click", (e) => {
+          const now = performance.now();
+          if (now - botData.lastClickTime < 380) return;
+          botData.lastClickTime = now;
+          this.handleRobotSingleClick(botData);
+        });
+
+        // Double click handler
+        btn.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.handleRobotDoubleClick(botData, e.clientX, e.clientY);
+        });
+
+        // Context menu handler
+        btn.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.handleRobotContextMenu(botData, e);
+        });
+
+        return botData;
+      }
+
+      handleRobotSingleClick(bot) {
+        this.singleClicks++;
+        if (this.game.audioManager && typeof this.game.audioManager.playKeyClick === "function") {
+          this.game.audioManager.playKeyClick();
+        }
+        bot.element.classList.remove("single-clicked");
+        void bot.element.offsetWidth; // trigger reflow
+        bot.element.classList.add("single-clicked");
+
+        bot.hint.classList.add("visible");
+        clearTimeout(bot.hintTimeout);
+        bot.hintTimeout = setTimeout(() => {
+          if (bot.hint) bot.hint.classList.remove("visible");
+        }, 1400);
+      }
+
+      handleRobotDoubleClick(bot, clientX, clientY) {
+        this.doubleClicks++;
+
+        if (bot.friendly) {
+          this.showHarmlessDecoyFeedback(bot);
+          return;
+        }
+
+        if (bot.state === "locked") {
+          this.handleRobotSingleClick(bot);
+          this.showCoachToast(this.text("Restraint active! RIGHT-CLICK to RELEASE first.", "ロック中！ 先にみぎクリックで かいじょしよう。", "Bloccato! Fai prima clic DESTRO su RELEASE."));
+          if (this.game.audioManager && typeof this.game.audioManager.playWrongKey === "function") {
+            this.game.audioManager.playWrongKey();
+          }
+          return;
+        }
+
+        if (bot.state === "tangled" || bot.state === "linked") {
+          this.handleRobotSingleClick(bot);
+          this.showCoachToast(this.text("Robots linked! RIGHT-CLICK either robot to UNLINK first.", "リンクしているよ！ さきに みぎクリックで リンクを かいじょしよう！", "Robot collegati! Fai prima clic DESTRO per SCOLLEGARE."));
+          if (this.game.audioManager && typeof this.game.audioManager.playWrongKey === "function") {
+            this.game.audioManager.playWrongKey();
+          }
+          return;
+        }
+
+        if (bot.state === "infected" && !bot.restored) {
+          this.restoreRobot(bot, clientX, clientY);
+        }
+      }
+
+      handleRobotContextMenu(bot, e) {
+        this.rightClicks++;
+        if (bot.state === "locked") {
+          this.openContextMenu(e, "locked", bot);
+        } else if ((bot.state === "tangled" || bot.state === "linked") && (bot.linkedPair || bot.tangledPair)) {
+          this.openContextMenu(e, "linked", bot.linkedPair || bot.tangledPair);
+        } else if (bot.state === "infected" && !bot.restored) {
+          this.showCoachToast(this.text("Robot unlocked! DOUBLE-CLICK with LEFT button to restore.", "かいじょずみ！ ひだりボタンで ダブルクリックしよう！", "Robot sbloccato! Fai DOPPIO CLIC col tasto SINISTRO per ripararlo."));
+        }
+      }
+
+      showHarmlessDecoyFeedback(bot) {
+        if (this.game.audioManager && typeof this.game.audioManager.playKeyClick === "function") {
+          this.game.audioManager.playKeyClick();
+        }
+        bot.element.classList.remove("single-clicked");
+        void bot.element.offsetWidth;
+        bot.element.classList.add("single-clicked");
+        if (bot.hint) {
+          bot.hint.textContent = this.text("Already secure!", "あんぜんだよ！", "Già sicuro!");
+          bot.hint.classList.add("visible");
+          clearTimeout(bot.hintTimeout);
+          bot.hintTimeout = setTimeout(() => {
+            if (bot.hint) bot.hint.classList.remove("visible");
+          }, 1400);
+        }
+        this.showCoachToast(this.text("Already secure! Friendly unit.", "あんぜん！ みかたのロボットだよ。", "Già sicuro! È un'unità amica."));
+      }
+
+      restoreRobot(bot, clientX, clientY) {
+        if (bot.restored) return;
+        bot.restored = true;
+        bot.state = "restored";
+
+        bot.element.classList.remove("infected", "single-clicked");
+        bot.element.classList.add("restored", "restored-anim");
+
+        bot.badge.className = "boss-robot-badge restored";
+        bot.badge.textContent = this.text("RESTORED!", "あんぜん！", "RIPARATO!");
+        bot.img.src = `../ART/robots/hacked-restored/${bot.botType}-restored.png`;
+        if (bot.hint) bot.hint.classList.remove("visible");
+
+        if (bot.minimapBlip) {
+          bot.minimapBlip.classList.remove("infected");
+          bot.minimapBlip.classList.add("restored");
+        }
+
+        // Fire Circuit Lightning from Base to Robot
+        const baseX = (this.viewport.clientWidth || 940) / 2;
+        this.triggerCircuitSnap(baseX, this.baseY, bot.x, bot.y);
+
+        // Sound effects
+        if (this.game.audioManager) {
+          if (typeof this.game.audioManager.playCircuitSnap === "function") this.game.audioManager.playCircuitSnap();
+          if (typeof this.game.audioManager.playRestoreChime === "function") this.game.audioManager.playRestoreChime();
+        }
+
+        this.robotsRestored++;
+        this.game.score += 150;
+        this.checkpoints.restoredInfected = true;
+        this.updateChecklistUI();
+        this.game.updateHUD();
+
+        this.checkWaveProgress();
+      }
+
+      bindGateEvents(gate) {
+        // Drag-to-select on Access Key
+        gate.sourceCodeEl.addEventListener("mouseup", (e) => {
+          if (e.button !== 0) return;
+          const sel = window.getSelection();
+          if (sel && sel.toString().trim() === gate.key) {
+            this.textSelections++;
+            this.checkpoints.selectedCode = true;
+            this.updateChecklistUI();
+            this.updateGateMiniChecklist(gate, "select");
+          }
+        });
+
+        // Context Menu on Access Key
+        gate.sourceCodeEl.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const sel = window.getSelection();
+          const selectedText = sel ? sel.toString().trim() : "";
+          if (selectedText === gate.key) {
+            this.openContextMenu(e, "key_source", { gate, key: gate.key });
+          } else {
+            this.showCoachToast(this.text("Drag across the key with LEFT button first to select it!", "ひだりボタンで ドラッグして キーを えらんでね！", "Trascina prima col tasto sinistro sul codice per selezionarlo!"));
+          }
+        });
+
+        // Destination Input Field Focus & Context Menu
+        gate.destInputEl.addEventListener("focus", () => {
+          this.updateGateMiniChecklist(gate, "focus");
+        });
+        gate.destInputEl.addEventListener("click", () => {
+          gate.destInputEl.focus();
+          this.updateGateMiniChecklist(gate, "focus");
+        });
+
+        gate.destInputEl.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.openContextMenu(e, "key_dest", { gate, input: gate.destInputEl });
+        });
+      }
+
+      bindPrimaryRelayEvents(relay) {
+        relay.sourceCodeEl.addEventListener("mouseup", (e) => {
+          if (e.button !== 0) return;
+          const sel = window.getSelection();
+          if (sel && sel.toString().trim() === relay.key) {
+            this.textSelections++;
+            this.checkpoints.selectedCode = true;
+            this.updateChecklistUI();
+            this.updateGateMiniChecklist(relay, "select");
+          }
+        });
+
+        relay.sourceCodeEl.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const sel = window.getSelection();
+          const selectedText = sel ? sel.toString().trim() : "";
+          if (selectedText === relay.key) {
+            this.openContextMenu(e, "key_source", { gate: relay, key: relay.key });
+          } else {
+            this.showCoachToast(this.text("Drag across the MASTER-CORE key to select it!", "MASTER-CORE を ドラッグして えらんでね！", "Trascina su MASTER-CORE per selezionarlo!"));
+          }
+        });
+
+        relay.destInputEl.addEventListener("focus", () => {
+          this.updateGateMiniChecklist(relay, "focus");
+        });
+        relay.destInputEl.addEventListener("click", () => {
+          relay.destInputEl.focus();
+          this.updateGateMiniChecklist(relay, "focus");
+        });
+
+        relay.destInputEl.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.openContextMenu(e, "primary_dest", { gate: relay, input: relay.destInputEl });
+        });
+
+        // Double-click to restore Primary Relay once armed
+        relay.element.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (relay.armed && !relay.restored) {
+            this.restorePrimaryRelay(relay);
+          } else if (!relay.armed) {
+            this.showCoachToast(this.text("Copy & paste the MASTER-CORE key into the relay first!", "さきに MASTER-CORE を コピー＆ペーストしよう！", "Copia e incolla prima la chiave MASTER-CORE!"));
+          }
+        });
+      }
+
+      updateGateMiniChecklist(gate, step) {
+        if (!gate || !gate.steps) return;
+        gate.steps[step] = true;
+        const mini = gate.checklistEl;
+        if (!mini) return;
+
+        const setStep = (className, done) => {
+          const el = mini.querySelector(`.${className}`);
+          if (el) {
+            el.classList.toggle("done", done);
+            el.classList.toggle("checked", done);
+            el.textContent = (done ? "✓ " : "□ ") + el.textContent.slice(2);
+          }
+        };
+
+        if (step === "select") setStep("step-select", true);
+        if (step === "copy") setStep("step-copy", true);
+        if (step === "focus") setStep("step-focus", true);
+        if (step === "paste") setStep("step-paste", true);
+        if (step === "unlock") setStep("step-unlock", true);
+      }
+
+      openContextMenu(e, type, data) {
+        this.closeContextMenu();
+
+        const menu = document.createElement("div");
+        menu.className = "boss-context-menu";
+        const clientX = Math.min(window.innerWidth - 170, Math.max(10, e.clientX));
+        const clientY = Math.min(window.innerHeight - 150, Math.max(10, e.clientY));
+        menu.style.left = `${clientX}px`;
+        menu.style.top = `${clientY}px`;
+
+        if (type === "locked") {
+          // Locked Robot Menu: RELEASE, SCAN, INFO
+          const releaseBtn = document.createElement("button");
+          releaseBtn.className = "boss-context-btn";
+          releaseBtn.innerHTML = `<span>🔓 RELEASE</span><small>${this.text("Left-click to free robot", "ひだりクリックで かいじょ", "Clic sinistro per liberare")}</small>`;
+          releaseBtn.addEventListener("click", () => {
+            this.releaseLock(data);
+            this.closeContextMenu();
+          });
+
+          const scanBtn = document.createElement("button");
+          scanBtn.className = "boss-context-btn";
+          scanBtn.innerHTML = `<span>🔍 SCAN</span><small>${this.text("Cyber restraint active", "ロックしゅうはすう けんしゅつ", "Blocco ostile attivo")}</small>`;
+          scanBtn.addEventListener("click", () => {
+            this.showCoachToast(this.text("Scan complete: Release restraint to restore.", "スキャンかんりょう： ロックを かいじょしよう。", "Scansione: Sblocca per riparare."));
+            this.closeContextMenu();
+          });
+
+          menu.append(releaseBtn, scanBtn);
+        } else if (type === "tangled" || type === "linked") {
+          // Linked Robot Pair Menu: UNLINK, ANALYZE
+          const unlinkBtn = document.createElement("button");
+          unlinkBtn.className = "boss-context-btn";
+          unlinkBtn.innerHTML = `<span>🔗 UNLINK</span><small>${this.text("Left-click to unlink robots", "ひだりクリックで リンクを かいじょ", "Clic sinistro per scollegare")}</small>`;
+          unlinkBtn.addEventListener("click", () => {
+            this.unlinkPair(data);
+            this.closeContextMenu();
+          });
+
+          const analyzeBtn = document.createElement("button");
+          analyzeBtn.className = "boss-context-btn";
+          analyzeBtn.innerHTML = `<span>🔍 ANALYZE LINK</span><small>${this.text("Energy link active", "エネルギー リンク", "Collegamento attivo")}</small>`;
+          analyzeBtn.addEventListener("click", () => {
+            this.showCoachToast(this.text("Energy link active: Left-click UNLINK to separate.", "エネルギーリンク中： UNLINK を ひだりクリックしよう。", "Collegamento attivo: Clic sinistro su UNLINK."));
+            this.closeContextMenu();
+          });
+
+          menu.append(unlinkBtn, analyzeBtn);
+        } else if (type === "key_source") {
+          // Key Source Menu: COPY, SELECT ALL
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "boss-context-btn";
+          copyBtn.innerHTML = `<span>📋 COPY</span><small>${this.text("Left-click to copy key", "ひだりクリックで コピー", "Clic sinistro per copiare")}</small>`;
+          copyBtn.addEventListener("click", () => {
+            this.clipboard = data.key;
+            this.copies++;
+            this.checkpoints.copiedCode = true;
+            this.updateChecklistUI();
+            this.updateGateMiniChecklist(data.gate, "copy");
+            if (this.game.audioManager && typeof this.game.audioManager.playKeyClick === "function") {
+              this.game.audioManager.playKeyClick();
+            }
+            this.showCoachToast(this.text(`Copied "${data.key}"! Now click and paste into destination.`, `「${data.key}」を コピーしたよ！ にゅうりょくエリアを クリックして はりつけよう。`, `Copiato "${data.key}"! Ora clicca e incolla nella destinazione.`));
+            this.closeContextMenu();
+          });
+
+          const selectAllBtn = document.createElement("button");
+          selectAllBtn.className = "boss-context-btn";
+          selectAllBtn.innerHTML = `<span>Select All</span><small>${this.text("Highlight access key", "キーを ぜんせんたく", "Evidenzia codice")}</small>`;
+          selectAllBtn.addEventListener("click", () => {
+            const range = document.createRange();
+            range.selectNodeContents(data.gate.sourceCodeEl);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            this.updateGateMiniChecklist(data.gate, "select");
+            this.closeContextMenu();
+          });
+
+          menu.append(copyBtn, selectAllBtn);
+        } else if (type === "key_dest" || type === "primary_dest") {
+          // Key Destination Menu: PASTE, CLEAR
+          const pasteBtn = document.createElement("button");
+          pasteBtn.className = "boss-context-btn";
+          pasteBtn.innerHTML = `<span>📥 PASTE</span><small>${this.text("Left-click to paste key", "ひだりクリックで はりつけ", "Clic sinistro per incollare")}</small>`;
+          pasteBtn.addEventListener("click", () => {
+            if (!this.clipboard) {
+              this.showCoachToast(this.text("Copy the access key first!", "さきに アクセスキーを コピーしよう！", "Copia prima la chiave di accesso!"));
+              this.closeContextMenu();
+              return;
+            }
+
+            data.input.value = this.clipboard;
+            this.pastes++;
+            this.checkpoints.pastedCode = true;
+            this.updateChecklistUI();
+            this.updateGateMiniChecklist(data.gate, "paste");
+
+            if (type === "primary_dest") {
+              this.verifyPrimaryRelayKey(data.gate, this.clipboard);
+            } else {
+              this.verifyGateKey(data.gate, this.clipboard);
+            }
+
+            this.closeContextMenu();
+          });
+
+          const clearBtn = document.createElement("button");
+          clearBtn.className = "boss-context-btn";
+          clearBtn.innerHTML = `<span>✖ CLEAR</span><small>${this.text("Clear field", "クリア", "Pulisci")}</small>`;
+          clearBtn.addEventListener("click", () => {
+            data.input.value = "";
+            data.input.classList.remove("accepted", "invalid");
+            this.closeContextMenu();
+          });
+
+          menu.append(pasteBtn, clearBtn);
+        }
+
+        document.body.appendChild(menu);
+        this.activeContextMenu = menu;
+      }
+
+      closeContextMenu() {
+        if (this.activeContextMenu) {
+          this.activeContextMenu.remove();
+          this.activeContextMenu = null;
+        }
+      }
+
+      releaseLock(bot) {
+        if (!bot || bot.state !== "locked") return;
+        bot.state = "infected";
+        if (bot.lockOverlay) {
+          bot.lockOverlay.remove();
+          bot.lockOverlay = null;
+        }
+        bot.element.classList.remove("locked");
+        bot.element.classList.add("infected");
+        bot.badge.className = "boss-robot-badge infected";
+        bot.badge.textContent = "INFECTED";
+        bot.hint.textContent = this.text("Now DOUBLE-CLICK to restore!", "ダブルクリックで なおそう！", "Ora DOPPIO CLIC per riparare!");
+
+        this.releases++;
+        this.checkpoints.releasedLocked = true;
+        this.updateChecklistUI();
+
+        if (this.game.audioManager && typeof this.game.audioManager.playCircuitSnap === "function") {
+          this.game.audioManager.playCircuitSnap();
+        }
+        this.showCoachToast(this.text("Security lock released! Now DOUBLE-CLICK to restore.", "ロックを かいじょしたよ！ ダブルクリックで なおそう！", "Blocco rimosso! Fai DOPPIO CLIC per riparare."));
+      }
+
+      unlinkPair(pair) {
+        if (!pair || pair.unlinked || pair.untangled) return;
+        pair.unlinked = true;
+        pair.untangled = true;
+
+        if (pair.cableEl) {
+          pair.cableEl.remove();
+          pair.cableEl = null;
+        }
+
+        [pair.bot1, pair.bot2].forEach((bot, i) => {
+          bot.state = "infected";
+          bot.element.classList.remove("tangled", "linked");
+          bot.element.classList.add("infected");
+          bot.badge.className = "boss-robot-badge infected";
+          bot.badge.textContent = "INFECTED";
+          bot.hint.textContent = this.text("Double-click to restore!", "ダブルクリックで なおそう！", "Doppio clic per riparare!");
+          bot.vx = (i === 0 ? -1 : 1) * Math.abs(bot.vx || 22);
+        });
+
+        this.untangles++;
+        this.checkpoints.unlinkedPair = true;
+        this.checkpoints.untangledPair = true;
+        this.updateChecklistUI();
+
+        if (this.game.audioManager && typeof this.game.audioManager.playHeavyImpact === "function") {
+          this.game.audioManager.playHeavyImpact();
+        }
+        if (this.game.audioManager && typeof this.game.audioManager.playCircuitSnap === "function") {
+          this.game.audioManager.playCircuitSnap();
+        }
+
+        this.showCoachToast(this.text("Robots unlinked! Now DOUBLE-CLICK each robot to restore both.", "リンクを かいじょしたよ！ ふたつのロボットを それぞれ ダブルクリックしよう！", "Robot scollegati! Fai DOPPIO CLIC su ciascuno per ripararli entrambi."));
+      }
+
+      untanglePair(pair) {
+        return this.unlinkPair(pair);
+      }
+
+      verifyGateKey(gate, value) {
+        if (value === gate.key) {
+          gate.destInputEl.classList.remove("invalid");
+          gate.destInputEl.classList.add("accepted");
+          this.unlockGate(gate);
+        } else {
+          gate.destInputEl.classList.remove("accepted");
+          gate.destInputEl.classList.add("invalid");
+          if (this.game.audioManager && typeof this.game.audioManager.playWrongKey === "function") {
+            this.game.audioManager.playWrongKey();
+          }
+          this.showCoachToast(this.text("ACCESS KEY INVALID. Check the key and retry.", "アクセスキーが ちがうよ。 たしかめて もういちど はりつけよう。", "CHIAVE NON VALIDA. Controlla e riprova."));
+        }
+      }
+
+      unlockGate(gate) {
+        if (gate.unlocked) return;
+        gate.unlocked = true;
+        this.gatesOpened++;
+        this.checkpoints.gateUnlocked = true;
+        this.updateChecklistUI();
+        this.updateGateMiniChecklist(gate, "unlock");
+
+        gate.element.classList.add("unlocked");
+        const barrier = gate.element.querySelector(".boss-gate-barrier");
+        if (barrier) barrier.textContent = "✔ ACCESS GRANTED · SECTOR UNLOCKED";
+
+        // Sound cues
+        if (this.game.audioManager) {
+          if (typeof this.game.audioManager.playSafeArrival === "function") this.game.audioManager.playSafeArrival();
+          if (typeof this.game.audioManager.playCircuitSnap === "function") this.game.audioManager.playCircuitSnap();
+        }
+
+        // Fire Restoration Lightning from Base up to Gate
+        const baseX = (this.viewport.clientWidth || 940) / 2;
+        this.triggerCircuitSnap(baseX, this.baseY, baseX, gate.pixelY);
+
+        this.game.score += 250;
+        this.game.updateHUD();
+
+        setTimeout(() => {
+          if (gate.checklistEl) gate.checklistEl.classList.add("collapsed");
+        }, 1200);
+
+        this.showCoachToast(this.text("GATE UNLOCKED! Scroll upward to continue.", "ゲートかいじょ！ うえへ スクロールして すすもう！", "GATE SBLOCCATO! Scorri in alto per avanzare."));
+
+        this.checkWaveProgress();
+      }
+
+      verifyPrimaryRelayKey(relay, value) {
+        if (value === relay.key) {
+          relay.destInputEl.classList.remove("invalid");
+          relay.destInputEl.classList.add("accepted");
+          relay.armed = true;
+          relay.element.classList.add("armed");
+          this.updateGateMiniChecklist(relay, "unlock");
+
+          if (this.game.audioManager && typeof this.game.audioManager.playSafeArrival === "function") {
+            this.game.audioManager.playSafeArrival();
+          }
+
+          // Fire Restoration Lightning to Primary Relay
+          const baseX = (this.viewport.clientWidth || 940) / 2;
+          this.triggerCircuitSnap(baseX, this.baseY, baseX, relay.pixelY);
+
+          this.showCoachToast(this.text("CORE ARMED! Now DOUBLE-CLICK the Primary Relay to finish!", "コアきどう！ プライマリ リレーを ダブルクリックしよう！", "NUCLEO ARMATO! Fai DOPPIO CLIC sul Relay Primario per completare!"));
+        } else {
+          relay.destInputEl.classList.remove("accepted");
+          relay.destInputEl.classList.add("invalid");
+          if (this.game.audioManager && typeof this.game.audioManager.playWrongKey === "function") {
+            this.game.audioManager.playWrongKey();
+          }
+          this.showCoachToast(this.text("INVALID MASTER CODE. Check the key and retry.", "マスターコードが ちがうよ。 たしかめてね。", "CODICE MASTER NON VALIDO."));
+        }
+      }
+
+      restorePrimaryRelay(relay) {
+        if (relay.restored) return;
+        relay.restored = true;
+        this.primaryRelayRestored = true;
+        this.checkpoints.primaryRelayRestored = true;
+        this.updateChecklistUI();
+
+        // Massive full-screen lightning snap from Base all the way up to Primary Relay!
+        const baseX = (this.viewport.clientWidth || 940) / 2;
+        this.triggerCircuitSnap(baseX, this.baseY, baseX, relay.pixelY, "#ffffff", 8);
+        setTimeout(() => this.triggerCircuitSnap(baseX - 100, this.baseY, baseX, relay.pixelY, "#00f0ff", 5), 100);
+        setTimeout(() => this.triggerCircuitSnap(baseX + 100, this.baseY, baseX, relay.pixelY, "#38bdf8", 5), 200);
+
+        if (this.game.audioManager) {
+          if (typeof this.game.audioManager.playVictory === "function") this.game.audioManager.playVictory();
+          if (typeof this.game.audioManager.playCircuitSnap === "function") this.game.audioManager.playCircuitSnap();
+        }
+
+        this.game.score += 1000;
+        this.game.updateHUD();
+
+        this.showCoachToast(this.text("PRIMARY RELAY RESTORED! NETWORK FULLY ONLINE!", "プライマリ リレー ふっきゅう！ ネットワークが かんぜん ふっかつ！", "RELAY PRIMARIO RIPRISTINATO! RETE ONLINE!"));
+
+        setTimeout(() => {
+          this.game.endGame(true);
+        }, 1500);
+      }
+
+      triggerCircuitSnap(x1, y1, x2, y2, color = "#00f0ff", strokeWidth = 4.5) {
+        if (!this.circuitLayer) return;
+
+        // Base lightning activation animation
+        if (this.baseEl) {
+          this.baseEl.classList.add("firing-lightning");
+          clearTimeout(this.baseLightTimeout);
+          this.baseLightTimeout = setTimeout(() => {
+            if (this.baseEl) this.baseEl.classList.remove("firing-lightning");
+          }, 400);
+        }
+
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.setAttribute("class", "circuit-flash-burst");
+        group.style.opacity = "1";
+        group.style.transition = "opacity 0.3s ease-out";
+
+        const dy = y2 - y1;
+        const dx = x2 - x1;
+        const stepDir = dy < 0 ? -1 : 1;
+
+        // Stepped orthogonal main lightning trunk
+        const midY1 = y1 + dy * 0.28;
+        const midX1 = x1 + dx * 0.35 + (Math.random() * 30 - 15);
+        const midY2 = y1 + dy * 0.58;
+        const midX2 = x1 + dx * 0.72 + (Math.random() * 30 - 15);
+        const midY3 = y1 + dy * 0.85;
+
+        const mainD = `M ${x1} ${y1} L ${x1} ${midY1} L ${midX1} ${midY1} L ${midX1} ${midY2} L ${midX2} ${midY2} L ${midX2} ${midY3} L ${x2} ${midY3} L ${x2} ${y2}`;
+
+        // 1. Pronounced outer glowing aura
+        const auraPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        auraPath.setAttribute("d", mainD);
+        auraPath.setAttribute("fill", "none");
+        auraPath.setAttribute("stroke", color);
+        auraPath.setAttribute("stroke-width", String(strokeWidth * 2.6));
+        auraPath.setAttribute("stroke-linecap", "round");
+        auraPath.setAttribute("stroke-linejoin", "round");
+        auraPath.setAttribute("filter", "drop-shadow(0 0 14px #00f0ff) drop-shadow(0 0 28px rgba(0, 240, 255, 0.9))");
+        auraPath.setAttribute("opacity", "0.85");
+
+        // 2. High-intensity inner white/cyan core
+        const corePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        corePath.setAttribute("d", mainD);
+        corePath.setAttribute("fill", "none");
+        corePath.setAttribute("stroke", "#ffffff");
+        corePath.setAttribute("stroke-width", String(Math.max(2.5, strokeWidth * 0.9)));
+        corePath.setAttribute("stroke-linecap", "round");
+        corePath.setAttribute("stroke-linejoin", "round");
+        corePath.setAttribute("filter", "drop-shadow(0 0 8px #ffffff)");
+
+        group.appendChild(auraPath);
+        group.appendChild(corePath);
+
+        // Helper to add a circuit branch with nodes
+        const addCircuitBranch = (pathD, nodePoints = []) => {
+          const bAura = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          bAura.setAttribute("d", pathD);
+          bAura.setAttribute("fill", "none");
+          bAura.setAttribute("stroke", color);
+          bAura.setAttribute("stroke-width", String(strokeWidth * 1.5));
+          bAura.setAttribute("stroke-linecap", "square");
+          bAura.setAttribute("stroke-linejoin", "miter");
+          bAura.setAttribute("filter", "drop-shadow(0 0 10px #00f0ff)");
+          bAura.setAttribute("opacity", "0.75");
+
+          const bCore = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          bCore.setAttribute("d", pathD);
+          bCore.setAttribute("fill", "none");
+          bCore.setAttribute("stroke", "#e0f2fe");
+          bCore.setAttribute("stroke-width", String(Math.max(1.5, strokeWidth * 0.55)));
+          bCore.setAttribute("stroke-linecap", "square");
+
+          group.appendChild(bAura);
+          group.appendChild(bCore);
+
+          nodePoints.forEach(pt => {
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", String(pt.x));
+            circle.setAttribute("cy", String(pt.y));
+            circle.setAttribute("r", "4");
+            circle.setAttribute("fill", "#00f0ff");
+            circle.setAttribute("stroke", "#ffffff");
+            circle.setAttribute("stroke-width", "1.5");
+            circle.setAttribute("filter", "drop-shadow(0 0 6px #00f0ff)");
+            group.appendChild(circle);
+          });
+        };
+
+        // 3. Bifurcating Branch 1 (Splits to the Left with secondary bifurcation)
+        const b1X = midX1;
+        const b1Y = midY2;
+        const b1ArmX = b1X - 65;
+        const b1ArmY = b1Y + stepDir * 40;
+        const b1SubX = b1ArmX - 40;
+        const b1SubY = b1ArmY + stepDir * 30;
+        const branch1D = `M ${b1X} ${b1Y} L ${b1ArmX} ${b1Y} L ${b1ArmX} ${b1ArmY} L ${b1SubX} ${b1ArmY} M ${b1ArmX} ${b1ArmY} L ${b1ArmX} ${b1SubY}`;
+        addCircuitBranch(branch1D, [
+          { x: b1SubX, y: b1ArmY },
+          { x: b1ArmX, y: b1SubY }
+        ]);
+
+        // 4. Bifurcating Branch 2 (Splits to the Right with secondary bifurcation)
+        const b2X = midX2;
+        const b2Y = midY3;
+        const b2ArmX = b2X + 70;
+        const b2ArmY = b2Y + stepDir * 45;
+        const b2SubX = b2ArmX + 45;
+        const b2SubY = b2ArmY + stepDir * 35;
+        const branch2D = `M ${b2X} ${b2Y} L ${b2ArmX} ${b2Y} L ${b2ArmX} ${b2ArmY} L ${b2SubX} ${b2ArmY} M ${b2ArmX} ${b2ArmY} L ${b2ArmX} ${b2SubY}`;
+        addCircuitBranch(branch2D, [
+          { x: b2SubX, y: b2ArmY },
+          { x: b2ArmX, y: b2SubY }
+        ]);
+
+        // 5. Dual Circuit Fork flanking target
+        const forkLeftX = x2 - 38;
+        const forkRightX = x2 + 38;
+        const forkLeadY = y2 - stepDir * 24;
+        const forkD = `M ${x2} ${forkLeadY} L ${forkLeftX} ${forkLeadY} L ${forkLeftX} ${y2} M ${x2} ${forkLeadY} L ${forkRightX} ${forkLeadY} L ${forkRightX} ${y2}`;
+        addCircuitBranch(forkD, [
+          { x: forkLeftX, y: y2 },
+          { x: forkRightX, y: y2 }
+        ]);
+
+        // 6. Impact target shockwave ring
+        const shockRing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        shockRing.setAttribute("cx", String(x2));
+        shockRing.setAttribute("cy", String(y2));
+        shockRing.setAttribute("r", "28");
+        shockRing.setAttribute("fill", "none");
+        shockRing.setAttribute("stroke", "#00f0ff");
+        shockRing.setAttribute("stroke-width", "3");
+        shockRing.setAttribute("filter", "drop-shadow(0 0 14px #00f0ff)");
+        group.appendChild(shockRing);
+
+        const shockCore = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        shockCore.setAttribute("cx", String(x2));
+        shockCore.setAttribute("cy", String(y2));
+        shockCore.setAttribute("r", "12");
+        shockCore.setAttribute("fill", "rgba(0, 240, 255, 0.45)");
+        shockCore.setAttribute("stroke", "#ffffff");
+        shockCore.setAttribute("stroke-width", "2");
+        group.appendChild(shockCore);
+
+        this.circuitLayer.appendChild(group);
+
+        setTimeout(() => {
+          group.style.opacity = "0";
+          setTimeout(() => group.remove(), 320);
+        }, 180);
+      }
+
+      update(dt) {
+        if (!this.active) return;
+
+        // 1. Move active linked pairs in tandem
+        if (this.pairs && this.pairs.length > 0) {
+          this.pairs.forEach(pair => {
+            if (!pair.unlinked && !pair.untangled) {
+              pair.x += pair.vx * dt;
+              if (pair.x <= pair.minX) {
+                pair.x = pair.minX;
+                pair.vx = Math.abs(pair.vx);
+              } else if (pair.x >= pair.maxX) {
+                pair.x = pair.maxX;
+                pair.vx = -Math.abs(pair.vx);
+              }
+              pair.bot1.x = pair.x;
+              pair.bot2.x = pair.x + pair.dist;
+              pair.bot1.vx = pair.vx;
+              pair.bot2.vx = pair.vx;
+              pair.bot1.element.style.left = `${pair.bot1.x}px`;
+              pair.bot2.element.style.left = `${pair.bot2.x}px`;
+
+              if (pair.cableEl) {
+                pair.cableEl.style.left = `${pair.bot1.x}px`;
+                pair.cableEl.style.top = `${pair.y}px`;
+              }
+            }
+          });
+        }
+
+        // 2. Move other individual robots
+        this.robots.forEach(bot => {
+          if (bot.friendly || bot.restored || bot.state === "locked") return;
+          if ((bot.state === "linked" || bot.state === "tangled") && (bot.linkedPair || bot.tangledPair)) {
+            const p = bot.linkedPair || bot.tangledPair;
+            if (!p.unlinked && !p.untangled) return;
+          }
+
+          bot.x += bot.vx * dt;
+          if (bot.x <= bot.minX) {
+            bot.x = bot.minX;
+            bot.vx = Math.abs(bot.vx);
+          } else if (bot.x >= bot.maxX) {
+            bot.x = bot.maxX;
+            bot.vx = -Math.abs(bot.vx);
+          }
+          bot.element.style.left = `${bot.x}px`;
+        });
+      }
+
+      checkWaveProgress() {
+        const cfg = this.waves[this.currentWave - 1] || this.waves[0];
+        if (cfg.isBossWave) {
+          // Handled by Primary Relay interaction
+          return;
+        }
+
+        const allRobotsRestored = this.robotsRestored >= this.robotsTotal;
+        const allGatesUnlocked = this.gates.every(g => g.unlocked);
+
+        if (allRobotsRestored && allGatesUnlocked) {
+          if (this.waveAdvanceTriggered) return;
+          this.waveAdvanceTriggered = true;
+
+          if (this.game.audioManager && typeof this.game.audioManager.playSafeArrival === "function") {
+            this.game.audioManager.playSafeArrival();
+          }
+
+          const nextWave = this.currentWave + 1;
+          setTimeout(() => {
+            this.waveAdvanceTriggered = false;
+            this.startWave(nextWave);
+          }, 1400);
+        }
+      }
+
+      showCoachToast(msg) {
+        let toast = this.root.querySelector(".boss-coach-toast");
+        if (!toast) {
+          toast = document.createElement("div");
+          toast.className = "scroll-coach-toast boss-coach-toast";
+          this.root.appendChild(toast);
+        }
+        toast.innerHTML = `<span>🖱️</span> <span>${msg}</span>`;
+        toast.classList.remove("fade-out");
+
+        clearTimeout(this.toastTimeout);
+        this.toastTimeout = setTimeout(() => {
+          if (toast) toast.classList.add("fade-out");
+        }, 3200);
+      }
+
+      playWheelTick() {
+        try {
+          const am = this.game.audioManager;
+          if (!am || am.muted) return;
+          const ctx = am.ctx;
+          if (!ctx) return;
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(850, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.02);
+          gain.gain.setValueAtTime(0.035, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.022);
+        } catch (e) {}
+      }
+
+      startTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          if (this.game.state !== GAME_STATES.ACTIVE) return;
+          this.timerSec--;
+          this.updateHUD();
+
+          if (this.timerSec <= 0) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+            this.game.endGame(false);
+          }
+        }, 1000);
+      }
+
+      updateHUD() {
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (timerBadge) {
+          timerBadge.style.display = "inline-flex";
+          const sec = Math.max(0, Math.floor(this.timerSec));
+          const m = Math.floor(sec / 60);
+          const s = sec % 60;
+          const timeStr = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+
+          const timerVal = document.getElementById("hud-timer-value");
+          if (timerVal) {
+            timerVal.textContent = timeStr;
+          }
+          const timerText = document.getElementById("hud-timer-text");
+          if (timerText && !timerVal) {
+            timerText.textContent = `⏱️ ${timeStr}`;
+          }
+
+          if (sec <= 10) {
+            timerBadge.classList.remove("timer-warning");
+            timerBadge.classList.add("timer-critical");
+          } else if (sec <= 20) {
+            timerBadge.classList.remove("timer-critical");
+            timerBadge.classList.add("timer-warning");
+          } else {
+            timerBadge.classList.remove("timer-warning", "timer-critical");
+          }
+        }
+
+        const pipsContainer = document.getElementById("base-shield-pips");
+        if (pipsContainer) pipsContainer.innerHTML = "";
+        const numericEl = document.getElementById("base-shields-numeric");
+        if (numericEl) numericEl.textContent = "";
+
+        const dict = TRANSLATIONS[this.game.currentLanguage] || {};
+        const waveLabel = dict.wave || "WAVE";
+        const waveEl = document.getElementById("hud-wave-text");
+        const waveSub = document.getElementById("hud-wave-sub");
+        if (waveEl) waveEl.textContent = `LEVEL ${this.currentWave} / 4`;
+        if (waveSub) waveSub.textContent = `${waveLabel} ${this.currentWave} / 4`;
+
+        const scoreEl = document.getElementById("hud-score-text");
+        const scoreSub = document.getElementById("hud-score-sub");
+        const restoredLabel = dict.restored || "RESTORED";
+        if (scoreEl) scoreEl.textContent = `RESTORED: ${this.robotsRestored} / ${this.robotsTotal}`;
+        if (scoreSub) scoreSub.textContent = `${restoredLabel}: ${this.robotsRestored} / ${this.robotsTotal}`;
+      }
+
+      pause() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+        this.closeContextMenu();
+      }
+
+      resume() {
+        if (this.active && !this.timerInterval) {
+          this.startTimer();
+        }
+      }
+
+      clearRobotsAndGates() {
+        this.robots.forEach(r => {
+          if (r.element && r.element.parentNode) r.element.remove();
+        });
+        this.robots = [];
+
+        if (this.pairs) {
+          this.pairs.forEach(p => {
+            if (p.cableEl && p.cableEl.parentNode) p.cableEl.remove();
+          });
+          this.pairs = [];
+          this.tangledPairs = this.pairs;
+        }
+
+        this.gates.forEach(g => {
+          if (g.element && g.element.parentNode) g.element.remove();
+        });
+        this.gates = [];
+
+        if (this.primaryRelay && this.primaryRelay.element && this.primaryRelay.element.parentNode) {
+          this.primaryRelay.element.remove();
+          this.primaryRelay = null;
+        }
+      }
+
+      dispose() {
+        this.active = false;
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+        this.closeContextMenu();
+        this.clearRobotsAndGates();
+
+        if (this.viewport && this.onWheel) {
+          this.viewport.removeEventListener("wheel", this.onWheel);
+        }
+        if (this.viewport && this.onScroll) {
+          this.viewport.removeEventListener("scroll", this.onScroll);
+        }
+        if (this.onDocClick) document.removeEventListener("pointerdown", this.onDocClick);
+        if (this.onDocKey) document.removeEventListener("keydown", this.onDocKey);
+
+        if (this.root && this.root.parentNode) {
+          this.root.remove();
+          this.root = null;
+        }
+
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (timerBadge) {
+          timerBadge.style.display = "none";
+          timerBadge.classList.remove("timer-warning", "timer-critical");
+        }
+      }
+    }
+
     class GameEngine {
       constructor() {
         this.state = GAME_STATES.START;
@@ -5632,10 +9527,16 @@
           this.currentModeId = "reinforcements";
         } else if (paramMission === "3" || paramMode === "robot_override" || paramMode === "robotOverride") {
           this.currentModeId = "robot_override";
+        } else if (paramMode === "scroll_training" || paramMode === "scroll" || paramMode === "scrollTraining" || paramMission === "scroll") {
+          this.currentModeId = "scroll_training";
+        } else if (paramMission === "7" || paramMode === "mouse_boss" || paramMode === "mouse_boss_fight" || paramMode === "mouseBoss") {
+          this.currentModeId = "mouse_boss";
         } else {
           this.currentModeId = "base_defense";
         }
         this.currentMode = GAME_MODES[this.currentModeId] || GAME_MODES.base_defense;
+        this.scrollTrainingLevel = null;
+        this.mouseBossLevel = null;
 
         this.waveRobotsToSpawn = 0;
         this.waveRobotsSpawned = 0;
@@ -5669,6 +9570,9 @@
       }
 
       playGame() {
+        if (this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss") {
+          return this.startRun();
+        }
         if (this.selectedDifficulty === "veryEasy") {
           this.startTutorial(0, true);
         } else {
@@ -5687,6 +9591,20 @@
       }
 
       setMode(modeId, applyDisplay = true) {
+        if (this.scrollTrainingLevel) {
+          this.scrollTrainingLevel.dispose();
+          this.scrollTrainingLevel = null;
+        }
+        if (this.mouseBossLevel) {
+          this.mouseBossLevel.dispose();
+          this.mouseBossLevel = null;
+        }
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (timerBadge) {
+          timerBadge.style.display = "none";
+          timerBadge.classList.remove("timer-warning", "timer-critical");
+        }
+
         if (GAME_MODES[modeId]) {
           this.currentMode = GAME_MODES[modeId];
           this.currentModeId = this.currentMode.id;
@@ -5699,6 +9617,12 @@
             return;
           }
         }
+
+        const isScroll = this.currentModeId === "scroll_training";
+        const isMouseBoss = this.currentModeId === "mouse_boss";
+        document.body.classList.toggle("scroll-training-mode", isScroll);
+        document.body.classList.toggle("mouse-boss-mode", isMouseBoss);
+
         if (applyDisplay) {
           this.updateModeDisplay();
           this.updateHUD();
@@ -5706,7 +9630,7 @@
       }
 
       cycleNextMode() {
-        const order = ["base_defense", "reinforcements", "robot_override"];
+        const order = ["base_defense", "reinforcements", "robot_override", "scroll_training", "mouse_boss"];
         const nextIdx = (order.indexOf(this.currentModeId) + 1) % order.length;
         this.setMode(order[nextIdx]);
         if (this.state === GAME_STATES.ACTIVE || this.state === GAME_STATES.PAUSED) {
@@ -5731,13 +9655,13 @@
         const modeDisplay = document.getElementById("debug-mode-display");
         const modeBtn = document.getElementById("debug-mode-toggle");
         if (modeDisplay) modeDisplay.textContent = `Mission ${m.mission}: ${m.name}`;
-        if (modeBtn) modeBtn.textContent = `Mode: ${m.name}${window.trainingDebugUnlocked ? '' : ' 🔒'}`;
+        if (modeBtn) modeBtn.textContent = `Mode: ${m.name}`;
 
         // Ultra mode is available ONLY in Mission 1 (Base Defense) and Mission 2 (Reinforcements)
-        // Hidden and disabled in Mission 3 (Robot Override)
+        // Hidden and disabled in Mission 3 (Robot Override), Scroll Training, and Mouse Boss Fight
         const ultraBtn = document.querySelector(".diff-btn.diff-ultra");
         if (ultraBtn) {
-          if (this.currentModeId === "robot_override") {
+          if (this.currentModeId === "robot_override" || this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss") {
             ultraBtn.style.display = "none";
             if (this.selectedDifficulty === "ultra") {
               this.selectedDifficulty = "normal";
@@ -5915,13 +9839,7 @@
         // Mode switch button in footer
         const debugModeBtn = document.getElementById("debug-mode-toggle");
         if (debugModeBtn) {
-          debugModeBtn.addEventListener("click", () => {
-            if (window.trainingDebugUnlocked) this.cycleNextMode();
-            else {
-              debugModeBtn.title = "Teacher access required";
-              if (window.parent !== window) window.parent.postMessage({ type: "robot-debug-locked" }, "*");
-            }
-          });
+          debugModeBtn.addEventListener("click", () => this.cycleNextMode());
         }
 
         // UI Buttons
@@ -6088,6 +10006,52 @@
         this.hideAllScreens();
         this.updateHUD();
 
+        if (this.currentModeId === "scroll_training") {
+          this.totalWaves = 3;
+          this.currentWave = 1;
+          this.score = 0;
+          this.robotsDestroyed = 0;
+          this.robotsRestored = 0;
+          this.shields = 6;
+          this.maxShields = 6;
+          this.runStartTime = performance.now();
+          this.activePlayDurationSec = 0;
+          this.runId = `run-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+          for (let s = 1; s <= 3; s++) {
+            const starEl = document.getElementById(`res-star-${s}`);
+            if (starEl) starEl.classList.remove("earned");
+          }
+
+          this.startCountdown(() => {
+            this.startWave(1);
+          });
+          return;
+        }
+
+        if (this.currentModeId === "mouse_boss") {
+          this.totalWaves = 4;
+          this.currentWave = 1;
+          this.score = 0;
+          this.robotsDestroyed = 0;
+          this.robotsRestored = 0;
+          this.shields = 6;
+          this.maxShields = 6;
+          this.runStartTime = performance.now();
+          this.activePlayDurationSec = 0;
+          this.runId = `run-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+          for (let s = 1; s <= 3; s++) {
+            const starEl = document.getElementById(`res-star-${s}`);
+            if (starEl) starEl.classList.remove("earned");
+          }
+
+          this.startCountdown(() => {
+            this.startWave(1);
+          });
+          return;
+        }
+
         this.startCountdown(() => {
           this.startWave(1);
         });
@@ -6098,6 +10062,22 @@
         this.currentWave = waveNum;
         this.state = GAME_STATES.ACTIVE;
         this.updateHUD();
+
+        if (this.currentModeId === "scroll_training") {
+          if (!this.scrollTrainingLevel) {
+            this.scrollTrainingLevel = new ScrollTrainingLevel(this);
+          }
+          this.scrollTrainingLevel.startWave(waveNum);
+          return;
+        }
+
+        if (this.currentModeId === "mouse_boss") {
+          if (!this.mouseBossLevel) {
+            this.mouseBossLevel = new MouseBossLevel(this);
+          }
+          this.mouseBossLevel.startWave(waveNum);
+          return;
+        }
 
         const diff = DIFFICULTY_SETTINGS[this.selectedDifficulty];
         if (diff.isEndless) {
@@ -6176,9 +10156,15 @@
             const card = document.createElement("div");
             card.className = "announcement-card";
             const dict = TRANSLATIONS[this.currentLanguage] || {};
+            const isScroll = this.currentModeId === "scroll_training";
+            const isBoss = this.currentModeId === "mouse_boss";
+            const scrollCallout = (this.currentLanguage === "ja") ? "スクロールして なおそう！" : (this.currentLanguage === "it" ? "SCORRI E RIPARA!" : "SCROLL & RESTORE!");
+            const bossCallout = (this.currentLanguage === "ja") ? "すべてのわざで ちょうせん！" : (this.currentLanguage === "it" ? "SFIDA FINALE!" : "FINAL CHALLENGE!");
+            const mainText = isBoss ? "BOSS FIGHT!" : (isScroll ? "SEARCH!" : "DEFEND!");
+            const subText = isBoss ? bossCallout : (isScroll ? scrollCallout : (dict.defendCallout || ""));
             card.innerHTML = `
-              <div class="announcement-text" style="color: #ff8c00;">DEFEND!</div>
-              <div class="announcement-sub sub-lang" style="color: var(--cyan-main);">${dict.defendCallout || ""}</div>
+              <div class="announcement-text" style="color: ${isBoss ? 'var(--magenta-main, #f000ff)' : '#ff8c00'};">${mainText}</div>
+              <div class="announcement-sub sub-lang" style="color: var(--cyan-main);">${subText}</div>
             `;
             overlay.appendChild(card);
             this.activeTimerId = setTimeout(() => {
@@ -6330,6 +10316,20 @@
 
       updateActiveGame(dtSec, dtMs) {
         this.activePlayDurationSec += dtSec;
+
+        if (this.currentModeId === "scroll_training") {
+          if (this.scrollTrainingLevel) {
+            this.scrollTrainingLevel.update(dtSec);
+          }
+          return;
+        }
+
+        if (this.currentModeId === "mouse_boss") {
+          if (this.mouseBossLevel) {
+            this.mouseBossLevel.update(dtSec);
+          }
+          return;
+        }
 
         // 1. Spawning
         const diff = DIFFICULTY_SETTINGS[this.selectedDifficulty];
@@ -6854,7 +10854,15 @@
           // 3 Stars: Flawless/Near-flawless (lost at most 1 shield)
           // 2 Stars: Solid defense (retained at least 40% shields)
           // 1 Star: Narrow victory (survived)
-          if (this.shields >= this.maxShields - 1) {
+          if (this.currentModeId === "scroll_training") {
+            this.starsEarned = 3;
+            this.earnedXP += 120;
+            this.earnedCredits += 60;
+          } else if (this.currentModeId === "mouse_boss") {
+            this.starsEarned = 3;
+            this.earnedXP += 200;
+            this.earnedCredits += 100;
+          } else if (this.shields >= this.maxShields - 1) {
             this.starsEarned = 3;
             this.earnedXP += 100;
             this.earnedCredits += 50;
@@ -6942,7 +10950,23 @@
             rankSubKey = "star0Rank";
           }
         } else {
-          if (this.starsEarned === 3) {
+          if (this.currentModeId === "scroll_training") {
+            if (this.starsEarned === 3) {
+              rankEn = "SCROLL MASTER!";
+              rankSubKey = "scrollStar3Rank";
+            } else {
+              rankEn = "TRY AGAIN!";
+              rankSubKey = "star0Rank";
+            }
+          } else if (this.currentModeId === "mouse_boss") {
+            if (this.starsEarned === 3) {
+              rankEn = "MOUSE MASTER!";
+              rankSubKey = "mouseMasterRank";
+            } else {
+              rankEn = "TRY AGAIN!";
+              rankSubKey = "star0Rank";
+            }
+          } else if (this.starsEarned === 3) {
             rankEn = "DEFENSE MASTER!";
             rankSubKey = "star3Rank";
           } else if (this.starsEarned === 2) {
@@ -6954,7 +10978,15 @@
           }
         }
         if (rankEnEl) rankEnEl.textContent = rankEn;
-        if (rankSubEl) rankSubEl.textContent = dict[rankSubKey] || "";
+        if (rankSubEl) {
+          if (this.currentModeId === "scroll_training" && this.starsEarned === 3) {
+            rankSubEl.textContent = (this.currentLanguage === "ja") ? "スクロール マスター！" : (this.currentLanguage === "it" ? "MAESTRO DELLO SCORRIMENTO!" : "SCROLL MASTER!");
+          } else if (this.currentModeId === "mouse_boss" && this.starsEarned === 3) {
+            rankSubEl.textContent = (this.currentLanguage === "ja") ? "マウス マスター！" : (this.currentLanguage === "it" ? "MAESTRO DEL MOUSE!" : "MOUSE MASTER!");
+          } else {
+            rankSubEl.textContent = dict[rankSubKey] || "";
+          }
+        }
 
         // Update XP, Training Credits, and Cyber Hero Credit Reward Chips
         const rewardXpEl = document.getElementById("res-reward-xp");
@@ -6974,7 +11006,45 @@
         const msgSubEl = document.getElementById("results-message-sub");
         const extraHelpBtn = document.getElementById("res-extra-help-btn");
 
-        if (isVictory) {
+        if (this.currentModeId === "scroll_training") {
+          extraHelpBtn.style.display = "none";
+          if (isVictory) {
+            titleEl.textContent = "All Robots Restored!";
+            titleEl.style.color = "var(--cyan-main)";
+            titleSubEl.textContent = (this.currentLanguage === "ja") ? "すべての ロボットを なおしたよ！" : (this.currentLanguage === "it" ? "Tutti i robot sono stati ripristinati!" : "All Robots Restored!");
+
+            msgEl.textContent = "Fantastic mouse-wheel control! You navigated above and below the base and restored all robots.";
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? "マウスホイールで じょうげを さがして、ぜんぶの ロボットを なおせたね！" : (this.currentLanguage === "it" ? "Fantastico controllo della rotella! Hai riparato tutti i robot." : "Fantastic mouse-wheel control!");
+          } else {
+            titleEl.textContent = "TIME EXPIRED!";
+            titleEl.style.color = "var(--orange-main)";
+            titleSubEl.textContent = (this.currentLanguage === "ja") ? "じかんぎれ！" : (this.currentLanguage === "it" ? "TEMPO SCADUTO!" : "TIME EXPIRED!");
+
+            const restored = this.scrollTrainingLevel?.robotsRestored || this.robotsDestroyed || 0;
+            const total = this.scrollTrainingLevel?.robotsTotal || 4;
+            msgEl.textContent = `${restored} / ${total} Robots Restored. Use the mouse wheel to search faster!`;
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? `${restored} / ${total} なおしたよ。 マウスホイールで すばやく さがそう！` : "";
+          }
+        } else if (this.currentModeId === "mouse_boss") {
+          extraHelpBtn.style.display = "none";
+          if (isVictory) {
+            titleEl.textContent = "Facility Fully Restored!";
+            titleEl.style.color = "var(--cyan-main)";
+            titleSubEl.textContent = (this.currentLanguage === "ja") ? "しせつを ぜんぶ なおしたよ！" : (this.currentLanguage === "it" ? "Struttura completamente ripristinata!" : "Facility Fully Restored!");
+
+            msgEl.textContent = "Spectacular mouse mastery! You navigated the facility, bypassed security gates, and restored the Primary Command Relay.";
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? "すべての マウスわざを つかいこなして、メインリレーを さいきどう できたね！" : (this.currentLanguage === "it" ? "Controllo del mouse spettacolare! Hai sbloccato tutti i cancelli e riattivato il relè principale." : "Spectacular mouse mastery!");
+          } else {
+            titleEl.textContent = "TIME EXPIRED!";
+            titleEl.style.color = "var(--orange-main)";
+            titleSubEl.textContent = (this.currentLanguage === "ja") ? "じかんぎれ！" : (this.currentLanguage === "it" ? "TEMPO SCADUTO!" : "TIME EXPIRED!");
+
+            const restored = this.mouseBossLevel?.robotsRestored || 0;
+            const total = this.mouseBossLevel?.robotsTotal || 4;
+            msgEl.textContent = `${restored} / ${total} Robots Restored. Combine all your mouse skills to conquer the facility!`;
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? `${restored} / ${total} なおしたよ。 すべての マウスわざで ちょうせん しよう！` : "";
+          }
+        } else if (isVictory) {
           titleEl.textContent = "Base Defended!";
           titleEl.style.color = "var(--cyan-main)";
           titleSubEl.textContent = dict.baseDefended || "";
@@ -7012,14 +11082,24 @@
 
         const diffName = DIFFICULTY_SETTINGS[this.selectedDifficulty].name;
         document.getElementById("res-stat-diff").textContent = diffName;
-        if (isUltra) {
+        if (this.currentModeId === "scroll_training") {
+          document.getElementById("res-stat-waves").textContent = `${isVictory ? 3 : (this.scrollTrainingLevel?.currentWave || 1)} / 3`;
+          document.getElementById("res-stat-bots").textContent = this.scrollTrainingLevel?.robotsRestored || this.robotsDestroyed;
+          document.getElementById("res-stat-shields").textContent = "-- / --";
+        } else if (this.currentModeId === "mouse_boss") {
+          document.getElementById("res-stat-waves").textContent = `${isVictory ? 4 : (this.mouseBossLevel?.currentWave || 1)} / 4`;
+          document.getElementById("res-stat-bots").textContent = this.mouseBossLevel?.robotsRestored || this.robotsDestroyed;
+          document.getElementById("res-stat-shields").textContent = "-- / --";
+        } else if (isUltra) {
           document.getElementById("res-stat-waves").textContent = `${wavesSurvived} / ∞`;
+          document.getElementById("res-stat-bots").textContent = this.robotsDestroyed;
+          document.getElementById("res-stat-shields").textContent = `${Math.max(0, this.shields)} / ${this.maxShields}`;
         } else {
           document.getElementById("res-stat-waves").textContent = `${isVictory ? 3 : Math.max(1, this.currentWave - 1)} / ${this.totalWaves}`;
+          document.getElementById("res-stat-bots").textContent = this.robotsDestroyed;
+          document.getElementById("res-stat-shields").textContent = `${Math.max(0, this.shields)} / ${this.maxShields}`;
         }
-        document.getElementById("res-stat-bots").textContent = this.robotsDestroyed;
         document.getElementById("res-stat-score").textContent = this.score.toLocaleString();
-        document.getElementById("res-stat-shields").textContent = `${Math.max(0, this.shields)} / ${this.maxShields}`;
 
         const helpTextEn = this.extraHelpActive ? "Active (+2 Shields)" : "No";
         const helpTextSub = this.extraHelpActive ? (dict.helpActive || "") : (dict.helpInactive || "");
@@ -7065,7 +11145,7 @@
           score: this.score,
           robotsDestroyed: this.robotsDestroyed,
           robotsRestored: this.robotsRestored ?? this.robotsDestroyed,
-          wavesCompleted: isUltra ? wavesSurvived : (isVictory ? 3 : Math.max(0, this.currentWave - 1)),
+          wavesCompleted: isUltra ? wavesSurvived : (isVictory ? (this.currentModeId === "mouse_boss" ? 4 : 3) : Math.max(0, this.currentWave - 1)),
           shieldsRemaining: Math.max(0, this.shields),
           activePlayDurationSec: Math.round(this.activePlayDurationSec * 10) / 10,
           extraHelpUsed: this.extraHelpActive
@@ -7099,6 +11179,12 @@
           this.state = GAME_STATES.PAUSED;
           this.inputEngine.reset();
           this.clearPendingTimers();
+          if (this.scrollTrainingLevel) {
+            this.scrollTrainingLevel.pause();
+          }
+          if (this.mouseBossLevel) {
+            this.mouseBossLevel.pause();
+          }
           document.getElementById("screen-pause").classList.add("active");
         }
       }
@@ -7108,6 +11194,12 @@
           document.getElementById("screen-pause").classList.remove("active");
           const targetState = this.previousState || GAME_STATES.ACTIVE;
           this.lastFrameTime = performance.now();
+          if (this.scrollTrainingLevel) {
+            this.scrollTrainingLevel.resume();
+          }
+          if (this.mouseBossLevel) {
+            this.mouseBossLevel.resume();
+          }
           if (targetState === GAME_STATES.COUNTDOWN) {
             this.startCountdown(() => this.startWave(this.currentWave));
           } else if (targetState === GAME_STATES.INTERMISSION) {
@@ -7141,6 +11233,14 @@
       }
 
       clearAllRobots() {
+        if (this.scrollTrainingLevel) {
+          this.scrollTrainingLevel.dispose();
+          this.scrollTrainingLevel = null;
+        }
+        if (this.mouseBossLevel) {
+          this.mouseBossLevel.dispose();
+          this.mouseBossLevel = null;
+        }
         this.robots.forEach(r => {
           if (r.element && r.element.parentNode) {
             r.element.parentNode.removeChild(r.element);
@@ -7179,6 +11279,65 @@
       }
 
       updateHUD() {
+        if (this.currentModeId === "mouse_boss" && this.mouseBossLevel) {
+          this.mouseBossLevel.updateHUD();
+          return;
+        }
+
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (this.currentModeId === "scroll_training" && this.scrollTrainingLevel) {
+          if (timerBadge) {
+            timerBadge.style.display = "inline-flex";
+            const sec = Math.max(0, Math.floor(this.scrollTrainingLevel.timerSec));
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            const timeStr = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+
+            const timerVal = document.getElementById("hud-timer-value");
+            if (timerVal) {
+              timerVal.textContent = timeStr;
+            }
+            const timerText = document.getElementById("hud-timer-text");
+            if (timerText && !timerVal) {
+              timerText.textContent = `⏱️ ${timeStr}`;
+            }
+
+            if (sec <= 10) {
+              timerBadge.classList.remove("timer-warning");
+              timerBadge.classList.add("timer-critical");
+            } else if (sec <= 20) {
+              timerBadge.classList.remove("timer-critical");
+              timerBadge.classList.add("timer-warning");
+            } else {
+              timerBadge.classList.remove("timer-warning", "timer-critical");
+            }
+          }
+          const pipsContainer = document.getElementById("base-shield-pips");
+          if (pipsContainer) pipsContainer.innerHTML = "";
+          const numericEl = document.getElementById("base-shields-numeric");
+          if (numericEl) numericEl.textContent = "";
+
+          const dict = TRANSLATIONS[this.currentLanguage] || {};
+          const waveLabel = dict.wave || "WAVE";
+          document.getElementById("hud-wave-text").textContent = `LEVEL ${this.currentWave} / 3`;
+          document.getElementById("hud-wave-sub").textContent = `${waveLabel} ${this.currentWave} / 3`;
+
+          const restoreLabel = dict.restored || "RESTORED";
+          const restored = this.scrollTrainingLevel.robotsRestored;
+          const total = this.scrollTrainingLevel.robotsTotal;
+          document.getElementById("hud-score-text").textContent = `RESTORED: ${restored} / ${total}`;
+          document.getElementById("hud-score-sub").textContent = `${restoreLabel}: ${restored} / ${total}`;
+
+          const helpBadge = document.getElementById("hud-help-badge");
+          if (helpBadge) helpBadge.classList.remove("active");
+          return;
+        } else {
+          if (timerBadge) {
+            timerBadge.style.display = "none";
+            timerBadge.classList.remove("timer-warning", "timer-critical");
+          }
+        }
+
         // Large Shields Indicator Right Under The Base
         const pipsContainer = document.getElementById("base-shield-pips");
         pipsContainer.innerHTML = "";
@@ -7225,7 +11384,11 @@
         let targetMode = config.mode;
         if (config.mission === 1 || config.mission === "1" || config.mission === 1.5) targetMode = "base_defense";
         else if (config.mission === 2 || config.mission === "2" || config.mission === 2.5) targetMode = "reinforcements";
-        else if (config.mission === 3 || config.mission === "3" || config.mission === 3.5) targetMode = "robot_override";
+        else if (config.mission === 3 || config.mission === "3" || config.mission === 3.5) {
+          targetMode = (config.mode === "scroll_training" || config.mode === "scroll" || config.mission === "scroll") ? "scroll_training" : "robot_override";
+        }
+        else if (config.mode === "scroll_training" || config.mode === "scroll" || config.mission === "scroll") targetMode = "scroll_training";
+        else if (config.mission === 7 || config.mission === "7" || config.mode === "mouse_boss" || config.mode === "mouse_boss_fight" || config.mode === "mouseBoss") targetMode = "mouse_boss";
         window.gameInstance.setMode(targetMode);
       }
       if (config.language) {
@@ -7239,16 +11402,7 @@
       }
       return window.gameInstance;
     };
-    window.trainingDebugUnlocked = false;
-    window.addEventListener("message", (event) => {
-      if (event.source !== window.parent || event.data?.type !== "training-host-config") return;
-      if (event.data.language === "it" || event.data.language === "ja") window.gameInstance?.setLanguage(event.data.language);
-      window.trainingDebugUnlocked = event.data.teacherPreview === true;
-      window.gameInstance?.updateModeDisplay();
-    });
-    window.addEventListener("game-complete", (event) => {
-      if (window.parent !== window) window.parent.postMessage({ type: "robot-training-complete", result: event.detail }, "*");
-    });
   </script>
+  <script src="mouse-training.js"></script>
 </body>
 </html>

@@ -99,11 +99,11 @@ export function TrainingCenter({
         title="CYBER GUIDE / TRAINING"
       />
       {onRobotDefense && <section className="robot-defense-modes" aria-label="Robot Defense training modes">
-        <header><p className="eyebrow">TRAINING GROUND / {language === 'it' ? 'Campo di addestramento' : '訓練場'}</p><h2>Robot Defense Training</h2><p>Three training stages linked to Missions 1–3. <small lang={language}>{language === 'it' ? 'Tre fasi di addestramento collegate alle Missioni 1–3.' : 'ミッション1～3につながる3つの訓練段階。'}</small></p></header>
+        <header><p className="eyebrow">TRAINING GROUND / {language === 'it' ? 'Campo di addestramento' : '訓練場'}</p><h2>Robot Defense Training</h2><p>Practice mouse skills, then apply them in the campaign. <small lang={language}>{language === 'it' ? 'Allena le abilità del mouse e poi usale nelle missioni.' : 'マウス操作を練習して、ミッションで使いましょう。'}</small></p></header>
         <div className="robot-defense-mode-grid">{robotDefenseModes.map(mode => {
           const unlocked = robotDefenseUnlocked(mode, completedMissions);
           return <article key={mode.id} className={`robot-defense-mode ${unlocked ? 'available' : 'locked'}`} aria-label={mode.name}>
-            <span>MISSION {mode.requiredMission}.5</span><h3>{mode.name}</h3><small lang={language}>{mode.support[language]}</small>
+            <span>TRAINING {'trainingNumber' in mode ? mode.trainingNumber : `${mode.requiredMission}.5`}</span><h3>{mode.name}</h3><small lang={language}>{mode.support[language]}</small>
             <p>{mode.skill.en}</p><small lang={language}>{mode.skill[language]}</small>
             {unlocked ? <button aria-label={`Train ${mode.name}`} className="primary-button" onClick={() => onRobotDefense(mode.id)}>Start training →</button>
               : <p className="training-lock-note">Complete Mission {mode.requiredMission} to unlock. <small lang={language}>{language === 'it' ? `Completa la Missione ${mode.requiredMission} per sbloccare.` : `ミッション${mode.requiredMission}を完了すると解除されます。`}</small></p>}
@@ -124,7 +124,7 @@ export function TrainingCenter({
             >
               <div className="training-module-index">
                 <TrainingCopy copy={trainingCopy("module", language)} />
-                <strong>{String(moduleIndex + 1).padStart(2, "0")}</strong>
+                <strong>{module.id === "data-transfer" ? "06" : String(moduleIndex + 1).padStart(2, "0")}</strong>
                 <TrainingCopy copy={trainingCopy("beginner", language)} />
               </div>
               <div className="training-module-copy">

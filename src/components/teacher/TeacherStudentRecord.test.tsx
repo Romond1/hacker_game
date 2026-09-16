@@ -35,7 +35,7 @@ describe('TeacherStudentRecord', () => {
     render(<TeacherStudentRecord detail={detail} onBack={() => undefined} />);
     expect(screen.getByText('Mission 1 · Computer Training')).toBeInTheDocument();
     expect(screen.getByText('Mission 2 · Follow the Trail')).toBeInTheDocument();
-    expect(screen.getByText('Mission 3 · File Detective')).toBeInTheDocument();
+    expect(screen.getByText('Mission 8 · File Detective')).toBeInTheDocument();
     expect(screen.getByText('802')).toBeInTheDocument();
     expect(screen.getAllByText('1')).not.toHaveLength(0);
   });

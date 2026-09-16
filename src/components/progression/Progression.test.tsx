@@ -29,6 +29,7 @@ describe('progression experiences', () => {
     fireEvent.click(screen.getByRole('button', { name: /Return to shop/i }));
     view.rerender(<HackerShop user={user} progression={saved} onUpdate={onUpdate} onBack={vi.fn()} />);
     expect(screen.getByRole('button', { name: /Equip Cyber Wolf Cadet/ })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview elite armour' }));
     expect(screen.getByRole('button', { name: /Future campaign unlock for Cyber Wolf Centurion/ })).toBeDisabled();
   });
   it('toggles in-shop ephemeral trials for pointers and assistants without altering inventory', () => {
@@ -36,7 +37,7 @@ describe('progression experiences', () => {
     render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
     
     // Switch to Pointers department
-    fireEvent.click(screen.getByRole('button', { name: /02\. POINTERS/i }));
+    fireEvent.click(screen.getByRole('button', { name: /02\. MOUSE STUDIO/i }));
     expect(screen.getByText(/POINTER CALIBRATION PAD/i)).toBeInTheDocument();
     
     // Click TRY IN SHOP on Tactical Crosshair
@@ -58,20 +59,24 @@ describe('progression experiences', () => {
     
     expect(screen.getByText(/GOD MODE/i)).toBeInTheDocument();
     expect(screen.getByText('99,999')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview legendary armour' }));
     // Future/Legendary hero (Cyber Wolf Imperator) should NOT be disabled in God Mode even at rookie rank
     expect(screen.getByRole('button', { name: /Buy Cyber Wolf Imperator/i })).not.toBeDisabled();
   });
   it('locks future heroes for normal accounts with dedicated lock notice', () => {
     const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1,2,3], currentCredits: 9999, storyFlags: { shopUnlocked: true } };
     render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Preview elite armour' }));
     expect(screen.getAllByText(/Reserved for future campaign operations/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('button', { name: /Future campaign unlock for Cyber Wolf Centurion/i })).toBeDisabled();
   });
   it('shows affordability progress and remaining Credits for aspirational items', () => {
-    const state = { ...emptyProgression(), completedMissions: [1,2,3], currentCredits: 70, storyFlags: { shopUnlocked: true } };
+    const state = { ...emptyProgression(), completedMissions: [1,2,3,4,5,6,7], currentCredits: 70, storyFlags: { shopUnlocked: true, rareEquipmentUnlocked: true } };
     render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
-    expect(screen.getByText('30 CREDITS REMAINING')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Preview rare armour' }));
+    expect(screen.getByText('30 more needed')).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: /Cyber Wolf Vanguard affordability/i })).toHaveAttribute('aria-valuenow', '70');
+    fireEvent.click(screen.getByRole('button', { name: 'Preview elite armour' }));
     expect(screen.getAllByText(/Requires Infiltrator rank/i).length).toBeGreaterThan(0);
 
     // Switch to Themes department
@@ -90,9 +95,9 @@ describe('progression experiences', () => {
     expect(screen.getByText('+20')).toBeInTheDocument();
     expect(screen.getByText('+800')).toBeInTheDocument();
   });
-  it('reveals the Mission 4 story outcome instead of rookie training progress', () => {
+  it('reveals the Mission 6 story outcome instead of rookie training progress', () => {
     vi.useFakeTimers();
-    render(<RewardSequence user={user} missionNumber={4} progression={{ ...emptyProgression(), completedMissions: [1,2,3,4] }} reward={{ source: 'mission-4', eventId: 'm4', xp: 1000, credits: 30, totalXP: 3400, currentCredits: 90, creditLimitReached: false }} onContinue={vi.fn()} />);
+    render(<RewardSequence user={user} missionNumber={6} progression={{ ...emptyProgression(), completedMissions: [1,2,3,6] }} reward={{ source: 'mission-4', eventId: 'm4', xp: 1000, credits: 30, totalXP: 3400, currentCredits: 90, creditLimitReached: false }} onContinue={vi.fn()} />);
     expect(screen.getByText('COMMUNICATION NODE SECURED')).toBeInTheDocument();
     expect(screen.getByText('SOURCE IDENTIFIED')).toBeInTheDocument();
     expect(screen.getByText('FONTE IDENTIFICATA')).toHaveAttribute('lang', 'it');
@@ -125,4 +130,117 @@ describe('progression experiences', () => {
     fireEvent.click(screen.getByRole('button', { name: /Sound muted/i }));
     await waitFor(() => expect(update).toHaveBeenCalledWith(saved));
   });
+
+  it('renders Stitch split-panel Pointers department with magnified preview, interactive calibration pad, and accessibility sizing', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1, 2, 3], currentCredits: 200, storyFlags: { shopUnlocked: true } };
+    const { container } = render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+
+    // Switch to Pointers department
+    fireEvent.click(screen.getByRole('button', { name: /02\. MOUSE STUDIO/i }));
+
+    // Verify split layout container
+    expect(container.querySelector('.shop-split-layout')).toBeInTheDocument();
+
+    // Verify magnified preview card and telemetry
+    expect(screen.getByText(/RETICLE CALIBRATION \/\/ 4X MAGNIFIED/i)).toBeInTheDocument();
+    expect(screen.getByText(/CIRCUIT CYAN #00F0FF/i)).toBeInTheDocument();
+
+    // Verify calibration pad interactive targets
+    expect(screen.getByRole('button', { name: /TEST BUTTON/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /SECURE LINK/i })).toBeInTheDocument();
+    expect(screen.getByText(/0x4F/i)).toBeInTheDocument();
+    expect(screen.getByText(/DIR mission-files/i)).toBeInTheDocument();
+    expect(screen.getByText(/TXT cipher-key.key/i)).toBeInTheDocument();
+    expect(screen.getByText(/KEYCARD TOKEN/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Click accuracy bullseye target/i })).toBeInTheDocument();
+
+    // Test precision bullseye click
+    fireEvent.click(screen.getByRole('button', { name: /Click accuracy bullseye target/i }));
+    expect(screen.getByText(/ACCURACY:/i)).toBeInTheDocument();
+  });
+
+  it('toggles cursor size between Standard and Large and persists to localStorage without API mutations', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1, 2, 3], currentCredits: 200, storyFlags: { shopUnlocked: true } };
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+    const { container } = render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /02\. MOUSE STUDIO/i }));
+
+    const standardBtn = screen.getByRole('button', { name: /Standard \(28px\)/i });
+    const largeBtn = screen.getByRole('button', { name: /Large \(36px\)/i });
+
+    expect(standardBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(largeBtn).toHaveAttribute('aria-pressed', 'false');
+
+    // Switch to Large
+    fireEvent.click(largeBtn);
+    expect(largeBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(standardBtn).toHaveAttribute('aria-pressed', 'false');
+    expect(localStorage.getItem('cyber_hero_cursor_size')).toBe('large');
+    expect(container.querySelector('.cyber-shop-page')).toHaveAttribute('data-cursor-size', 'large');
+
+    // Sizing change must NOT trigger any API mutations
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    // Switch back to Standard
+    fireEvent.click(standardBtn);
+    expect(standardBtn).toHaveAttribute('aria-pressed', 'true');
+    expect(localStorage.getItem('cyber_hero_cursor_size')).toBe('standard');
+    expect(container.querySelector('.cyber-shop-page')).toHaveAttribute('data-cursor-size', 'standard');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
+  it('renders Stitch split-panel Themes department with miniature dashboard and mission computer previews', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1, 2, 3], currentCredits: 200, storyFlags: { shopUnlocked: true } };
+    const { container } = render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+
+    // Switch to Themes department
+    fireEvent.click(screen.getByRole('button', { name: /03\. THEMES/i }));
+
+    // Verify split layout container
+    expect(container.querySelector('.shop-split-layout')).toBeInTheDocument();
+
+    // Verify miniature previews
+    expect(screen.getByText(/MINIATURE DASHBOARD PREVIEW/i)).toBeInTheDocument();
+    expect(screen.getByText(/MINIATURE MISSION COMPUTER PREVIEW/i)).toBeInTheDocument();
+    expect(screen.getByText(/MISSION 01: COMPUTER TRAINING/i)).toBeInTheDocument();
+    expect(screen.getByText(/Desktop \/ training/i)).toBeInTheDocument();
+
+    // Verify theme items in selection list
+    expect(screen.getByText('Orbit Blue Matrix')).toBeInTheDocument();
+    expect(screen.getByText('Matrix Terminal')).toBeInTheDocument();
+    expect(screen.getByText('Solar Amber Matrix')).toBeInTheDocument();
+  });
+
+  it('applies theme trial to shop container without altering application root or persistent state', () => {
+    const state = { ...emptyProgression(), playerRank: 'operator', completedMissions: [1, 2, 3], currentCredits: 200, storyFlags: { shopUnlocked: true } };
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
+    const { container } = render(<HackerShop user={user} progression={state} onUpdate={vi.fn()} onBack={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /03\. THEMES/i }));
+
+    const shopRoot = container.querySelector('.cyber-shop-page')!;
+    expect(shopRoot).not.toHaveAttribute('data-theme', 'orbit-blue');
+
+    // Try Orbit Blue Matrix
+    const tryBtn = screen.getByRole('button', { name: /Try Orbit Blue Matrix in shop/i });
+    fireEvent.click(tryBtn);
+
+    // Shop root gets trial data-theme attribute
+    expect(shopRoot).toHaveAttribute('data-theme', 'orbit-blue');
+    expect(screen.getByText(/TRIAL MODE ACTIVE/i)).toBeInTheDocument();
+
+    // Trial should NOT make API writes
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    // Stop trial
+    const stopBtn = screen.getByRole('button', { name: /Stop testing Orbit Blue Matrix/i });
+    fireEvent.click(stopBtn);
+    expect(shopRoot).not.toHaveAttribute('data-theme', 'orbit-blue');
+    expect(screen.queryByText(/TRIAL MODE ACTIVE/i)).not.toBeInTheDocument();
+    expect(fetchSpy).not.toHaveBeenCalled();
+    fetchSpy.mockRestore();
+  });
+
 });

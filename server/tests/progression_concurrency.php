@@ -86,7 +86,7 @@ try {
     foreach ([$trainingDuplicateId, $trainingCapId] as $trainingUserId) {
         economy_transaction($pdo, $trainingUserId);
         $pdo->beginTransaction(); lock_student_progress($pdo, $trainingUserId);
-        $trainingState = economy_load_locked($pdo, $trainingUserId); $trainingState['completedMissions'] = [1,2,3];
+        $trainingState = economy_load_locked($pdo, $trainingUserId); $trainingState['completedMissions'] = [1,2,3,4,5,6,8];
         economy_milestones($pdo, $trainingUserId, $trainingState); economy_save($pdo, $trainingUserId, $trainingState); $pdo->commit();
     }
     $duplicateAttempt = training_start($pdo, $trainingDuplicateId, 'systems-calibration');

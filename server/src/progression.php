@@ -3,6 +3,19 @@ declare(strict_types=1);
 
 class EconomyError extends RuntimeException {}
 
+function valid_recovery_evidence(mixed $value): bool
+{
+    if (!is_array($value) || ($value['status'] ?? '') !== 'complete' || ($value['phase'] ?? -1) !== 2 || ($value['version'] ?? 0) !== 2 || ($value['step'] ?? 0) !== 19) return false;
+    $files = ['CORE_MAP.dat','ROBOT_AI.dat','CORE_ACCESS.dat'];
+    $secured = $value['secured'] ?? [];
+    if (!is_array($secured) || count($secured) !== 3 || array_diff($files, $secured)) return false;
+    $metrics = $value['metrics'] ?? [];
+    foreach (['singleClicks'=>5,'doubleClicks'=>11,'wheelSearches'=>3,'rightClicks'=>8,'contextChoices'=>8,'copies'=>2,'pastes'=>2,'textSelections'=>2,'textCopies'=>2,'textPastes'=>2,'backUses'=>3,'fileOpens'=>2] as $key=>$minimum) {
+        if (!is_numeric($metrics[$key] ?? null) || $metrics[$key] < $minimum) return false;
+    }
+    return true;
+}
+
 function economy_catalog(): array
 {
     static $catalog;
@@ -26,6 +39,7 @@ function economy_codename(string $name): string
 
 function economy_rank(array $completed): array
 {
+    if (in_array(8, $completed, true) && !in_array(3, $completed, true)) $completed[] = 3;
     foreach (array_reverse(economy_catalog()['ranks']) as $rank) {
         if (!array_diff($rank['requiredMissions'], $completed)) return $rank;
     }
@@ -58,7 +72,7 @@ function economy_milestones(PDO $pdo, string $userId, array &$state): void
     if ($state['completedMissions']) $state['storyFlags']['rookieTrainingStarted'] = true;
     $awards = [];
     if (in_array(1, $state['completedMissions'], true)) $awards[] = 'first-access';
-    if (!array_diff([1,2,3], $state['completedMissions'])) {
+    if (!array_diff([1,2,3], $state['completedMissions']) || !array_diff([1,2,8], $state['completedMissions'])) {
         $awards[] = 'rookie-no-more';
         $state['hackerIdentityUnlocked'] = true;
         $state['dateUnlocked'] ??= gmdate('c');
@@ -67,11 +81,20 @@ function economy_milestones(PDO $pdo, string $userId, array &$state): void
         $state['storyFlags']['networkMapUnlocked'] = true;
         if (!in_array('classified', $state['unlockedNodes'], true)) $state['unlockedNodes'][] = 'classified';
     }
-    if (in_array(4, $state['completedMissions'], true)) {
+    if (in_array(6, $state['completedMissions'], true)) {
         $awards[] = 'communication-node-secured';
         $state['storyFlags']['communicationNodeSecured'] = true;
         $state['storyFlags']['sourceIdentified'] = true;
         $state['storyFlags']['unknownNetworkActivityDetected'] = true;
+    }
+    if (in_array(7, $state['completedMissions'], true)) {
+        $awards[] = 'mouse-master';
+        $state['storyFlags']['mouseMasteryCompleted'] = true;
+        $state['storyFlags']['rareEquipmentUnlocked'] = true;
+        foreach (economy_catalog()['recoveryRewardItems'] as $itemId) {
+            $pdo->prepare('INSERT IGNORE INTO player_inventory (user_id, item_id) VALUES (?, ?)')->execute([$userId, $itemId]);
+            if (!in_array($itemId, $state['inventory'], true)) $state['inventory'][] = $itemId;
+        }
     }
     foreach ($awards as $id) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, NULL)')->execute([$userId, $id]);
 }
@@ -87,13 +110,34 @@ function economy_load_locked(PDO $pdo, string $userId): array
     $query = $pdo->prepare('SELECT state FROM player_economy WHERE user_id = ?');
     $query->execute([$userId]);
     $json = $query->fetchColumn();
-    if ($json !== false) return json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+    if ($json !== false) {
+        $state = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        if (empty($state['storyFlags']['mouseProgressionV2'])) {
+            $state['completedMissions'] = array_map(fn($n) => $n === 4 ? 6 : $n, $state['completedMissions']);
+            $state['storyFlags']['mouseProgressionV2'] = true;
+            economy_save($pdo, $userId, $state);
+        }
+        if (empty($state['storyFlags']['scrollProgressionV3'])) {
+            $state['completedMissions'] = array_map(fn($n) => $n === 3 ? 7 : $n, $state['completedMissions']);
+            $state['storyFlags']['scrollProgressionV3'] = true;
+            economy_save($pdo, $userId, $state);
+        }
+        if (empty($state['storyFlags']['recoveryProgressionV4'])) {
+            $state['completedMissions'] = array_map(fn($n) => $n === 7 ? 8 : $n, $state['completedMissions']);
+            $state['storyFlags']['recoveryProgressionV4'] = true;
+            economy_save($pdo, $userId, $state);
+        }
+        return $state;
+    }
     $state = economy_empty();
+    $state['storyFlags']['mouseProgressionV2'] = true;
+    $state['storyFlags']['scrollProgressionV3'] = true;
+    $state['storyFlags']['recoveryProgressionV4'] = true;
     $query = $pdo->prepare('SELECT mission_id, completed, total_points FROM user_progress WHERE user_id = ?');
     $query->execute([$userId]);
     foreach ($query->fetchAll() as $row) {
         $state['lifetimeXP'] += (int) $row['total_points'];
-        if ((bool) $row['completed']) $state['completedMissions'][] = (int) substr($row['mission_id'], 8);
+        if ((bool) $row['completed']) $state['completedMissions'][] = campaign_number($row['mission_id']);
     }
     $query = $pdo->prepare('SELECT id, mission_id, score, completed_at FROM attempts WHERE user_id = ? AND completed = 1 ORDER BY completed_at, id');
     $query->execute([$userId]);
@@ -188,6 +232,7 @@ function economy_transaction(PDO $pdo, string $userId, ?string $action = null, a
                 if (!$isGodMode) {
                     if (($item['availability'] ?? 'available') === 'future') throw new EconomyError('item_future');
                     if (!($state['storyFlags']['shopUnlocked'] ?? false)) throw new EconomyError('shop_locked');
+                    if ($item['rarity'] === 'rare' && empty($state['storyFlags']['rareEquipmentUnlocked'])) throw new EconomyError('rare_locked');
                     $ranks = array_column(economy_catalog()['ranks'], 'id');
                     if (array_search($state['playerRank'], $ranks, true) < array_search($item['requiredRank'], $ranks, true)) throw new EconomyError('rank_required');
                     if ($state['currentCredits'] < $item['price']) throw new EconomyError('insufficient_credits');
@@ -216,4 +261,37 @@ function economy_transaction(PDO $pdo, string $userId, ?string $action = null, a
         if ($pdo->inTransaction()) $pdo->rollBack();
         throw $error;
     }
+}
+
+/** Stable IDs and display order are deliberately independent. */
+function campaign_number(string $id): int {
+    foreach (economy_catalog()['campaign'] as $entry) if ($entry['id'] === $id) return $entry['number'];
+    throw new EconomyError('mission_not_found');
+}
+
+function campaign_mission_unlocked(PDO $pdo, string $userId, string $id, bool $legacyUnlocked): bool {
+    $entries = economy_catalog()['campaign'];
+    foreach ($entries as $index => $entry) {
+        if ($entry['id'] !== $id) continue;
+        if (empty($entry['training'])) return $legacyUnlocked;
+        $query = $pdo->prepare('SELECT completed, attempt_count FROM user_progress WHERE user_id = ? AND mission_id = ?');
+        $query->execute([$userId, $id]);
+        $progress = $query->fetch();
+        if ($progress && ($progress['completed'] || $progress['attempt_count'] > 0)) return true;
+        $rewarded = $pdo->prepare('SELECT completions FROM reward_counters WHERE user_id = ? AND source = ?');
+        $rewarded->execute([$userId, $id]);
+        if ((int) $rewarded->fetchColumn() > 0) return true;
+        $query->execute([$userId, $entries[$index - 1]['id']]);
+        $previous = $query->fetch();
+        if (!$previous || !$previous['completed']) return false;
+        if ($entry['training'] === 'data-transfer') {
+            $query = $pdo->prepare('SELECT completed_runs FROM user_training_progress WHERE user_id = ? AND training_id = ?');
+            $query->execute([$userId, $entry['training']]);
+            return (int) $query->fetchColumn() > 0;
+        }
+        $query = $pdo->prepare('SELECT COUNT(*) FROM robot_training_runs WHERE user_id = ? AND mode = ? AND completed_at IS NOT NULL');
+        $query->execute([$userId, $entry['training']]);
+        return (int) $query->fetchColumn() > 0;
+    }
+    return false;
 }

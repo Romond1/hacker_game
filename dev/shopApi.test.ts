@@ -78,7 +78,7 @@ it('rejects future items for normal accounts even with high balance, but permits
   const teacher = await login('be_a_hacker');
 
   // Complete missions 1, 2, 3 to graduate and unlock shop
-  for (const missionId of ['mission-1', 'mission-2', 'mission-3']) {
+  for (const missionId of ['mission-1', 'mission-2', 'mission-scroll']) {
     const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
     await request({ action: 'attempt.finish', attemptId: started.attemptId, score: 800, durationSeconds: 60, stats: {} }, student.cookie, student.token);
   }
@@ -134,4 +134,57 @@ it('rejects missing / non-existent items for both normal and test accounts', asy
   const missingGod = await request({ action: 'student.purchase', itemId: 'non-existent-item' }, god.cookie, god.token);
   expect(missingGod.status).toBe(422);
   expect((await missingGod.json()).error.code).toBe('item_unavailable');
+});
+
+it('handles purchasing, equipping, and default un-equipping of neon-pointer and orbit-blue-theme with session persistence', async () => {
+  const student = await login('himari.hacker');
+  const teacher = await login('be_a_hacker');
+
+  // Graduate student through missions 1, 2, 3 to unlock shop
+  for (const missionId of ['mission-1', 'mission-2', 'mission-scroll']) {
+    const { data: started } = await (await request({ action: 'attempt.start', missionId }, student.cookie, student.token)).json();
+    await request({ action: 'attempt.finish', attemptId: started.attemptId, score: 850, durationSeconds: 50, stats: {} }, student.cookie, student.token);
+  }
+
+  // Grant credits
+  await request({ action: 'teacher.setBalances', studentId: student.user.id, currentCredits: 500 }, teacher.cookie, teacher.token);
+
+  // 1. Purchase Neon Pointer
+  const buyPointer = await request({ action: 'student.purchase', itemId: 'neon-pointer', category: 'cursor' }, student.cookie, student.token);
+  expect(buyPointer.status).toBe(200);
+  const pointerData = await buyPointer.json();
+  expect(pointerData.data.progression.inventory).toContain('neon-pointer');
+
+  // 2. Purchase Orbit Blue Theme
+  const buyTheme = await request({ action: 'student.purchase', itemId: 'orbit-blue-theme', category: 'terminalTheme' }, student.cookie, student.token);
+  expect(buyTheme.status).toBe(200);
+  const themeData = await buyTheme.json();
+  expect(themeData.data.progression.inventory).toContain('orbit-blue-theme');
+
+  // 3. Equip Neon Pointer
+  const equipPointer = await request({ action: 'student.equip', itemId: 'neon-pointer', category: 'cursor' }, student.cookie, student.token);
+  expect(equipPointer.status).toBe(200);
+  const eqPointerData = await equipPointer.json();
+  expect(eqPointerData.data.progression.equippedItems.cursor).toBe('neon-pointer');
+
+  // 4. Equip Orbit Blue Theme
+  const equipTheme = await request({ action: 'student.equip', itemId: 'orbit-blue-theme', category: 'terminalTheme' }, student.cookie, student.token);
+  expect(equipTheme.status).toBe(200);
+  const eqThemeData = await equipTheme.json();
+  expect(eqThemeData.data.progression.equippedItems.terminalTheme).toBe('orbit-blue-theme');
+
+  // 5. Verify session reload restores equipped items
+  const reloadRes = await request({ action: 'student.dashboard' }, student.cookie, student.token);
+  const reloadData = await reloadRes.json();
+  expect(reloadData.data.progression.equippedItems.cursor).toBe('neon-pointer');
+  expect(reloadData.data.progression.equippedItems.terminalTheme).toBe('orbit-blue-theme');
+
+  // 6. Use Default (unequip cursor and theme)
+  const unequipPointer = await request({ action: 'student.equip', itemId: '', category: 'cursor' }, student.cookie, student.token);
+  expect(unequipPointer.status).toBe(200);
+  expect((await unequipPointer.json()).data.progression.equippedItems.cursor).toBeUndefined();
+
+  const unequipTheme = await request({ action: 'student.equip', itemId: '', category: 'terminalTheme' }, student.cookie, student.token);
+  expect(unequipTheme.status).toBe(200);
+  expect((await unequipTheme.json()).data.progression.equippedItems.terminalTheme).toBeUndefined();
 });

@@ -43,7 +43,7 @@ export function startTraining(
 ): TrainingAttemptStart {
   const module = getTrainingModule(trainingId);
   if (!module) throw new ProgressionError('training_not_found', 'Training module not found.');
-  if (!module.requiredCompletedMissions.every(id => progression.completedMissions.includes(id))) {
+  if (!(module.id === 'data-transfer' && progression.completedMissions.includes(6)) && !module.requiredCompletedMissions.every(id => progression.completedMissions.includes(id))) {
     throw new ProgressionError('training_locked', 'Training module is locked.');
   }
   if (!Number.isInteger(issuedSeed) || issuedSeed < 0 || issuedSeed > 0xffffffff) {

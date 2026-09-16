@@ -34,3 +34,7 @@ $imperfect = training_calculate(['successes'=>5, 'errors'=>1, 'longestStreak'=>5
 training_check($imperfect['score'] === 4800 && $imperfect['accuracy'] === 83 && $imperfect['rank'] === 'S', 'imperfect parity');
 
 echo "Training policy checks passed.\n";
+
+training_check(!training_is_unlocked(training_definition('data-transfer'), ['completedMissions'=>[1,2,3,4]]), 'Training 6 waits for Mission 5');
+training_check(training_is_unlocked(training_definition('data-transfer'), ['completedMissions'=>[1,2,3,4,5]]), 'Training 6 before Mission 6');
+training_check(training_is_unlocked(training_definition('data-transfer'), ['completedMissions'=>[1,2,3,6]]), 'Legacy transmission graduates retain training access');

@@ -1,0 +1,73 @@
+/* Desktop Home Base: identity first, then tools, then the next mission. */
+@media (min-width:1000px){
+  .cyber-home{padding-top:20px}
+  .cyber-home-status{min-height:38px;margin-bottom:14px;padding:7px 16px}
+  .cyber-home-echo{min-height:0;grid-template-columns:minmax(245px,.48fr) minmax(0,1.52fr);gap:18px;margin-bottom:14px;padding:16px}
+  .echo-portrait{min-height:0}
+  .echo-command{padding:4px 3px 2px 0}
+  .echo-header-row{gap:10px;padding-bottom:6px}
+  .echo-title h1{font-size:clamp(2.8rem,3.35vw,3.9rem)}
+  .echo-title>span{border-color:#ffad4c;background:#ff930022;color:#ffd394;font-size:.66rem;font-weight:900}
+  .echo-welcome{margin:7px 0 2px;font-size:1.2rem}
+  .echo-readouts{gap:8px;margin:8px 0}
+  .echo-readouts>div{padding:7px 10px;border-color:#00eaf631;background:linear-gradient(135deg,#061b1d,#08120f)}
+  .echo-readouts span{color:#b3d9cf;font-size:.63rem}
+  .echo-readouts strong{font-size:clamp(1.5rem,2vw,2.05rem);line-height:1.1;color:#ffd171;text-shadow:0 0 13px #ff93003b}
+  .echo-quick-utilities{margin:8px 0 4px;gap:9px}
+  .echo-utility-card{padding:9px 11px;gap:5px}
+  .echo-utility-header strong{font-size:.83rem}
+  .echo-utility-header small{font-size:.58rem}
+  .echo-utility-card .utility-heading{font-size:.84rem}
+  .echo-utility-body{flex:0 1 auto}
+  .echo-equipment-grid{gap:3px;margin:2px 0}
+  .echo-slot-chip{padding:3px 4px}
+  .echo-loadout{margin:0;border-top:1px solid #ff93002b}
+  .echo-loadout summary{min-height:26px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#ffca7e;font:800 .64rem 'Cascadia Mono',monospace;letter-spacing:.1em;cursor:pointer;list-style:none}
+  .echo-loadout summary::-webkit-details-marker{display:none}
+  .echo-loadout summary:after{content:'＋';margin-left:auto;font-size:1rem;line-height:1}
+  .echo-loadout[open] summary:after{content:'−'}
+  .echo-loadout summary small{color:#bcaa91;font-size:.58rem;letter-spacing:0}
+  .echo-loadout[open] .echo-equipment-grid{animation:mission-copy-arrive .22s ease-out both}
+  .echo-command .profile-achievements{margin-top:5px;padding-top:4px;gap:9px;font-size:.5rem}
+  .echo-utility-card .cyber-outline-button,.cyber-shop-button{min-height:44px}
+  .cyber-home-launch{gap:8px;padding:6px 7px 6px 12px}
+  .cyber-home-launch>div>span{width:30px;height:30px;min-width:30px}
+  .cyber-home-launch p strong{max-width:210px;overflow:hidden;text-overflow:ellipsis;font-size:.69rem!important;white-space:nowrap}
+  .cyber-home-launch p em{display:block!important;color:#bddbd4;font-size:.53rem;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cyber-home-launch button{min-width:158px;min-height:53px;padding:7px 12px;background:linear-gradient(125deg,#ffd274,#ff9500);box-shadow:0 0 18px #ff93004f}
+  .cyber-home-launch button strong{font-size:.82rem!important}
+  .cyber-home-launch button:hover:not(:disabled){transform:translateY(-3px) scale(1.02);box-shadow:0 0 30px #ff930088}
+  .cyber-home-operation{min-height:0;grid-template-columns:minmax(0,1fr) 180px;gap:18px;margin-bottom:14px;padding:16px 20px;align-items:center}
+  .operation-priority{margin-bottom:8px;padding:4px 9px;color:#ffd084;font-size:.64rem}
+  .cyber-home .cyber-home-operation h2{max-width:780px;margin-bottom:3px;font-size:clamp(1.5rem,2vw,2.15rem);line-height:1.08}
+  .cyber-home .cyber-home-operation h3{margin-bottom:6px;font-size:.88rem}
+  .cyber-home .cyber-home-operation p:not(.eyebrow){max-width:800px;margin-bottom:3px;font-size:.83rem;line-height:1.45}
+  .cyber-home .cyber-home-operation small{font-size:.71rem;line-height:1.4}
+  .operation-radar{width:180px;aspect-ratio:1.55;border-radius:11px;box-shadow:0 0 20px #00eaf617}
+  .operation-radar small{font-size:.43rem}
+  .cyber-home-network{padding:18px 20px;margin-bottom:16px}
+  .cyber-home-network>header{padding-bottom:12px}
+  .cyber-home .mission-card-grid{gap:13px;margin-top:15px}
+  .cyber-home .mission-card{min-height:240px;gap:6px;border-radius:14px;transition:transform .23s ease,box-shadow .23s ease,border-color .23s ease}
+  .cyber-home .mission-card.current{border-color:#ffad3b;background:linear-gradient(145deg,#291a0fae,#0920166c);box-shadow:inset 0 0 26px #ff930014,0 0 18px #ff930022}
+  .cyber-home .mission-card.completed{background:linear-gradient(145deg,#07351dbd,#071c25a8)}
+  .cyber-home .mission-card.locked{opacity:.63}
+  .cyber-home .mission-card:not(.locked):hover{transform:translateY(-3px);box-shadow:0 12px 32px #0007,0 0 20px #00eaf627}
+  .cyber-home .mission-summary h2{font-size:1.28rem;line-height:1.12}
+  .cyber-home .mission-summary h3{font-size:.88rem;color:#c7e1d7}
+  .cyber-home .mission-action .primary-button{min-height:49px;font-size:.84rem;letter-spacing:.03em}
+  .cyber-home .mission-card.current .mission-action .primary-button{background:#ffbd61;color:#140900;box-shadow:0 0 18px #ff930057}
+  .cyber-home .mission-card.current .mission-action .primary-button:hover{background:#ffda91;box-shadow:0 0 26px #ff930088}
+  .mission-training-link{position:relative;overflow:hidden;isolation:isolate;min-height:75px;margin-top:11px;border-color:#00eaf69e;background:linear-gradient(110deg,#0b3440,#0b2430);box-shadow:inset 3px 0 #00eaf6,0 0 15px #00eaf61c;transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
+  .mission-training-link:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(105deg,transparent 26%,#00eaf628 46%,transparent 63%);transform:translateX(-125%);animation:training-signal-sweep 5s ease-in-out infinite}
+  .mission-training-link span{color:#70f7ff;font-size:.75rem;letter-spacing:.08em}
+  .mission-training-link strong{font-size:1.1rem}
+  .mission-training-link b{transition:transform .2s ease;text-shadow:0 0 12px #00eaf6}
+  .mission-training-link:hover,.mission-training-link:focus-visible{transform:translateY(-3px) scale(1.012);background:linear-gradient(110deg,#125166,#0c3443);box-shadow:inset 3px 0 #80fbff,0 0 29px #00eaf661}
+  .mission-training-link:hover b,.mission-training-link:focus-visible b{transform:translateX(5px)}
+  .echo-utility-card.cyber-home-training:not(.is-locked) .cyber-outline-button{box-shadow:inset 0 0 0 1px #00eaf62f,0 0 12px #00eaf620;animation:training-button-breathe 3.4s ease-in-out infinite}
+  .echo-utility-card.cyber-home-training:not(.is-locked) .cyber-outline-button:hover{animation:none;background:#00eaf623;box-shadow:0 0 24px #00eaf65f}
+}
+@keyframes training-signal-sweep{0%,67%{transform:translateX(-125%)}88%,100%{transform:translateX(125%)}}
+@keyframes training-button-breathe{0%,100%{box-shadow:inset 0 0 0 1px #00eaf62f,0 0 9px #00eaf620}50%{box-shadow:inset 0 0 0 1px #00eaf66a,0 0 19px #00eaf64d}}
+@media(prefers-reduced-motion:reduce){.mission-training-link:before,.echo-utility-card.cyber-home-training:not(.is-locked) .cyber-outline-button{animation:none!important}}

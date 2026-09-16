@@ -67,7 +67,7 @@ $pdo->exec("INSERT INTO users (id, username, display_name, password_hash) VALUES
 economy_transaction($pdo, 'shared-ledger-test');
 $pdo->beginTransaction(); lock_student_progress($pdo, 'shared-ledger-test');
 $shared = economy_load_locked($pdo, 'shared-ledger-test');
-$shared['completedMissions'] = [1,2,3]; $shared['currentCredits'] = 70; $shared['lifetimeCreditsEarned'] = 70;
+$shared['completedMissions'] = [1,2,3,4,5,6,8]; $shared['currentCredits'] = 70; $shared['lifetimeCreditsEarned'] = 70;
 economy_milestones($pdo, 'shared-ledger-test', $shared); economy_save($pdo, 'shared-ledger-test', $shared); $pdo->commit();
 $trainingAttempt = training_start($pdo, 'shared-ledger-test', 'systems-calibration');
 $trainingEvidence = [];

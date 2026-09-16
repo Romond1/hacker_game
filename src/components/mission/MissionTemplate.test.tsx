@@ -1,165 +1,82 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ComponentProps } from 'react';
 import type { MissionProgress, SessionUser } from '../../api/client';
-import { emptyProgression, type RewardReceipt } from '../../domain/progression';
+import type { RewardReceipt } from '../../domain/progression';
 import { missionOne } from '../../missions/mission-one';
 import { missionTwo } from '../../missions/mission-two';
 import { missionThree } from '../../missions/mission-three';
+import { missionFour } from '../../missions/mission-four';
 import { MissionTemplate } from './MissionTemplate';
 import type { MissionRunner } from './MissionRunner';
 
 const score = { total: 850, accuracy: 100, lines: [] };
 const stats = { hints: 0, translations: 0, correct: 3, incorrect: 0 };
 const reward: RewardReceipt = { source: 'mission-1', eventId: 'attempt-1', xp: 850, credits: 20, totalXP: 850, currentCredits: 20, creditLimitReached: false };
-
-vi.mock('./MissionRunner', () => ({
-  MissionRunner: ({ attemptId, onComplete }: ComponentProps<typeof MissionRunner>) => <section aria-label="Active mission">
-    <p>Attempt: {attemptId}</p>
-    <button onClick={() => onComplete(score, 42, stats)}>Finish without receipt</button>
-    <button onClick={() => onComplete(score, 42, stats, reward)}>Finish with receipt</button>
-  </section>,
-}));
-
+vi.mock('./MissionRunner', () => ({ MissionRunner: ({ attemptId, preview, onComplete }: ComponentProps<typeof MissionRunner>) => <section aria-label="Training computer" data-preview={String(Boolean(preview))}><p>Attempt: {attemptId || 'none'}</p><button onClick={() => onComplete(score, 42, stats)}>Finish without receipt</button><button onClick={() => onComplete(score, 42, stats, reward)}>Finish with receipt</button></section> }));
 const student: SessionUser = { id: 'student-1', username: 'agent', displayName: 'Agent', role: 'student', supportLanguage: 'ja', themeColor: 'cyan', csrfToken: 'csrf' };
 const progress: MissionProgress = { missionId: 'mission-1', missionNumber: 1, unlocked: true, completed: false, bestScore: null, bestTimeSeconds: null, totalPoints: 0, attemptCount: 0 };
+function setup(overrides: Partial<ComponentProps<typeof MissionTemplate>> = {}) { vi.stubGlobal('matchMedia', () => ({ matches: true })); const request = vi.fn().mockResolvedValue({ attemptId: 'attempt-1' }); const onHome = vi.fn(); render(<MissionTemplate mission={missionOne} user={student} progress={progress} request={request} onHome={onHome} {...overrides} />); return { request, onHome }; }
+function finishMissionOneGuide() { fireEvent.click(screen.getByRole('button', { name: /^Next/ })); expect(screen.getByRole('button', { name: /^Next/ })).toBeDisabled(); fireEvent.doubleClick(screen.getByRole('button', { name: /Practice Folder/ })); fireEvent.click(screen.getByRole('button', { name: /^Next/ })); expect(screen.getByRole('button', { name: /^Next/ })).toBeDisabled(); fireEvent.click(screen.getByRole('button', { name: /Back/ })); fireEvent.click(screen.getByRole('button', { name: /^Next/ })); fireEvent.click(screen.getByRole('button', { name: /^Start Mission/ })); }
+afterEach(() => { vi.unstubAllGlobals(); });
 
-function setup(overrides: Partial<ComponentProps<typeof MissionTemplate>> = {}) {
-  const request = vi.fn().mockResolvedValue({ attemptId: 'attempt-1' });
-  const onHome = vi.fn();
-  render(<MissionTemplate mission={missionOne} user={student} progress={progress} request={request} onHome={onHome} {...overrides} />);
-  return { request, onHome };
-}
-
-function openTutorial() {
-  fireEvent.click(screen.getByRole('button', { name: /Open briefing/ }));
-  fireEvent.click(screen.getByRole('button', { name: /Start tutorial/ }));
-}
-
-function finishTutorial() {
-  openTutorial();
-  completeTutorialSteps();
-}
-
-function completeTutorialSteps() {
-  fireEvent.click(screen.getByRole('button', { name: /Continue/ }));
-  fireEvent.doubleClick(screen.getByRole('button', { name: /Practice Folder/ }));
-  fireEvent.click(screen.getByRole('button', { name: /Continue/ }));
-  fireEvent.click(screen.getByRole('button', { name: /Back/ }));
-  fireEvent.click(screen.getByRole('button', { name: /Continue/ }));
-  fireEvent.click(screen.getByRole('button', { name: /Begin Mission/ }));
-}
-
-afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
-
-describe('MissionTemplate', () => {
-  it('opens the real briefing and tutorial without starting an attempt', () => {
-    const { request } = setup();
-    fireEvent.click(screen.getByRole('button', { name: /Open briefing/ }));
-    expect(screen.getByText('MISSION 01 / BRIEFING')).toBeInTheDocument();
-    expect(screen.getByText('MISSION STEPS')).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(missionOne.objectives.length);
-    fireEvent.click(screen.getByRole('button', { name: /Start tutorial/ }));
-    expect(screen.getByText('Welcome, Agent')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Folders and files' })).toBeInTheDocument();
+describe('MissionTemplate rookie overlays', () => {
+  it('shows the computer preview under the guide without creating an attempt', () => { const { request } = setup(); expect(screen.getByRole('dialog', { name: 'Folders and files' })).toBeInTheDocument(); expect(screen.getByText('Attempt: none').closest('[aria-hidden]')).toHaveAttribute('inert'); expect(request).not.toHaveBeenCalled(); });
+  it('keeps locked missions unavailable', () => { const { request, onHome } = setup({ mission: missionTwo, progress: { ...progress, missionId: 'mission-2', missionNumber: 2, unlocked: false } }); expect(screen.getByText(/Complete the previous mission/)).toBeInTheDocument(); expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(request).not.toHaveBeenCalled(); fireEvent.click(screen.getByRole('button', { name: /Home/i })); expect(onHome).toHaveBeenCalledOnce(); });
+  it('Mission 2 has three steps, then starts a fresh attempt', async () => { const { request } = setup({ mission: missionTwo, progress: { ...progress, missionId: 'mission-2', missionNumber: 2 } }); expect(screen.getByText(/01 OF 03/)).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: /^Next/ })); expect(screen.getByRole('heading', { name: 'Change branches' })).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: /^Next/ })); expect(screen.getByRole('heading', { name: 'Follow clues in order' })).toBeInTheDocument(); expect(request).not.toHaveBeenCalled(); fireEvent.click(screen.getByRole('button', { name: /^Start Mission/ })); await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument()); expect(screen.getByRole('region', { name: 'Training computer' })).toHaveAttribute('data-preview', 'false'); expect(screen.getByText('Attempt: attempt-1')).toBeInTheDocument(); expect(request.mock.calls).toEqual([['attempt.start', { missionId: 'mission-2' }, 'csrf'], ['attempt.event', { attemptId: 'attempt-1', type: 'tutorial_completed', data: { tutorialId: 'mission-2-intro' } }, 'csrf']]); });
+  it('Mission 1 practice is unscored and X starts immediately', async () => { const { request } = setup(); fireEvent.click(screen.getByRole('button', { name: /^Next/ })); fireEvent.doubleClick(screen.getByRole('button', { name: /Practice Folder/ })); expect(request).not.toHaveBeenCalled(); fireEvent.click(screen.getByRole('button', { name: /Close tutorial and start mission/ })); expect(await screen.findByText('Attempt: attempt-1')).toBeInTheDocument(); });
+  it('Mission 8 introduces both detective levels in a compact guide', () => { setup({ mission: missionThree, progress: { ...progress, missionId: 'mission-3', missionNumber: 8 } }); expect(screen.getByText(/01 OF 02/)).toBeInTheDocument(); expect(screen.getByRole('heading', {name:'FILE DETECTIVE'})).toBeInTheDocument(); fireEvent.click(screen.getByRole('button',{name:/^Next/})); expect(screen.getByRole('heading',{name:'READ BEFORE YOU TYPE'})).toBeInTheDocument(); expect(screen.getByRole('button',{name:/^Start Mission/})).toBeEnabled(); });
+  it('retries a failed tutorial event without duplicating the created attempt', async () => { const request = vi.fn().mockResolvedValueOnce({ attemptId: 'attempt-1' }).mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({}); setup({ request }); finishMissionOneGuide(); expect(await screen.findByRole('alert')).toHaveTextContent(/try again/i); expect(screen.getByRole('dialog', { name: 'Help is allowed' })).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: /Retry starting/ })); expect(await screen.findByText('Attempt: attempt-1')).toBeInTheDocument(); expect(request.mock.calls.filter(([action]) => action === 'attempt.start')).toHaveLength(1); });
+  it('shows Access Granted then Final Score over the same computer, including rewards and replay', async () => { const onComplete = vi.fn(); const { request, onHome } = setup({ onComplete }); fireEvent.click(screen.getByRole('button', { name: /Close tutorial and start mission/ })); await screen.findByText('Attempt: attempt-1'); fireEvent.click(screen.getByRole('button', { name: 'Finish with receipt' })); expect(screen.getByRole('dialog', { name: 'ACCESS GRANTED' })).toBeInTheDocument(); expect(screen.getByText('Attempt: attempt-1').closest('[aria-hidden]')).toHaveAttribute('inert'); fireEvent.click(screen.getByRole('button', { name: /View Mission Score/ })); const report = screen.getByRole('dialog', { name: 'FINAL SCORE' }); expect(within(report).getByText('850')).toBeInTheDocument(); expect(within(report).getByText('+20')).toBeInTheDocument(); expect(onComplete).toHaveBeenCalledWith({ score, duration: 42, stats, reward }); fireEvent.click(within(report).getByRole('button', { name: /Replay Mission/ })); expect(screen.getByRole('dialog', { name: 'Folders and files' })).toBeInTheDocument(); expect(screen.getByText('Attempt: none')).toBeInTheDocument(); expect(request.mock.calls.filter(([action]) => action === 'attempt.start')).toHaveLength(1); fireEvent.click(screen.getByRole('button', { name: /Agent Home/ })); expect(onHome).toHaveBeenCalledOnce(); });
+  it('shows both completion overlays even without a receipt', async () => { const { onHome } = setup(); fireEvent.click(screen.getByRole('button', { name: /Close tutorial and start mission/ })); await screen.findByText('Attempt: attempt-1'); fireEvent.click(screen.getByRole('button', { name: 'Finish without receipt' })); fireEvent.click(screen.getByRole('button', { name: /View Mission Score/ })); expect(screen.getByRole('dialog', { name: 'FINAL SCORE' })).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: /Return Home/ })); expect(onHome).toHaveBeenCalledOnce(); });
+  it('uses the production API by default', async () => { const fetchMock = vi.fn().mockResolvedValue({ json: async () => ({ ok: true, data: { attemptId: 'default-attempt' } }) }); vi.stubGlobal('fetch', fetchMock); setup({ request: undefined }); fireEvent.click(screen.getByRole('button', { name: /Close tutorial and start mission/ })); expect(await screen.findByText('Attempt: default-attempt')).toBeInTheDocument(); expect(fetchMock.mock.calls.map(([, options]) => JSON.parse(options.body).action)).toEqual(['attempt.start', 'attempt.event']); });
+  it('uses the shared introduction, reward, score and replay pop-ups for Mission 6', async () => {
+    const { request } = setup({ mission: missionFour, progress: { ...progress, missionId: 'mission-4', missionNumber: 4 } });
+    expect(screen.getByRole('dialog', { name: 'SELECT INFORMATION' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Close tutorial and start mission/ })).toBeDisabled();
+    expect(screen.getByText('DOWNLOADS / INTERCEPTED_SIGNAL.txt')).toBeInTheDocument();
     expect(request).not.toHaveBeenCalled();
-  });
-
-  it('keeps locked missions unavailable without contacting the API', () => {
-    const { request, onHome } = setup({ mission: missionTwo, progress: { ...progress, missionId: 'mission-2', missionNumber: 2, unlocked: false } });
-    expect(screen.getByText(/Complete the previous mission/)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Open briefing|Start tutorial|Begin Mission/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Next/ }));
+    expect(screen.getByRole('dialog', { name: 'RIGHT-CLICK COPY' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Next/ }));
+    expect(screen.getByRole('dialog', { name: 'RIGHT-CLICK PASTE' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Next/ }));
+    expect(screen.getByRole('dialog', { name: 'TRY COPY AND PASTE' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Start Mission/ })).toBeDisabled();
+    expect(screen.getByRole('region', { name: 'Watch copy and paste demonstration' })).toBeInTheDocument();
+    for (let step = 0; step < 9; step++) fireEvent.click(screen.getByRole('button', { name: /Next action/ }));
     expect(request).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: /Home/i }));
-    expect(onHome).toHaveBeenCalledOnce();
-  });
-
-  it('creates an attempt only after tutorial completion, then logs completion before entering active', async () => {
-    let finishEvent!: (value: object) => void;
-    const request = vi.fn().mockResolvedValueOnce({ attemptId: 'attempt-1' }).mockImplementationOnce(() => new Promise(resolve => { finishEvent = resolve; }));
-    setup({ request });
-    finishTutorial();
-    await waitFor(() => expect(request).toHaveBeenCalledTimes(2));
-    expect(request.mock.calls).toEqual([
-      ['attempt.start', { missionId: 'mission-1' }, 'csrf'],
-      ['attempt.event', { attemptId: 'attempt-1', type: 'tutorial_completed', data: { tutorialId: 'mission-1-intro' } }, 'csrf'],
-    ]);
-    expect(screen.queryByRole('region', { name: 'Active mission' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Begin Mission/ }));
-    expect(request).toHaveBeenCalledTimes(2);
-    await act(async () => finishEvent({}));
-    expect(screen.getByText('Attempt: attempt-1')).toBeInTheDocument();
-  });
-
-  it('presents start failure retryably without entering active state', async () => {
-    const request = vi.fn().mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({ attemptId: 'attempt-2' });
-    setup({ request });
-    finishTutorial();
-    expect(await screen.findByRole('alert')).toHaveTextContent(/try again/i);
-    expect(screen.queryByRole('region', { name: 'Active mission' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Retry starting/ }));
-    expect(await screen.findByText('Attempt: attempt-2')).toBeInTheDocument();
-    expect(request.mock.calls.filter(([action]) => action === 'attempt.start')).toHaveLength(2);
-  });
-
-  it('reuses a created attempt when tutorial event logging needs a retry', async () => {
-    const request = vi.fn().mockResolvedValueOnce({ attemptId: 'attempt-1' }).mockRejectedValueOnce(new Error('Offline')).mockResolvedValue({});
-    setup({ request });
-    finishTutorial();
-    await screen.findByRole('alert');
-    fireEvent.click(screen.getByRole('button', { name: /Retry starting/ }));
-    expect(await screen.findByText('Attempt: attempt-1')).toBeInTheDocument();
-    expect(request.mock.calls.filter(([action]) => action === 'attempt.start')).toHaveLength(1);
-  });
-
-  it('shows results without a receipt, exposes completion, and supports Home and replay', async () => {
-    const onComplete = vi.fn();
-    const { onHome, request } = setup({ onComplete });
-    finishTutorial();
-    fireEvent.click(await screen.findByRole('button', { name: 'Finish without receipt' }));
-    expect(screen.getByText('FINAL SCORE')).toBeInTheDocument();
-    expect(onComplete).toHaveBeenCalledWith({ score, duration: 42, stats, reward: undefined });
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Return home/ }));
-    expect(onHome).toHaveBeenCalledOnce();
-    fireEvent.click(screen.getByRole('button', { name: /Replay mission/ }));
-    expect(screen.getByText('MISSION 01 / BRIEFING')).toBeInTheDocument();
-    expect(request).toHaveBeenCalledTimes(2);
-    fireEvent.click(screen.getByRole('button', { name: /Agent Home/ }));
-    expect(onHome).toHaveBeenCalledTimes(2);
-    fireEvent.click(screen.getByRole('button', { name: /Start tutorial/ }));
-    completeTutorialSteps();
-    expect(await screen.findByRole('region', { name: 'Active mission' })).toBeInTheDocument();
-    expect(request.mock.calls.filter(([action]) => action === 'attempt.start')).toHaveLength(2);
-  });
-
-  it('shows the server receipt in RewardSequence before Results', async () => {
-    setup({ progression: { ...emptyProgression(), completedMissions: [1] } });
-    finishTutorial();
-    const finish = await screen.findByRole('button', { name: 'Finish with receipt' });
-    vi.useFakeTimers();
-    fireEvent.click(finish);
-    expect(screen.getByRole('dialog', { name: 'Mission rewards' })).toBeInTheDocument();
-    expect(screen.queryByText('FINAL SCORE')).not.toBeInTheDocument();
-    act(() => vi.advanceTimersByTime(3000));
-    expect(screen.getByText('+850')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Continue/ }));
-    expect(screen.getByText('FINAL SCORE')).toBeInTheDocument();
-  });
-
-  it('uses the production API client by default', async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ json: async () => ({ ok: true, data: { attemptId: 'default-attempt' } }) });
-    vi.stubGlobal('fetch', fetchMock);
-    setup({ request: undefined });
-    finishTutorial();
-    expect(await screen.findByText('Attempt: default-attempt')).toBeInTheDocument();
-    expect(fetchMock.mock.calls.map(([, options]) => JSON.parse(options.body).action)).toEqual(['attempt.start', 'attempt.event']);
-  });
-
-  it('declares the existing prerequisite chain and replay metadata', () => {
-    expect(missionOne.lifecycle).toMatchObject({ replay: 'allowed' });
-    expect(missionOne.lifecycle.prerequisiteMissionId).toBeUndefined();
-    expect(missionTwo.lifecycle).toMatchObject({ replay: 'allowed', prerequisiteMissionId: 'mission-1' });
-    expect(missionThree.lifecycle).toMatchObject({ replay: 'allowed', prerequisiteMissionId: 'mission-2', associatedTrainingId: 'systems-calibration' });
+    expect(screen.getByRole('button', { name: /^Start Mission/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: /Your turn/ }));
+    const source = screen.getByTestId('practice-transfer-source');
+    fireEvent.contextMenu(source);
+    expect(screen.queryByRole('button', { name: 'Copy practice code' })).not.toBeInTheDocument();
+    const selection = vi.spyOn(window, 'getSelection').mockReturnValue({ toString: () => 'STAR-7', anchorNode: source.firstChild, focusNode: source.firstChild } as Selection);
+    fireEvent.mouseUp(source);
+    fireEvent.click(source);
+    expect(screen.queryByRole('button', { name: 'Copy practice code' })).not.toBeInTheDocument();
+    fireEvent.contextMenu(source);
+    fireEvent.contextMenu(screen.getByRole('button', { name: 'Copy practice code' }));
+    expect(screen.getByRole('button', { name: /^Start Mission/ })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Copy practice code' }));
+    const destination = screen.getByLabelText('Practice destination');
+    fireEvent.click(destination);
+    expect(screen.queryByRole('button', { name: 'Paste practice code' })).not.toBeInTheDocument();
+    fireEvent.contextMenu(destination);
+    fireEvent.click(screen.getByRole('button', { name: 'Paste practice code' }));
+    expect(destination).toHaveValue('STAR-7');
+    expect(screen.getByRole('button', { name: /^Start Mission/ })).toBeEnabled();
+    expect(request).not.toHaveBeenCalled();
+    selection.mockRestore();
+    fireEvent.click(screen.getByRole('button', { name: /^Start Mission/ }));
+    await screen.findByText('Attempt: attempt-1');
+    expect(request).toHaveBeenCalledWith('attempt.start', { missionId: 'mission-4' }, 'csrf');
+    fireEvent.click(screen.getByRole('button', { name: 'Finish with receipt' }));
+    expect(screen.getByRole('dialog', { name: 'ACCESS GRANTED' })).toBeInTheDocument();
+    expect(screen.getByText('COMMUNICATION NODE SECURED')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /View Mission Score/ }));
+    expect(screen.getByRole('dialog', { name: 'FINAL SCORE' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Replay Mission/ }));
+    expect(screen.getByRole('dialog', { name: 'SELECT INFORMATION' })).toBeInTheDocument();
   });
 });

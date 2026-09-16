@@ -52,7 +52,7 @@ export const PROGRESSION_COPY = {
   classified: ['CLASSIFIED', 'RISERVATO', '機密'],
   sourceIdentified: ['SOURCE IDENTIFIED', 'FONTE IDENTIFICATA', '発信源を特定'],
   unknownNetworkActivity: ['UNKNOWN NETWORK ACTIVITY DETECTED', 'ATTIVITÀ DI RETE SCONOSCIUTA RILEVATA', '未知のネットワーク活動を検出'],
-  teaserHelp: ['Your training is over. Something is moving beyond the home network. Mission 4 is coming.', 'L’addestramento è finito. Qualcosa si muove oltre la rete di casa. La missione 4 sta arrivando.', 'トレーニングは終了。ホームネットワークの先で何かが動いています。ミッション4は近日公開。'],
+  teaserHelp: ['Rookie training is complete. Start Training 4: practice dragging, then move the rescue kit in Mission 4.', 'L’addestramento iniziale è completo. Inizia l’Addestramento 4: impara a trascinare, poi sposta il kit nella Missione 4.', '新人訓練を完了しました。トレーニング4でドラッグを練習し、ミッション4で救助キットを移しましょう。'],
   enterNetwork: ['Enter home base', 'Entra nella base', 'ホームベースに入る'],
   soundOn: ['Sound on', 'Audio attivo', 'サウンド：オン'],
   soundOff: ['Sound muted', 'Audio disattivato', 'サウンド：オフ'],

@@ -141,7 +141,7 @@ function lock_student_progress(PDO $pdo, string $userId): void
 
 function refresh_current_mission(PDO $pdo, string $userId): void
 {
-    $current = $pdo->prepare('SELECT m.mission_number FROM missions m LEFT JOIN user_progress p ON p.mission_id = m.id AND p.user_id = ? WHERE m.is_active = 1 AND COALESCE(p.unlocked, IF(m.mission_number = 1, 1, 0)) = 1 ORDER BY COALESCE(p.completed, 0), CASE WHEN COALESCE(p.completed, 0) = 0 THEN m.mission_number ELSE -m.mission_number END LIMIT 1');
+    $current = $pdo->prepare('SELECT m.mission_number FROM missions m LEFT JOIN user_progress p ON p.mission_id = m.id AND p.user_id = ? WHERE m.is_active = 1 ORDER BY COALESCE(p.completed, 0), CASE WHEN COALESCE(p.completed, 0) = 0 THEN m.mission_number ELSE -m.mission_number END LIMIT 1');
     $current->execute([$userId]);
     $number = $current->fetchColumn();
     if ($number !== false) $pdo->prepare('UPDATE users SET current_mission = ? WHERE id = ?')->execute([(int) $number, $userId]);

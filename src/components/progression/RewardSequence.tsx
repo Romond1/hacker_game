@@ -111,7 +111,7 @@ export function RewardSequence({
             <Copy id="replayCap" language={language} />
           </p>
         )}
-        {missionNumber === 4 ? (
+        {missionNumber === 6 ? (
           <div className="mission-four-story-beat">
             <strong>COMMUNICATION NODE SECURED</strong>
             <Copy id="sourceIdentified" language={language} />
@@ -160,7 +160,7 @@ export function RewardSequence({
           tone="success"
           message={
             <Copy
-              id={missionNumber === 4 ? "nodeSecured" : "signalConfirmed"}
+              id={missionNumber === 6 ? "nodeSecured" : "signalConfirmed"}
               language={language}
             />
           }

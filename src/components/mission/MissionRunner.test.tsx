@@ -71,17 +71,17 @@ describe('MissionRunner', () => {
     await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
   });
 
-  it('keeps Mission 3 English-first, logs translation once, and confirms ORBIT', async () => {
+  it('requires both randomized detective levels and rejects the fake code', async () => {
     const onComplete = vi.fn();
     render(<MissionRunner mission={missionThree} user={himari} attemptId="attempt-3" onComplete={onComplete} />);
     open(/Documents/);
     open(/Investigation/);
     open(/mission-report\.txt/);
 
-    expect(screen.getByText(/Agent Code: ORBIT/)).toBeInTheDocument();
-    expect(screen.queryByText(/エージェントコード：ORBIT/)).not.toBeInTheDocument();
+    const firstCode = screen.getByText(/Agent Code:/).textContent!.match(/Agent Code: ([A-Z]+)/)![1];
+    expect(screen.queryByText(/エージェントコード：/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Translate file/i }));
-    expect(screen.getByText(/エージェントコード：ORBIT/)).toHaveAttribute('lang', 'ja');
+    expect(screen.getByText(/エージェントコード：/)).toHaveAttribute('lang', 'ja');
     expect(JSON.stringify((fetch as ReturnType<typeof vi.fn>).mock.calls)).toContain('translation_used');
 
     fireEvent.change(await screen.findByLabelText(/Agent Code/i), { target: { value: 'MOON' } });
@@ -89,8 +89,21 @@ describe('MissionRunner', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/not confirmed/i);
     expect(onComplete).not.toHaveBeenCalled();
 
-    fireEvent.change(screen.getByLabelText(/Agent Code/i), { target: { value: ' orbit ' } });
+    fireEvent.change(screen.getByLabelText(/Agent Code/i), { target: { value: ` ${firstCode.toLowerCase()} ` } });
     fireEvent.click(screen.getByRole('button', { name: /Confirm code/i }));
+    expect(await screen.findByRole('dialog', {name:'Level 1 complete'})).toBeInTheDocument();
+    expect(onComplete).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button',{name:/Start Level 2/}));
+    open(/Documents/); open(/Verification/); open(/access-report/);
+    const report = screen.getByText(/Only the ACTIVE code/).textContent!;
+    const active = report.match(/ACTIVE code: ([A-Z]{2}-[0-9]{2})/)![1];
+    const fake = report.match(/TRAINING code \(fake\): ([A-Z]{2}-[0-9]{2})/)![1];
+    await screen.findByLabelText(/Agent Code/i);
+    fireEvent.change(screen.getByLabelText(/Agent Code/i),{target:{value:fake}});
+    fireEvent.click(screen.getByRole('button',{name:/Confirm code/}));
+    expect(screen.getByRole('alert')).toBeInTheDocument(); expect(onComplete).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText(/Agent Code/i),{target:{value:active}});
+    fireEvent.click(screen.getByRole('button',{name:/Confirm code/}));
     await waitFor(() => expect(onComplete).toHaveBeenCalledOnce());
   });
 

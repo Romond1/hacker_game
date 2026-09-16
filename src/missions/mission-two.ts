@@ -28,8 +28,7 @@ export const missionTwo: MissionDefinition = {
     guideExhausted: t('You have every clue you need. Check your location and keep going.', 'Hai tutti gli indizi necessari. Controlla la posizione e continua.', '必要な手がかりはそろっています。今いる場所を確認して進みましょう。'),
   },
   tutorial: [
-    { id: 'nested', title: t('Folders inside folders', 'Cartelle dentro cartelle', 'フォルダーの中のフォルダー'), body: t('A folder can hold files and more folders.', 'Una cartella può contenere file e altre cartelle.', 'フォルダーにはファイルや別のフォルダーを入れられます。'), action: 'continue' },
-    { id: 'location', title: t('Your location', 'La tua posizione', '現在の場所'), body: t('The path shows where you are: Desktop > Documents > Agent.', 'Il percorso mostra dove sei: Desktop > Documents > Agent.', 'パスは今いる場所を示します：Desktop > Documents > Agent。'), action: 'continue' },
+    { id: 'nested', title: t('Folders and paths', 'Cartelle e percorsi', 'フォルダーとパス'), body: t('Folders can hold more folders. The path shows where you are, like Desktop > Documents > Agent.', 'Le cartelle possono contenere altre cartelle. Il percorso mostra dove sei, per esempio Desktop > Documents > Agent.', 'フォルダーの中には別のフォルダーがあります。パスは現在の場所を示します。例：Desktop > Documents > Agent。'), action: 'continue' },
     { id: 'branches', title: t('Change branches', 'Cambia percorso', '別の場所へ移動'), body: t('Use Back to leave one folder branch, then open another.', 'Usa Indietro per lasciare un percorso e aprirne un altro.', '「戻る」で今の場所を出て、別のフォルダーを開きます。'), action: 'continue' },
     { id: 'clues', title: t('Follow clues in order', 'Segui gli indizi in ordine', '手がかりを順番に'), body: t('Read each clue before looking for the next one.', 'Leggi ogni indizio prima di cercare il successivo.', '次を探す前に、それぞれの手がかりを読みましょう。'), action: 'continue' },
   ],

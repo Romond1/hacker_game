@@ -13,6 +13,11 @@ const balancesCase = api.split("case 'teacher.setBalances':")[1]?.split("case 't
 assert.ok(balancesCase && balancesCase.indexOf('require_teacher()') < balancesCase.indexOf('teacher_set_balances('), 'Teacher balance changes must authorize first.');
 assert.ok(api.includes("case 'robot.start':") && api.includes("case 'robot.finish':"), 'Robot training must use authenticated server run endpoints.');
 const robotTraining = await readFile('server/src/robot_training.php', 'utf8');
+const recoveryMigration = await readFile('server/migrations/010_core_recovery.sql', 'utf8');
+const economyCore = await readFile('server/src/progression.php', 'utf8');
+for (const token of ["mission_number = 8 WHERE id = 'mission-3'", "'mission-recovery'", "'mouse-master'"]) assert.ok(recoveryMigration.includes(token), `Recovery migration missing ${token}`);
+for (const token of ['recoveryProgressionV4', 'valid_recovery_evidence', 'rareEquipmentUnlocked', 'recoveryRewardItems']) assert.ok(economyCore.includes(token), `Recovery economy contract missing ${token}`);
+assert.ok(api.includes("valid_recovery_evidence($stats['recovery'] ?? null)"), 'Boss completion requires assessed recovery evidence.');
 for (const token of ['FOR UPDATE', 'economy_award(', 'completed = 1', 'TIMESTAMPDIFF']) assert.ok(robotTraining.includes(token), `Robot training contract missing ${token}`);
 assert.ok(resetCase && resetCase.indexOf('require_teacher()') < resetCase.indexOf('reset_student_mission('), 'Reset must authorize Teacher before any mutation.');
 assert.ok(api.includes("if (!in_array($action, ['auth.login', 'auth.session'], true)) require_csrf();"), 'Reset must remain protected by CSRF.');
@@ -52,7 +57,7 @@ for (const token of ["'mission-4'", "'communication-node-secured'"]) {
 }
 assert.ok(training.includes("'data-transfer'"), 'Training policy missing data-transfer');
 for (const token of ["'text_selected'", "'copy_used'", "'paste_used'", "'code_submitted'"]) {
-  assert.ok(api.includes(token), `Mission 4 event allowlist missing ${token}`);
+  assert.ok(api.includes(token), `Mission 6 event allowlist missing ${token}`);
 }
 for (const token of ['FOR UPDATE', 'economy_award(', "'training:' . $definition['id']"]) {
   assert.ok(training.includes(token), `Training policy missing ${token}`);

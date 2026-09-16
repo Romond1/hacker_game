@@ -91,7 +91,7 @@ function training_progress_public(array $row, array $definition, bool $unlocked)
 
 function training_is_unlocked(array $definition, array $state): bool
 {
-    return !array_diff($definition['requiredCompletedMissions'], $state['completedMissions']);
+    return ($definition['id'] === 'data-transfer' && in_array(6, $state['completedMissions'], true)) || !array_diff($definition['requiredCompletedMissions'], $state['completedMissions']);
 }
 
 function training_start(PDO $pdo, string $userId, string $trainingId): array

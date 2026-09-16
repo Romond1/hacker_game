@@ -9,5 +9,6 @@ INSERT INTO achievements (id, name, description) VALUES
   ('communication-node-secured', 'COMMUNICATION NODE SECURED', 'Recovered and transferred the intercepted transmission code.')
 ON DUPLICATE KEY UPDATE name = VALUES(name), description = VALUES(description);
 
-INSERT IGNORE INTO user_progress (user_id, mission_id, unlocked)
-SELECT user_id, 'mission-4', 1 FROM user_progress WHERE mission_id = 'mission-3' AND completed = 1;
+INSERT INTO user_progress (user_id, mission_id, unlocked)
+SELECT user_id, 'mission-4', 1 FROM user_progress WHERE mission_id = 'mission-3' AND completed = 1
+ON DUPLICATE KEY UPDATE unlocked = 1;

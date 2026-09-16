@@ -1,11 +1,21 @@
+import { FrameOrnament } from "../progression/FrameOrnament";
 import type { SessionUser, StudentDashboard } from "../../api/client";
 import { getStudentHomeCopy } from "../../i18n/student";
 import { MISSIONS } from "../../missions/catalog";
 import { ECONOMY, type PlayerProgression } from "../../domain/progression";
-import { HackerProfile } from "../progression/HackerProfile";
 import { trainingAvailableModules, trainingCopy } from "../../i18n/training";
 import { TrainingCopy } from "../training/TrainingCopy";
 import { AmbientLayer } from "../gamefeel/AmbientLayer";
+
+const EQUIPMENT_CATEGORIES = [
+  { key: "hero", label: "HERO" },
+  { key: "badge", label: "BADGE" },
+  { key: "cursor", label: "CURSOR" },
+  { key: "mouseEffect", label: "MOUSE EFFECT" },
+  { key: "mouseAnimation", label: "MOUSE ANIMATION" },
+  { key: "terminalTheme", label: "TERMINAL THEME" },
+  { key: "companion", label: "COMPANION" },
+] as const;
 import { ProgressMeter } from "../gamefeel/ProgressMeter";
 import { robotDefenseModes, robotDefenseUnlocked } from "../../training/robot-defense";
 import type { RobotDefenseModeId } from "../../training/robot-defense";
@@ -22,6 +32,7 @@ const labels = {
   locked: { it: "Bloccata", ja: "ロック中" },
   replay: { it: "Rigioca", ja: "もう一度プレイ" },
   briefing: { it: "Apri il briefing", ja: "ブリーフィングを開く" },
+  startMission: { it: "Inizia missione", ja: "ミッション開始" },
   lockedHelp: {
     it: "Completa la missione precedente.",
     ja: "前のミッションを完了してください。",
@@ -44,6 +55,8 @@ const dashboardLabels = {
     identityPending: "Identità in attesa",
     identityHelp: "Completa tre Missioni Rookie per creare la tua identità hacker.",
     profileEncrypted: "Profilo operativo crittografato",
+    lockedStatus: "Bloccato",
+    shopLockedHelp: "Completa tre Missioni Rookie per sbloccare il Cyber Shop.",
   },
   ja: {
     homeBase: "ホームベース",
@@ -60,6 +73,8 @@ const dashboardLabels = {
     identityPending: "アイデンティティ保留中",
     identityHelp: "3つのルーキーミッションを完了して、ハッカーとしての自分を作成しましょう。",
     profileEncrypted: "オペレータープロフィール暗号化中",
+    lockedStatus: "ロック中",
+    shopLockedHelp: "3つのルーキーミッションを完了するとサイバーショップが解除されます。",
   },
 } as const;
 
@@ -116,6 +131,7 @@ export function StudentHome({
   const equippedHero = progression?.equippedItems?.hero
     ? ECONOMY.items.find((item) => item.itemId === progression.equippedItems.hero)
     : undefined;
+  const equippedBadge = ECONOMY.items.find(item => item.itemId === progression?.equippedItems.badge);
   const heroImgSrc =
     equippedHero?.asset && "image" in equippedHero.asset
       ? `${import.meta.env.BASE_URL}${equippedHero.asset.image}`
@@ -123,11 +139,24 @@ export function StudentHome({
   const heroLabel = equippedHero
     ? `◉ ${equippedHero.name.toUpperCase()} // ONLINE`
     : "◉ OPERATIVE_ECHO // ONLINE";
-  const hasEchoPortrait = hasIdentity && (user.username.toLowerCase() === "test.hacker" || Boolean(equippedHero));
+  const hasEchoPortrait = hasIdentity && (user.username.toLowerCase() === "test.hacker" || Boolean(equippedHero) || Boolean(progression?.equippedItems.badge));
   const hasAnonymousPortrait = !hasIdentity;
   const hasPortrait = hasEchoPortrait || hasAnonymousPortrait;
+  const isMissionUnlocked = activeProgress?.unlocked ?? (activeMission.number === 1 || dashboard.completedMissions.includes(activeMission.number));
+  const neededTraining = !isMissionUnlocked && activeMission.number > 3 && dashboard.completedMissions.includes(activeMission.number - 1);
+  const startNeededTraining = () => {
+    const mode = robotDefenseModes.find(mode => 'trainingNumber' in mode && mode.trainingNumber === activeMission.number);
+    if (mode && onRobotDefense) onRobotDefense(mode.id); else onTraining?.();
+  };
+  const isShopUnlocked = Boolean(
+    progression?.storyFlags?.shopUnlocked ||
+    dashboard.completedMissions.includes(3) ||
+    dashboard.completedMissions.some((m) => m >= 3) ||
+    user.username.toLowerCase() === "test.hacker"
+  );
+  const isTrainingUnlocked = Boolean(availableTrainingCount > 0 || dashboard.completedMissions.length >= 1);
   const launchCurrentMission = () => {
-    if (!activeProgress?.unlocked) return;
+    if (!isMissionUnlocked) return;
     playEffect("click", progression?.settings.muted ?? true);
     onMission(activeMission.id);
   };
@@ -152,8 +181,9 @@ export function StudentHome({
 
       <section className={`cyber-home-echo cyber-glass spectral-border ${hasPortrait ? "" : "no-portrait"}`} data-rgb-pattern="echo-orbit">
         {hasEchoPortrait && (
-          <div className="echo-portrait">
+          <div className={`echo-portrait ${equippedBadge ? `premium-frame ${equippedBadge.asset.className ?? "frame-rookie"}` : ""}`}>
             <img src={heroImgSrc} alt={equippedHero?.name ?? "Echo cyber-wolf operative"} />
+            {equippedBadge && <FrameOrnament />}
             <span>{heroLabel}</span>
           </div>
         )}
@@ -165,9 +195,17 @@ export function StudentHome({
         )}
         <div className="echo-command">
           <p className="eyebrow">{hasIdentity ? "CYBER GUIDE" : "OPERATIVE PROFILE: ENCRYPTED"} // <span lang={user.supportLanguage}>{hasIdentity ? support.echoOnline : support.profileEncrypted}</span></p>
-          <div className="echo-title">
-            {operativeName ? <h1>{operativeName}</h1> : <strong className="identity-pending-title">IDENTITY PENDING</strong>}
-            <span>{dashboard.rank}</span>
+          <div className="echo-header-row">
+            <div className="echo-title">
+              {operativeName ? <h1>{operativeName}</h1> : <strong className="identity-pending-title">IDENTITY PENDING</strong>}
+              <span>{dashboard.rank}</span>
+            </div>
+            <section className="cyber-home-launch cyber-glass spectral-border" data-rgb-pattern="launch-reverse" aria-label="Operation launch console">
+              <div><span>▣</span><p><small>{neededTraining ? `TRAINING ${activeMission.number} READY` : isMissionUnlocked ? 'NEXT MISSION READY' : 'MISSION LOCKED'}</small><strong>MISSION {String(activeMission.number).padStart(2, '0')} · {activeMission.title.en}</strong><em lang={user.supportLanguage}>{activeMission.title[user.supportLanguage]}</em></p></div>
+              <button disabled={!isMissionUnlocked && !neededTraining} onClick={neededTraining ? startNeededTraining : launchCurrentMission} aria-label={neededTraining ? `Start Training ${activeMission.number}` : `Start Mission ${activeMission.number}: ${activeMission.title.en}`}>
+                <span>ϟ</span><strong>{neededTraining ? "START TRAINING" : "START MISSION"} {String(activeMission.number).padStart(2, '0')}</strong><small lang={user.supportLanguage}>{labels.startMission[user.supportLanguage]}</small>
+              </button>
+            </section>
           </div>
           {operativeName ? (
             <><p className="echo-welcome">{copy.welcome.en}</p><small lang={copy.welcome.lang}>{copy.welcome.support}</small></>
@@ -179,13 +217,128 @@ export function StudentHome({
             <div><span>CREDITS</span><strong>{progression?.currentCredits ?? 0}</strong></div>
             <div><span>{copy.currentMission.en}<small lang={copy.currentMission.lang}>{copy.currentMission.support}</small></span><strong>{String(dashboard.currentMission).padStart(2, "0")}</strong></div>
           </div>
-          {progression && hasIdentity && (
-            <HackerProfile
-              user={user}
-              progression={progression}
-              onShop={onShop ?? (() => undefined)}
-              onUpdate={onProgression ?? (() => undefined)}
-            />
+
+          <div className="echo-quick-utilities">
+            <section
+              className={`echo-utility-card cyber-home-training cyber-glass spectral-border ${isTrainingUnlocked ? "" : "is-locked"}`}
+              data-rgb-pattern="training-orbit"
+              aria-label="Training Center status"
+            >
+              <header className="echo-utility-header">
+                <div>
+                  <span>◎</span>
+                  <div>
+                    <strong>TRAINING CENTER</strong>
+                    <small lang={user.supportLanguage}>{support.trainingCenter}</small>
+                  </div>
+                </div>
+                <b className="echo-utility-tag">
+                  {isTrainingUnlocked ? `${availableTrainingCount} READY` : support.lockedStatus}
+                </b>
+              </header>
+              {!isTrainingUnlocked && <h2 className="utility-heading"><TrainingCopy copy={trainingCopy("keepSystemsSharp", user.supportLanguage)} /></h2>}
+              <div className="echo-utility-body">
+                {isTrainingUnlocked ? (
+                  <>
+                    <p><TrainingCopy copy={trainingAvailableModules(user.supportLanguage, availableTrainingCount)} /></p>
+                    {trainingCreditCap > 0 && (
+                      <div className="utility-credits-row">
+                        <strong>{trainingCredits} / {trainingCreditCap} Credits</strong>
+                        <ProgressMeter label="Training Credits" value={trainingCredits} max={trainingCreditCap} detail={`${trainingCredits} / ${trainingCreditCap}`} />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p><span>Training modules unlock through the campaign.</span><small lang={user.supportLanguage}>{support.trainingLocked}</small></p>
+                )}
+              </div>
+              <button
+                aria-label="Open Training Center"
+                className="cyber-outline-button cyan"
+                onClick={onTraining}
+                disabled={!isTrainingUnlocked}
+              >
+                <TrainingCopy copy={trainingCopy("openTrainingCenter", user.supportLanguage)} />
+                <b>→</b>
+              </button>
+            </section>
+
+            <section
+              className={`echo-utility-card cyber-home-supply cyber-glass spectral-border ${isShopUnlocked ? "" : "is-locked"}`}
+              data-rgb-pattern="supply-reverse"
+              aria-label="Cyber Shop status"
+            >
+              <header className="echo-utility-header">
+                <div>
+                  <span>▦</span>
+                  <div>
+                    <strong>CYBER SHOP</strong>
+                    <small lang={user.supportLanguage}>{support.supplyDepot}</small>
+                  </div>
+                </div>
+                <b className="echo-utility-tag">
+                  {isShopUnlocked ? `${progression?.currentCredits ?? 0} CREDITS` : (user.supportLanguage === "ja" ? "作戦03で解除" : "MISSIONE 3")}
+                </b>
+              </header>
+              <h2 className="utility-heading">
+                {isShopUnlocked ? (
+                  <>
+                    <span>CYBER SHOP // RECON & GEAR</span>
+                    <small lang={user.supportLanguage}>
+                      {user.supportLanguage === "ja" ? "装備とカスタマイズ" : "Equipaggiamento e personalizzazione"}
+                    </small>
+                  </>
+                ) : (
+                  <>
+                    <span>CYBER SHOP // LOCKED</span>
+                    <small lang={user.supportLanguage}>
+                      {user.supportLanguage === "ja" ? "作戦03で解除" : "Sblocca con Missione 3"}
+                    </small>
+                  </>
+                )}
+              </h2>
+              <div className="echo-utility-body">
+                {!isShopUnlocked && (
+                  <p className="shop-locked-help">
+                    <span>Shop unlocks after completing Mission 3.</span>
+                    <small lang={user.supportLanguage}>{support.shopLockedHelp}</small>
+                  </p>
+                )}
+                <details className="echo-loadout"><summary>YOUR GEAR <small lang={user.supportLanguage}>{user.supportLanguage === 'it' ? 'Il tuo equipaggiamento' : '装備を見る'}</small></summary>
+                <div role="region" className="echo-equipment-grid" aria-label="Equipped loadout">
+                  {EQUIPMENT_CATEGORIES.map(({ key, label }) => {
+                    const equipped = ECONOMY.items.find(
+                      (item) => item.itemId === progression?.equippedItems?.[key],
+                    );
+                    return (
+                      <span key={key} className="echo-slot-chip">
+                        <small>{label}</small>
+                        <b>{equipped ? `${equipped.icon} ${equipped.name}` : "DEFAULT"}</b>
+                      </span>
+                    );
+                  })}
+                </div></details>
+              </div>
+              <button
+                aria-label="Open Cyber Shop"
+                className="cyber-shop-button"
+                onClick={onShop}
+                disabled={!isShopUnlocked}
+              >
+                <div>
+                  <strong>OPEN CYBER SHOP</strong>
+                  <small lang={user.supportLanguage}>{support.openSupply}</small>
+                </div>
+                <b>{isShopUnlocked ? "→" : "◇"}</b>
+              </button>
+            </section>
+          </div>
+          {progression && progression.achievements && progression.achievements.length > 0 && (
+            <div className="profile-achievements" aria-label="Achievements">
+              {progression.achievements.map((id) => (
+                <span key={id}>◇ {id.replaceAll("-", " ").toUpperCase()}</span>
+              ))}
+            </div>
           )}
         </div>
       </section>
@@ -205,13 +358,6 @@ export function StudentHome({
         </div>
       </section>
 
-      <section className="cyber-home-launch cyber-glass spectral-border" data-rgb-pattern="launch-reverse">
-        <div><span>▣</span><p><small>READY TO ENGAGE</small><strong>CONSOLE LINK ESTABLISHED</strong><em>{copy.nextSkill.en}</em></p></div>
-        <button disabled={!activeProgress?.unlocked} onClick={launchCurrentMission}>
-          <span>ϟ</span><strong>BEGIN OPERATION</strong><small lang={user.supportLanguage}>{support.beginOperation}</small>
-        </button>
-      </section>
-
       <section className="cyber-home-network cyber-glass spectral-border" data-rgb-pattern="campaign-diagonal">
         <header>
           <div><span>⌘</span><p><strong>CAMPAIGN PROGRESSION NETWORK</strong><small lang={user.supportLanguage}>{support.campaignNetwork}</small></p></div>
@@ -219,7 +365,7 @@ export function StudentHome({
         </header>
         <section className="mission-card-grid" aria-label="Training missions">
         {MISSIONS.map((mission) => {
-          const robotMode = robotDefenseModes.find(mode => mode.requiredMission === mission.number);
+          const robotMode = robotDefenseModes.find(mode => mission.number <= 3 ? mode.requiredMission === mission.number && !('trainingNumber' in mode) : 'trainingNumber' in mode && mode.trainingNumber === mission.number);
           const progress = dashboard.missions.find(
             (item) => item.missionId === mission.id,
           ) ?? {
@@ -246,17 +392,17 @@ export function StudentHome({
           return (
             <article
               key={mission.id}
-              className={`mission-card ${state} ${dashboard.currentMission === mission.number ? "current" : ""}`}
+              className={`mission-card ${state} ${mission.recoveryChallenge ? "recovery-boss-card" : ""} ${dashboard.currentMission === mission.number ? "current" : ""}`}
               aria-label={`Mission ${mission.number}: ${mission.title.en}`}
               onPointerEnter={() => playEffect("hover", dashboard.progression?.settings.muted ?? true)}
             >
               <div className="mission-number">
-                <span>{mission.number <= 3 ? "ROOKIE" : "OPERATOR"}</span>
+                <span>{mission.recoveryChallenge ? "BOSS" : mission.number <= 3 ? "ROOKIE" : "OPERATOR"}</span>
                 <strong>{String(mission.number).padStart(2, "0")}</strong>
               </div>
               <div className="mission-summary">
                 {state === "available" && progress.attemptCount === 0 && (
-                  <span className="new-signal">NEW SIGNAL</span>
+                  <span className="new-signal">{mission.recoveryChallenge ? 'EMERGENCY SIGNAL' : 'NEW SIGNAL'}</span>
                 )}
                 <p className="status-chip">{englishStatus}</p>
                 <small className="status-support" lang={user.supportLanguage}>
@@ -296,7 +442,7 @@ export function StudentHome({
                 </dl>
                 {state === "locked" ? (
                   <div className="locked-note">
-                    <span>Complete the previous mission.</span>
+                    <span>Complete the previous mission{mission.number > 3 ? ` and Training ${mission.number}` : ""}.</span>
                     <small lang={user.supportLanguage}>
                       {labels.lockedHelp[user.supportLanguage]}
                     </small>
@@ -307,41 +453,22 @@ export function StudentHome({
                     onClick={() => { playEffect("click", dashboard.progression?.settings.muted ?? true); onMission(mission.id); }}
                   >
                     <span>
-                      {state === "completed" ? "Replay" : copy.openBriefing.en}
+                      {state === "completed" ? "Replay" : mission.number <= 3 ? "Start Mission" : copy.openBriefing.en}
                       <small lang={user.supportLanguage}>
                         {state === "completed"
                           ? labels.replay[user.supportLanguage]
-                          : labels.briefing[user.supportLanguage]}
+                          : (mission.number <= 3 ? labels.startMission : labels.briefing)[user.supportLanguage]}
                       </small>
                     </span>
                     <b>→</b>
                   </button>
                 )}
               </div>
-              {robotMode && onRobotDefense && robotDefenseUnlocked(robotMode, dashboard.completedMissions) && <button className="mission-training-link" aria-label={`Train ${robotMode.name}`} onClick={() => onRobotDefense(robotMode.id)}><span>TRAINING CENTER <small lang={user.supportLanguage}>{support.trainingCenter}</small></span><strong>{robotMode.name}</strong><small lang={user.supportLanguage}>{robotMode.support[user.supportLanguage]}</small><b>→</b></button>}
+              {mission.number === 6 && dashboard.completedMissions.includes(5) && <button className="mission-training-link" onClick={onTraining}>Training 6 → Data Transfer → Mission 6</button>}
+              {robotMode && onRobotDefense && robotDefenseUnlocked(robotMode, dashboard.completedMissions) && <button className="mission-training-link" aria-label={`Train ${robotMode.name}`} onClick={() => onRobotDefense(robotMode.id)}><span>✦ {mission.number > 3 ? `TRAINING ${mission.number} → MISSION ${mission.number}` : "BONUS TRAINING · READY"} <small lang={user.supportLanguage}>{support.trainingCenter}</small></span><strong>{robotMode.name}</strong><small lang={user.supportLanguage}>{robotMode.support[user.supportLanguage]}</small><b>→</b></button>}
             </article>
           );
         })}
-        </section>
-      </section>
-
-      <section className="cyber-home-utilities">
-        <section className="cyber-home-training cyber-glass spectral-border" data-rgb-pattern="training-orbit" aria-label="Training Center status">
-          <header><span>◎</span><div><strong>TRAINING CENTER</strong><small lang={user.supportLanguage}>{support.trainingCenter}</small></div><b>{availableTrainingCount} READY</b></header>
-          <h2><TrainingCopy copy={trainingCopy("keepSystemsSharp", user.supportLanguage)} /></h2>
-          {availableTrainingCount > 0 ? (
-            <>
-              <p><TrainingCopy copy={trainingAvailableModules(user.supportLanguage, availableTrainingCount)} /></p>
-              {trainingCreditCap > 0 && <><strong>{trainingCredits} / {trainingCreditCap} Credits</strong><ProgressMeter label="Training Credits" value={trainingCredits} max={trainingCreditCap} detail={`${trainingCredits} / ${trainingCreditCap}`} /></>}
-              <button aria-label="Open Training Center" className="cyber-outline-button cyan" onClick={onTraining}><TrainingCopy copy={trainingCopy("openTrainingCenter", user.supportLanguage)} /><b>→</b></button>
-            </>
-          ) : <p><span>Training modules unlock through the campaign.</span><small lang={user.supportLanguage}>{support.trainingLocked}</small></p>}
-        </section>
-
-        <section className="cyber-home-supply cyber-glass spectral-border" data-rgb-pattern="supply-reverse">
-          <header><span>▦</span><div><strong>CYBER SHOP</strong><small lang={user.supportLanguage}>{support.supplyDepot}</small></div><b>{progression?.currentCredits ?? 0} CREDITS</b></header>
-          <div className="supply-preview"><i>◇</i><p><strong>AGENT LOADOUT</strong><span>HEROES · POINTERS · THEMES · ASSISTANTS</span></p></div>
-          <button className="cyber-outline-button orange" onClick={onShop}><span>OPEN CYBER SHOP</span><small lang={user.supportLanguage}>{support.openSupply}</small><b>→</b></button>
         </section>
       </section>
 

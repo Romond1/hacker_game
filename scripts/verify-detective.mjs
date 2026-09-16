@@ -1,0 +1,76 @@
+// Real browser mouse assessment against a disposable account; never reads or writes a real player save.
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir, homedir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { scryptSync } from 'node:crypto';
+import { spawn } from 'node:child_process';
+import { createServer } from 'vite';
+import react from '@vitejs/plugin-react';
+import { devAuthPlugin } from '../dev/devAuthPlugin.ts';
+import { createDevAuthService } from '../dev/authCore.ts';
+import { RECOVERY_PHASES } from '../src/domain/recovery.ts';
+const { chromium } = await import(pathToFileURL(join(homedir(), '.codex/skills/develop-web-game/node_modules/playwright/index.mjs')).href);
+const temp = await mkdtemp(join(tmpdir(), 'core-recovery-'));
+const credential = { salt: 'fixture', hash: scryptSync('fixture-password', 'fixture', 32).toString('hex') };
+const credentials = { version: 1, credentials: { student: credential, teacher: credential } };
+await writeFile(join(temp, '.dev-auth.local.json'), JSON.stringify(credentials));
+const service = createDevAuthService(credentials); service.dashboard('dev-cloe');
+const saved = service.snapshot();
+for (const mission of saved.progress.find(([id]) => id === 'dev-cloe')[1]) if (mission.missionNumber <= 8) Object.assign(mission, { completed: true, unlocked: true, attemptCount: 1, bestScore: 800, bestTimeSeconds: 60 });
+const state = saved.progression.find(([id]) => id === 'dev-cloe')[1];
+Object.assign(state, { completedMissions: [1,2,3,4,5,6,7,8], hackerCodename: 'NOVA', hackerIdentityUnlocked: true, playerRank: 'operator', currentCredits: 80, lifetimeCreditsEarned: 80 });
+Object.assign(state.storyFlags, { shopUnlocked: true, rookieTrainingCompleted: true, mission4TransmissionSeen: true });
+await writeFile(join(temp, '.dev-progress.local.json'), JSON.stringify(saved));
+const server = await createServer({ configFile: false, root: process.cwd(), base: '/hacker/', plugins: [react(), devAuthPlugin(temp)], server: { host: '127.0.0.1', port: 0 }, logLevel: 'error' });
+await server.listen(); const url = `http://127.0.0.1:${server.httpServer.address().port}/hacker/`;
+const output = resolve('output/playwright/core-recovery'); await mkdir(output, { recursive: true });
+const browser = await chromium.launch({ headless: true }); const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+const errors = []; page.on('pageerror', e => errors.push(e.message));
+let csrf;
+async function api(action, data = {}, ok = true) {
+  const response = await page.request.post(`${url}api/index.php`, { data: { action, ...data }, headers: csrf ? { 'X-CSRF-Token': csrf } : {} });
+  const payload = await response.json(); assert.equal(payload.ok, ok, JSON.stringify(payload)); return payload.data;
+}
+try {
+ const session = await api('auth.login', { username:'cloe.hacker', password:'fixture-password' }); csrf=session.user.csrfToken;
+  await page.goto(url);
+  await page.getByRole('article', { name: /Mission 8:/ }).getByRole('button', { name: /Open briefing|Replay|Start Mission/i }).click();
+  await page.getByRole('button', { name: /Close tutorial and start mission/ }).click();
+  await page.getByRole('dialog').waitFor({ state: 'hidden' });
+  const doc=page.locator('.files-area').getByRole('button',{name:/Documents/}); await doc.click();
+  assert.equal(await doc.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(204, 232, 255)');
+  for (const name of ['Documents', 'Investigation', 'mission-report.txt']) await page.locator('.files-area').getByRole('button', { name: new RegExp(name) }).dblclick();
+  const firstCode=(await page.locator('.file-modal pre').innerText()).match(/Agent Code: ([A-Z]+)/)[1];
+  assert.equal(await page.locator('.computer-body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(237, 243, 249)');
+  assert.equal(await page.locator('.file-modal').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
+  await page.getByLabel(/Agent Code/i).fill(firstCode);
+  await page.getByRole('button', { name: /Confirm code/i }).click();
+  await page.getByRole('button',{name:/Start Level 2/}).click();
+  for (const name of ['Documents','Verification','access-report.txt']) await page.locator('.files-area').getByRole('button',{name:new RegExp(name)}).dblclick();
+  const report=await page.locator('.file-modal pre').innerText();
+  const activeCode=report.match(/ACTIVE code: ([A-Z]{2}-[0-9]{2})/)[1], fakeCode=report.match(/TRAINING code \(fake\): ([A-Z]{2}-[0-9]{2})/)[1];
+  await page.getByLabel(/Agent Code/i).fill(fakeCode);
+  await page.getByRole('button', { name: /Confirm code/i }).click();
+  await page.getByRole('alert').waitFor();
+  await page.screenshot({path:join(output,'detective-level-two.png'),fullPage:true});
+  const selectionBox=await page.locator('.file-modal pre').evaluate((el,code)=>{ const text=el.firstChild; const start=text.textContent.indexOf(code); const range=document.createRange(); range.setStart(text,start); range.setEnd(text,start+code.length); const r=range.getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height}; },activeCode);
+  await page.mouse.move(selectionBox.x+1,selectionBox.y+selectionBox.height/2); await page.mouse.down(); await page.mouse.move(selectionBox.x+selectionBox.width-1,selectionBox.y+selectionBox.height/2,{steps:12}); await page.mouse.up();
+  assert.equal(await page.evaluate(()=>getSelection().toString()),activeCode);
+  await page.mouse.click(selectionBox.x+selectionBox.width/2,selectionBox.y+selectionBox.height/2,{button:'right'});
+  await page.getByRole('button',{name:'Copy selected code'}).click();
+  await page.getByRole('button',{name:'Close file'}).click();
+  await page.getByLabel(/Agent Code/i).click({button:'right'}); await page.getByRole('button',{name:'Paste copied code'}).click();
+  assert.equal(await page.getByLabel(/Agent Code/i).inputValue(),activeCode);
+  await page.getByRole('button', { name: /Confirm code/i }).click();
+  await page.getByRole('heading', { name: 'ACCESS GRANTED', exact: true }).waitFor();
+  assert.equal((await api('student.dashboard')).completedMissions.includes(8), true);
+  await page.screenshot({ path: join(output, 'keyboard-mission-eight.png'), fullPage: true });
+
+  await page.getByRole('button',{name:/View Mission Score/}).click(); await page.getByRole('button',{name:/Replay Mission/}).click();
+  await page.getByRole('button',{name:/Close tutorial and start mission/}).click(); await page.getByRole('dialog').waitFor({state:'hidden'});
+  for(const name of ['Documents','Investigation','mission-report.txt'])await page.locator('.files-area').getByRole('button',{name:new RegExp(name)}).dblclick();
+  const replayCode=(await page.locator('.file-modal pre').innerText()).match(/Agent Code: ([A-Z]+)/)[1]; assert.notEqual(replayCode,firstCode);
+  assert.deepEqual(errors,[]); console.log('PASS: Mission 8 opaque desktop/document, blue selection, two-level completion, fake-code rejection, real text Copy/Paste, fresh replay code.');
+} finally { await browser.close(); await server.close(); }

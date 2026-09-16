@@ -30,7 +30,7 @@ export function awardMission(state: PlayerProgression, missionId: string, eventI
   const policy = ECONOMY.missions[missionId as keyof typeof ECONOMY.missions];
   if (!policy) throw new ProgressionError('validation_failed', 'Invalid mission result.');
   const previous = state.missionAttempts[missionId] ?? 0;
-  const number = Number(missionId.replace('mission-', ''));
+  const number = ECONOMY.campaign.find(mission => mission.id === missionId)!.number;
   if (!state.completedMissions.includes(number)) state.completedMissions.push(number);
   state.completedMissions.sort((a, b) => a - b);
   const receipt = awardReward(state, missionId, eventId, score, policy, { attempts: previous });
@@ -46,7 +46,13 @@ export function awardMission(state: PlayerProgression, missionId: string, eventI
     if (!state.unlockedNodes.includes('classified')) state.unlockedNodes.push('classified');
     if (!state.achievements.includes('rookie-no-more')) state.achievements.push('rookie-no-more');
   }
-  if (number === 4) {
+  if (missionId === 'mission-recovery') {
+    state.storyFlags.mouseMasteryCompleted = true;
+    state.storyFlags.rareEquipmentUnlocked = true;
+    if (!state.achievements.includes('mouse-master')) state.achievements.push('mouse-master');
+    for (const id of ECONOMY.recoveryRewardItems) if (!state.inventory.includes(id)) state.inventory.push(id);
+  }
+  if (missionId === 'mission-4') {
     state.storyFlags.communicationNodeSecured = true;
     state.storyFlags.sourceIdentified = true;
     state.storyFlags.unknownNetworkActivityDetected = true;
@@ -71,6 +77,7 @@ export function purchaseItem(state: PlayerProgression, itemId: string, canTestSh
   if (!canTestShop) {
     if ((item.availability ?? 'available') === 'future') throw new ProgressionError('item_future', 'This item is reserved for future campaign operations.');
     if (!state.storyFlags.shopUnlocked) throw new ProgressionError('shop_locked', 'Complete Rookie Training to gain access.');
+    if (item.rarity === 'rare' && !state.storyFlags.rareEquipmentUnlocked) throw new ProgressionError('rare_locked', 'Complete Mission 7 to unlock Rare equipment.');
     const rank = rankFor(state.completedMissions);
     if (ECONOMY.ranks.findIndex(entry => entry.id === rank.id) < ECONOMY.ranks.findIndex(entry => entry.id === item.requiredRank)) throw new ProgressionError('rank_locked', 'Reach the required rank first.');
     if (state.currentCredits < item.price) throw new ProgressionError('insufficient_credits', 'You need more Credits for this item.');

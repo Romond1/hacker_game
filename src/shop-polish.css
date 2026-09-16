@@ -1,0 +1,162 @@
+/* Student themes share one palette contract. A local shop trial overrides these values. */
+.app-shell:not(.is-teacher)[data-theme="matrix"],
+.cyber-shop-page[data-theme="matrix"],
+.theme-preview-card[data-theme="matrix"] {
+  --game-bg:#050d09; --game-surface:#0b1c13; --game-surface-raised:#153124;
+  --game-border:#315b45; --game-text:#effff2; --game-text-muted:#abcbb6;
+  --game-accent:#71ed9a; --game-selection:#1d4730; --game-focus:#a6ffc0;
+  --accent:#71ed9a; --accent-soft:rgba(113,237,154,.13); --surface:#0b1c13;
+  --surface-2:#153124; --muted:#abcbb6; --panel:#0b1c13; --border:#315b45;
+}
+.app-shell:not(.is-teacher)[data-theme="solar-amber"],
+.cyber-shop-page[data-theme="solar-amber"],
+.theme-preview-card[data-theme="solar-amber"] {
+  --game-bg:#130e0b; --game-surface:#211a17; --game-surface-raised:#312622;
+  --game-border:#6a4c38; --game-text:#fff5e8; --game-text-muted:#d3bba5;
+  --game-accent:#ffc278; --game-selection:#513322; --game-focus:#ffe0a9;
+  --accent:#ffc278; --accent-soft:rgba(255,194,120,.14); --surface:#211a17;
+  --surface-2:#312622; --muted:#d3bba5; --panel:#211a17; --border:#6a4c38;
+}
+.app-shell:not(.is-teacher)[data-theme="orbit-blue"],
+.cyber-shop-page[data-theme="orbit-blue"] {
+  --accent:#55d9f5;
+}
+.app-shell:not(.is-teacher)[data-theme], .cyber-shop-page[data-theme] {
+  color:var(--game-text);
+  background-color:var(--game-bg);
+  background-image:radial-gradient(circle at 84% 4%,color-mix(in srgb,var(--game-accent),transparent 91%),transparent 36rem),linear-gradient(color-mix(in srgb,var(--game-accent),transparent 97%) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--game-accent),transparent 97%) 1px,transparent 1px);
+  background-size:auto,36px 36px,36px 36px;
+}
+.app-shell:not(.is-teacher)[data-theme] :is(.topbar,.hud-panel,.cyber-glass,.mission-card,.training-module,.hacker-profile,.score-report,.file-modal),
+.cyber-shop-page[data-theme] :is(.shop-preview-column>section,.catalog-item-card,.inventory-strip,.shop-trial-banner,.department-tab,.pointer-size-switch,.mini-dashboard-frame,.mini-computer-frame) {
+  background:var(--game-surface);
+  color:var(--game-text);
+  border-color:var(--game-border);
+}
+.app-shell:not(.is-teacher)[data-theme] :is(.cyber-home-background,.results-screen,.briefing-page,.training-center) {background:transparent}
+.app-shell:not(.is-teacher)[data-theme] :is(.cyber-home-status,.eyebrow,.step-label,.mission-step-list li b,.training-module h2,.profile-values dd),
+.cyber-shop-page[data-theme] :is(.catalog-item-price,.mini-topbar b,.mini-preview-header strong,.magnified-hud-header strong) {color:var(--game-accent)}
+.app-shell:not(.is-teacher)[data-theme] :is(.primary-button,.cyber-outline-button,.mission-card.current,.file-item.selected,.theme-option.selected),
+.cyber-shop-page[data-theme] :is(.department-tab.active,.catalog-item-card.selected,.size-toggle-btn.active,.trial-button.active,.mini-file.selected) {
+  border-color:var(--game-accent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--game-accent),transparent 55%);
+}
+.cyber-shop-page[data-theme] .catalog-item-card.selected {background:var(--game-selection)}
+.cyber-shop-page .catalog-item-card {cursor:var(--game-cursor-pointer,pointer)}
+.cyber-shop-page .catalog-item-card :is(button,button *,a,a *) {cursor:var(--game-cursor-pointer,pointer)}
+.cyber-shop-page .pointer-calibration-pad :is(button,button *,a,a *):not(:disabled) {cursor:var(--game-cursor-pointer,pointer)}
+.cyber-shop-page .pointer-calibration-pad .test-pad-selectable {cursor:text}
+.cyber-shop-page .pointer-calibration-pad [draggable="true"] {cursor:grab}
+.cyber-shop-page .pointer-calibration-pad [draggable="true"]:active {cursor:grabbing}
+.cyber-shop-page .card-action-bar button {display:grid;justify-items:center;align-content:center;gap:2px;min-height:52px}
+.cyber-shop-page .card-action-bar button span {font-size:.85rem;letter-spacing:.03em}
+.cyber-shop-page .card-action-bar button small,.pointer-size-switch span small {display:block;font-size:.68em;line-height:1.3;color:var(--game-text-muted);font-weight:500;letter-spacing:0}
+.cyber-shop-page .shop-split-layout {gap:clamp(18px,2.4vw,40px)}
+.cyber-shop-page .shop-selection-column {gap:10px}
+.cyber-shop-page .catalog-item-card {background:color-mix(in srgb,var(--game-surface),transparent 8%);border-radius:8px;box-shadow:none}
+.cyber-shop-page .catalog-item-text h3 {font-size:clamp(1rem,1.2vw,1.22rem);line-height:1.15}
+.cyber-shop-page .catalog-item-text p {font-size:.85rem;line-height:1.45}
+.cyber-shop-page .catalog-item-status {gap:12px}
+.cyber-shop-page .catalog-item-price {font-size:.9rem}
+.cyber-shop-page .catalog-item-card:hover {background:var(--game-surface-raised);transform:none;border-color:var(--game-accent)}
+.cyber-shop-page .catalog-item-card.selected {box-shadow:inset 3px 0 0 var(--game-accent)}
+.cyber-shop-page .pointer-magnified-card,.cyber-shop-page .theme-preview-card {border-radius:10px;box-shadow:none}
+.cyber-shop-page .magnified-svg-container img {width:140px;height:140px;object-fit:contain;image-rendering:auto}
+.cyber-shop-page .magnified-telemetry {opacity:.72}
+.cyber-shop-page .theme-preview-card {background:var(--game-bg);border-color:var(--game-border)}
+.app-shell:not(.is-teacher)[data-theme] .computer-shell {border-color:var(--game-accent);background:var(--game-surface)}
+.app-shell:not(.is-teacher)[data-theme] .file-item:is(:hover,.selected) {background:var(--game-selection);border-color:var(--game-accent)}
+.app-shell:not(.is-teacher)[data-theme] button:focus-visible,.cyber-shop-page button:focus-visible {outline-color:var(--game-focus)}
+
+/* New cursor designs use the same normal/link silhouette; all remain precise at the tip. */
+.app-shell[data-cursor="tactical-crosshair"],.cyber-shop-page[data-cursor="tactical-crosshair"],.pointer-calibration-pad[data-cursor="tactical-crosshair"] {--game-cursor-default:url('/hacker/cursors/tactical-crosshair.svg') 16 16,crosshair;--game-cursor-pointer:url('/hacker/cursors/tactical-crosshair.svg') 16 16,crosshair}
+.app-shell[data-cursor="plasma-arrow"],.cyber-shop-page[data-cursor="plasma-arrow"],.pointer-calibration-pad[data-cursor="plasma-arrow"] {--game-cursor-default:url('/hacker/cursors/plasma-arrow.svg') 4 2,auto;--game-cursor-pointer:url('/hacker/cursors/plasma-arrow.svg') 4 2,pointer}
+.app-shell[data-cursor="cursor-iceblade"],.cyber-shop-page[data-cursor="cursor-iceblade"] {--game-cursor-default:url('/hacker/cursors/cursor-iceblade.svg') 2 2,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-iceblade.svg') 2 2,pointer}
+.app-shell[data-cursor="cursor-ember"],.cyber-shop-page[data-cursor="cursor-ember"] {--game-cursor-default:url('/hacker/cursors/cursor-ember.svg') 2 2,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ember.svg') 2 2,pointer}
+.app-shell[data-cursor="cursor-ghost"],.cyber-shop-page[data-cursor="cursor-ghost"] {--game-cursor-default:url('/hacker/cursors/cursor-ghost.svg') 2 2,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ghost.svg') 2 2,pointer}
+.app-shell[data-cursor="cursor-iceblade"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-iceblade"][data-cursor-size="large"] {--game-cursor-default:url('/hacker/cursors/cursor-iceblade-large.svg') 3 3,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-iceblade-large.svg') 3 3,pointer}
+.app-shell[data-cursor="cursor-ember"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-ember"][data-cursor-size="large"] {--game-cursor-default:url('/hacker/cursors/cursor-ember-large.svg') 3 3,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ember-large.svg') 3 3,pointer}
+.app-shell[data-cursor="cursor-ghost"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-ghost"][data-cursor-size="large"] {--game-cursor-default:url('/hacker/cursors/cursor-ghost-large.svg') 3 3,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ghost-large.svg') 3 3,pointer}
+.app-shell[data-cursor="cursor-iceblade"],.app-shell[data-cursor="cursor-ember"],.app-shell[data-cursor="cursor-ghost"],
+.cyber-shop-page[data-cursor="cursor-iceblade"],.cyber-shop-page[data-cursor="cursor-ember"],.cyber-shop-page[data-cursor="cursor-ghost"] {cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-iceblade"] :is(button,a,[role="button"]),.app-shell[data-cursor="cursor-ember"] :is(button,a,[role="button"]),.app-shell[data-cursor="cursor-ghost"] :is(button,a,[role="button"]) {cursor:var(--game-cursor-pointer)}
+@media(min-width:1800px){.page{max-width:none}}
+.cyber-home.page {width:calc(100% - clamp(28px,4vw,88px));max-width:none}
+.cyber-shop-page.page{width:calc(100% - clamp(28px,4vw,88px));max-width:none}
+.app-shell .topbar,.app-shell:has(.cyber-home) .topbar {padding-inline:clamp(14px,2vw,44px)}
+@media(max-width:850px){.cyber-home.page{width:calc(100% - 24px)}}
+@media(max-width:700px){.cyber-shop-page .catalog-item-card{flex-wrap:wrap}.cyber-shop-page .catalog-item-status{width:100%}.cyber-shop-page .card-action-bar{width:100%}}
+@media(prefers-reduced-motion:reduce){.cyber-shop-page .catalog-item-card{transition:none}}
+
+.mouse-cosmetic-canvas{position:fixed;inset:0;z-index:60;pointer-events:none}
+.mouse-studio-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 22px}
+.mouse-studio-tabs button{display:grid;gap:4px;text-align:left;padding:13px 17px;border:1px solid color-mix(in srgb,var(--accent) 32%,#123046);background:linear-gradient(120deg,#071825,#0b1d29);color:var(--text);cursor:var(--game-cursor-pointer,pointer)}
+.mouse-studio-tabs button.active{border-color:var(--accent);background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 19%,#071825),#081923);box-shadow:inset 3px 0 var(--accent),0 0 20px color-mix(in srgb,var(--accent) 16%,transparent)}
+.mouse-studio-tabs small,.mouse-catalog-heading small,.mouse-preview-heading small{font:600 .62rem 'Cascadia Mono',monospace;letter-spacing:.16em;color:var(--accent)}
+.mouse-studio-tabs strong{font:700 .86rem 'Cascadia Mono',monospace;letter-spacing:.08em}
+.mouse-studio-tabs span{font-size:.68rem;color:var(--muted)}
+.mouse-effects-layout{align-items:start}
+.mouse-effects-preview,.mouse-effects-catalog{min-width:0}
+.mouse-effects-preview{border:1px solid color-mix(in srgb,var(--accent) 38%,#173144);background:linear-gradient(140deg,#0a1d29 0%,#06111c 100%);box-shadow:0 18px 42px #0006}
+.mouse-preview-heading{padding:23px 28px 18px;border-bottom:1px solid #254052}
+.mouse-preview-heading h2,.mouse-catalog-heading h2{margin:9px 0;font-size:clamp(1.3rem,2vw,2rem);letter-spacing:.02em;color:var(--text)}
+.mouse-preview-heading p,.mouse-catalog-heading p{max-width:58ch;color:var(--muted);font-size:.84rem;line-height:1.5}
+.mouse-effects-field{position:relative;overflow:hidden;min-height:370px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--accent) 13%,transparent),transparent 44%),linear-gradient(#0b2231a0 1px,transparent 1px),linear-gradient(90deg,#0b2231a0 1px,transparent 1px),#040e18;background-size:auto,36px 36px,36px 36px,auto}
+.mouse-field-orbit{position:absolute;width:225px;height:225px;border:1px dashed color-mix(in srgb,var(--accent) 25%,transparent);border-radius:50%;pointer-events:none}
+.mouse-field-orbit:before,.mouse-field-orbit:after{content:"";position:absolute;inset:25px;border:1px solid color-mix(in srgb,var(--accent) 15%,transparent);border-radius:50%}
+.mouse-field-orbit:after{inset:70px}
+.mouse-field-orbit i{position:absolute;width:5px;height:5px;background:var(--accent);box-shadow:0 0 14px var(--accent);border-radius:50%}
+.mouse-field-orbit i:nth-child(1){top:3%;left:34%}.mouse-field-orbit i:nth-child(2){right:6%;bottom:18%}.mouse-field-orbit i:nth-child(3){left:8%;bottom:24%}
+.mouse-field-label{position:relative;color:var(--accent);font:700 .75rem 'Cascadia Mono',monospace;letter-spacing:.15em;text-shadow:0 0 14px var(--accent)}
+.mouse-field-label b{font-size:1.4rem}
+.mouse-effects-field button{position:relative;padding:12px 18px;border:1px solid var(--accent);background:#092233;color:var(--text);font:700 .7rem 'Cascadia Mono',monospace;letter-spacing:.1em;cursor:var(--game-cursor-pointer,pointer)}
+.mouse-effects-field button span{color:var(--accent);margin-left:7px}
+.mouse-effects-field>small{position:absolute;bottom:14px;right:18px;color:var(--muted);font:.6rem 'Cascadia Mono',monospace;letter-spacing:.13em}
+.mouse-preview-footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:15px 24px;border-top:1px solid #254052;color:var(--muted);font:.64rem 'Cascadia Mono',monospace;letter-spacing:.07em}
+.mouse-preview-footer b{color:var(--accent)}
+.mouse-catalog-heading{padding:3px 4px 11px}
+.mouse-effect-card{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;margin-bottom:10px;padding:16px;border:1px solid #2a4657;background:linear-gradient(130deg,#0d2430,#071721)}
+.mouse-effect-card.is-trial{border-color:var(--accent);box-shadow:inset 3px 0 var(--accent),0 0 18px color-mix(in srgb,var(--accent) 10%,transparent)}
+.mouse-effect-emblem{display:grid;place-items:center;align-self:start;width:64px;height:64px;border:1px solid #34576a;background:radial-gradient(circle,#153c47,#071b28);color:#86edff;font-size:2rem;text-shadow:0 0 16px currentColor}
+.mouse-effect-emblem.trail-rainbow-comet{background:conic-gradient(from 30deg,#ff587d,#ffbd54,#fbf57a,#5af2b2,#5bdcff,#bd89ff,#ff587d);color:#071824}
+.mouse-effect-emblem.trail-solar{color:#ffad57}.mouse-effect-emblem.trail-frost{color:#a9dbff}.mouse-effect-emblem.animation-sparkle{color:#ffedaa}
+.mouse-effect-title{display:flex;align-items:center;justify-content:space-between;gap:8px}.mouse-effect-title h3{margin:0;color:var(--text);font-size:1rem}.mouse-effect-title span{white-space:nowrap;font:.61rem 'Cascadia Mono',monospace;letter-spacing:.08em;color:var(--accent)}
+.mouse-effect-copy p{margin:7px 0 3px;color:var(--text);font-size:.78rem}.mouse-effect-copy>small{color:var(--muted);font-size:.69rem}
+.mouse-effect-actions{display:flex;gap:8px;margin-top:13px}.mouse-effect-actions button{flex:1;min-height:37px;cursor:var(--game-cursor-pointer,pointer);font-size:.7rem}
+.equipment-slots{grid-template-columns:repeat(7,minmax(0,1fr))}
+
+/* Imported Windows artwork is converted to transparent PNGs for reliable desktop browser cursors. */
+.app-shell[data-cursor="cursor-glacier"],.cyber-shop-page[data-cursor="cursor-glacier"]{--game-cursor-default:url('/hacker/cursors/cursor-glacier.png') 3 1,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-glacier.png') 3 1,pointer;cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-glacier"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-glacier"][data-cursor-size="large"]{--game-cursor-default:url('/hacker/cursors/cursor-glacier-large.png') 4 1,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-glacier-large.png') 4 1,pointer}
+.app-shell[data-cursor="cursor-hologram"],.cyber-shop-page[data-cursor="cursor-hologram"]{--game-cursor-default:url('/hacker/cursors/cursor-hologram.png') 2 1,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-hologram.png') 2 1,pointer;cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-hologram"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-hologram"][data-cursor-size="large"]{--game-cursor-default:url('/hacker/cursors/cursor-hologram-large.png') 3 1,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-hologram-large.png') 3 1,pointer}
+.app-shell[data-cursor="cursor-ani-spark"],.cyber-shop-page[data-cursor="cursor-ani-spark"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-spark-static.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-spark-static.png') 0 0,pointer;cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-ani-ship"],.cyber-shop-page[data-cursor="cursor-ani-ship"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-ship-static.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-ship-static.png') 0 0,pointer;cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-ani-sabre"],.cyber-shop-page[data-cursor="cursor-ani-sabre"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-sabre-static.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-sabre-static.png') 0 0,pointer;cursor:var(--game-cursor-default)}
+.app-shell[data-cursor="cursor-ani-spark"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-ani-spark"][data-cursor-size="large"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-spark-large.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-spark-large.png') 0 0,pointer}
+.app-shell[data-cursor="cursor-ani-ship"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-ani-ship"][data-cursor-size="large"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-ship-large.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-ship-large.png') 0 0,pointer}
+.app-shell[data-cursor="cursor-ani-sabre"][data-cursor-size="large"],.cyber-shop-page[data-cursor="cursor-ani-sabre"][data-cursor-size="large"]{--game-cursor-default:url('/hacker/cursors/cursor-ani-sabre-large.png') 0 0,auto;--game-cursor-pointer:url('/hacker/cursors/cursor-ani-sabre-large.png') 0 0,pointer}
+.app-shell[data-cursor^="cursor-ani-"] :is(button,a,[role="button"]),.cyber-shop-page[data-cursor^="cursor-ani-"] :is(button,a,[role="button"]),
+.app-shell[data-cursor="cursor-glacier"] :is(button,a,[role="button"]),.app-shell[data-cursor="cursor-hologram"] :is(button,a,[role="button"]),
+.cyber-shop-page[data-cursor="cursor-glacier"] :is(button,a,[role="button"]),.cyber-shop-page[data-cursor="cursor-hologram"] :is(button,a,[role="button"]){cursor:var(--game-cursor-pointer)}
+.app-shell[data-animated-cursor="true"],.app-shell[data-animated-cursor="true"] *,.cyber-shop-page[data-animated-cursor="true"],.cyber-shop-page[data-animated-cursor="true"] *{cursor:none!important}
+.app-shell[data-animated-cursor="true"] :is(input,textarea,[contenteditable="true"],.selectable-text),.cyber-shop-page[data-animated-cursor="true"] :is(input,textarea,[contenteditable="true"],.selectable-text){cursor:text!important}
+.animated-cursor-overlay{position:fixed;left:0;top:0;z-index:200;width:40px;height:40px;visibility:hidden;pointer-events:none;image-rendering:pixelated;filter:drop-shadow(0 2px 3px #0009)}
+[data-cursor-size="large"]>.animated-cursor-overlay{width:48px;height:48px}
+.imported-cursor-preview{object-fit:contain;filter:drop-shadow(0 0 12px #26ddff80)}
+.imported-cursor-preview[src*="cursor-ani-"]{image-rendering:pixelated}
+.catalog-item-icon .imported-cursor-card-art{display:block;width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 6px #47eaff80)}
+.catalog-item-icon .imported-cursor-card-art[src*="cursor-ani-"]{image-rendering:pixelated}
+.mouse-effect-emblem.trail-solid-signal{color:#ff75d7;background:linear-gradient(140deg,#092935,#2b1640)}
+.mouse-effect-emblem.trail-pixel-burst{color:#ffee86;background:radial-gradient(circle,#263a4b,#071824)}
+.trail-intensity-control{margin-top:15px;padding:11px 13px 8px;border:1px solid #305263;background:#071720}
+.trail-intensity-control label{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--text);font:700 .65rem 'Cascadia Mono',monospace;letter-spacing:.1em}
+.trail-intensity-control label small{display:inline-block;margin-left:9px;color:var(--muted);font-size:.58rem;font-weight:400;letter-spacing:0}
+.trail-intensity-control output{min-width:39px;color:var(--accent);font-size:.82rem;text-align:right}
+.trail-intensity-control input[type="range"]{display:block;width:100%;height:10px;margin:12px 0 7px;appearance:none;border:1px solid #527183;border-radius:0;background:linear-gradient(90deg,var(--accent) 0 var(--trail-fill),#1a3542 var(--trail-fill) 100%);cursor:var(--game-cursor-pointer,pointer)}
+.trail-intensity-control.rainbow input[type="range"]{background:linear-gradient(90deg,#ff5d76 0%,#ffbc59 18%,#f7ec6e 36%,#5decb0 55%,#5acbff 75%,#b78cff 100%)}
+.trail-intensity-control.solid input[type="range"]{background:linear-gradient(90deg,#57ebff 0%,#57ebff var(--trail-fill),#ff69da var(--trail-fill),#1a3542 100%)}
+.trail-intensity-control input[type="range"]::-webkit-slider-thumb{appearance:none;width:16px;height:21px;border:2px solid #eaffff;background:#07141f;box-shadow:0 0 0 2px var(--accent),0 0 13px var(--accent)}
+.trail-intensity-control input[type="range"]::-moz-range-thumb{width:14px;height:19px;border:2px solid #eaffff;border-radius:0;background:#07141f;box-shadow:0 0 0 2px var(--accent),0 0 13px var(--accent)}
+.trail-intensity-control input[type="range"]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.trail-range-labels{display:flex;justify-content:space-between;color:var(--muted);font:600 .55rem 'Cascadia Mono',monospace;letter-spacing:.12em}

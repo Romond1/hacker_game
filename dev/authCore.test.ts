@@ -19,7 +19,7 @@ function fixture(): DevCredentialFile {
 }
 
 function completeRookieTraining(service: ReturnType<typeof createDevAuthService>, userId: string) {
-  for (const missionId of ['mission-1', 'mission-2', 'mission-3']) {
+  for (const missionId of ['mission-1', 'mission-2', 'mission-scroll']) {
     const attempt = service.startAttempt(userId, missionId);
     service.finishAttempt(userId, attempt.attemptId, 800, 60, {});
   }
@@ -31,6 +31,21 @@ function perfectTrainingEvidence(start: { seed: number; rounds: number }) {
 }
 
 describe('local development authentication', () => {
+  it('adds released missions to older saves and unlocks them for graduates', () => {
+    const credentials = fixture();
+    const original = createDevAuthService(credentials);
+    completeRookieTraining(original, 'dev-test');
+    original.dashboard('dev-himari');
+    const saved = original.snapshot();
+    for (const [, missions] of saved.progress) missions.splice(3);
+    const before = structuredClone(saved.progress.find(([id]) => id === 'dev-test')![1]);
+    const restored = createDevAuthService(credentials, saved);
+    expect(restored.dashboard('dev-test').missions.slice(0, 3)).toEqual(before);
+    expect(restored.dashboard('dev-test').missions[3]).toMatchObject({ missionId: 'mission-drag', unlocked: false, completed: false, attemptCount: 0 });
+    expect(restored.dashboard('dev-himari').missions[3]).toMatchObject({ missionId: 'mission-drag', unlocked: false });
+    expect(() => restored.startAttempt('dev-test', 'mission-4')).toThrow('mission_locked');
+  });
+
   it('contains the standard profiles and the separate test student', () => {
     expect(STANDARD_DEV_PROFILES.map(({ username, role, supportLanguage }) => ({ username, role, supportLanguage }))).toEqual([
       { username: 'himari.hacker', role: 'student', supportLanguage: 'ja' },
@@ -59,7 +74,7 @@ describe('local development authentication', () => {
     const open = service.startAttempt('dev-test', 'mission-1');
     service.resetMission('dev-teacher', 'dev-test', 'mission-1');
     expect(service.dashboard('dev-test')).toMatchObject({ totalPoints: 700, completedMissions: [2], currentMission: 1 });
-    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, true, true, false]);
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, true, true, false, false, false, false, false]);
     expect(service.teacherStudent('dev-test')?.attempts.map(a => a.missionId)).toEqual(['mission-2']);
     expect(service.finishAttempt('dev-test', open.attemptId, 999, 1, {})).toBe(false);
     expect(service.dashboard('dev-himari').totalPoints).toBe(1400);
@@ -73,7 +88,7 @@ describe('local development authentication', () => {
     expect(() => service.resetMission('dev-teacher', 'dev-teacher', 'mission-1')).toThrow('student_not_found');
     expect(() => service.resetMission('dev-teacher', 'dev-test', 'missing')).toThrow('mission_not_found');
     service.resetMission('dev-teacher', 'dev-test', 'mission-3');
-    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, false, false, false]);
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, false, false, false, false, false, false, false]);
   });
 
   it('accepts the shared student credential and rejects a wrong credential', () => {
@@ -105,7 +120,7 @@ describe('local development authentication', () => {
     const himari = service.login('himari.hacker', 'student-test-secret')!;
     const mirko = service.login('mirko.hacker', 'student-test-secret')!;
 
-    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false]);
+    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false]);
     expect(() => service.startAttempt(himari.user.id, 'mission-2')).toThrowError('mission_locked');
 
     const first = service.startAttempt(himari.user.id, 'mission-1');
@@ -113,8 +128,8 @@ describe('local development authentication', () => {
       hintsUsed: 1, translationsUsed: 1, correctActions: 4, incorrectActions: 1,
     });
 
-    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, true, false, false]);
-    expect(service.dashboard(mirko.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false]);
+    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, true, false, false, false, false, false, false]);
+    expect(service.dashboard(mirko.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false]);
   });
 
   it('keeps per-mission personal bests while accumulating replay points', () => {
@@ -148,8 +163,12 @@ describe('local development authentication', () => {
   });
 
   it('restores training progress and receipts from a saved snapshot', () => {
-    const service = createDevAuthService(fixture());
+    let service = createDevAuthService(fixture());
     completeRookieTraining(service, 'dev-test');
+    const saved = service.snapshot();
+    const state = saved.progression.find(([id]) => id === 'dev-test')![1];
+    state.completedMissions.push(8); // Fixture: a File Detective graduate.
+    service = createDevAuthService(fixture(), saved);
     const start = service.startTraining('dev-test', 'systems-calibration', 42);
     const completion = service.finishTraining('dev-test', start.attemptId, perfectTrainingEvidence(start), 18);
     const restored = createDevAuthService(fixture(), service.snapshot());

@@ -8,7 +8,7 @@ import { emptyTrainingStore, finishTraining, startTraining } from './trainingCor
 function completedRookieState(): PlayerProgression {
   return {
     ...emptyProgression(),
-    completedMissions: [1, 2, 3],
+    completedMissions: [1, 2, 3, 4, 5, 6, 7, 8],
     playerRank: 'operator',
   };
 }
@@ -21,7 +21,7 @@ function perfectEvidence(attempt: { seed: number; rounds: number }): Calibration
 }
 
 function completedMissionFourState(): PlayerProgression {
-  return { ...completedRookieState(), completedMissions: [1, 2, 3, 4] };
+  return { ...completedRookieState(), completedMissions: [1, 2, 3, 4, 5] };
 }
 
 function perfectTransferEvidence(attempt: { seed: number; rounds: number }): DataTransferEvidence[] {
@@ -46,8 +46,8 @@ describe('development training policy', () => {
     expect(state.lifetimeCreditsEarned).toBe(220);
   });
 
-  it('rejects forged Data Transfer evidence and keeps it locked before Mission 4', () => {
-    expect(() => startTraining(completedRookieState(), emptyTrainingStore(), 'data-transfer', 42)).toThrow(/locked/i);
+  it('rejects forged Data Transfer evidence and keeps it locked before Mission 5', () => {
+    expect(() => startTraining({ ...completedRookieState(), completedMissions: [1, 2, 3] }, emptyTrainingStore(), 'data-transfer', 42)).toThrow(/locked/i);
     const state = completedMissionFourState();
     const training = emptyTrainingStore();
     const attempt = startTraining(state, training, 'data-transfer', 42);
