@@ -1,3 +1,4 @@
+import { KeyboardChallenge } from '../mission/KeyboardChallenge';
 import { useRef, useState } from 'react';
 import type { SessionUser } from '../../api/client';
 import type { TrainingAggregate, TrainingAttemptStart, TrainingCompletion } from '../../domain/training';
@@ -44,7 +45,9 @@ export function TrainingSession({ module, attempt, user, finish, onExit, onHome,
 
   function answer(selection: string) {
     if (state.phase !== 'round') return;
-    const validation = module.kind === 'systems-calibration'
+    const validation = module.kind === 'keyboard'
+      ? module.validateTask(module.generateTask(attempt.seed, state.roundIndex), selection)
+      : module.kind === 'systems-calibration'
       ? module.validateTask(module.generateTask(attempt.seed, state.roundIndex), selection)
       : module.validateTask(module.generateTask(attempt.seed, state.roundIndex), selection);
     const evidence = [...state.evidence, validation.evidence];
@@ -70,8 +73,8 @@ export function TrainingSession({ module, attempt, user, finish, onExit, onHome,
   if (state.phase === 'intro') return <main className="page training-session training-intro">
     <button aria-label="Return to Training Center" className="back-link" onClick={onExit}>← <TrainingCopy copy={trainingCopy('returnTrainingCenter', user.supportLanguage)} /></button>
     <p className="eyebrow"><TrainingCopy copy={trainingModuleState(user.supportLanguage, module.title, module.localized.title[user.supportLanguage], 'Ready')} /></p>
-    <h1 aria-label={module.kind === 'data-transfer' ? 'Transfer the data.' : 'Verify the signal.'}><TrainingCopy copy={trainingSessionTitle(user.supportLanguage, module.kind)} /></h1>
-    <p><TrainingCopy copy={trainingAgentInstruction(user.supportLanguage, user.displayName, attempt.rounds, module.kind)} /></p>
+    <h1 aria-label={module.kind === 'keyboard' ? module.title : module.kind === 'data-transfer' ? 'Transfer the data.' : 'Verify the signal.'}><TrainingCopy copy={module.kind === 'keyboard' ? localizedTrainingCopy(module.localized.title,user.supportLanguage) : trainingSessionTitle(user.supportLanguage, module.kind)} /></h1>
+    <p><TrainingCopy copy={module.kind === 'keyboard' ? localizedTrainingCopy(module.localized.description,user.supportLanguage) : trainingAgentInstruction(user.supportLanguage, user.displayName, attempt.rounds, module.kind)} /></p>
     <dl><div><dt><TrainingCopy copy={trainingCopy('rounds', user.supportLanguage)} /></dt><dd>{attempt.rounds}</dd></div><div><dt><TrainingCopy copy={trainingCopy('skill', user.supportLanguage)} /></dt><dd><TrainingCopy copy={localizedTrainingCopy(module.localized.skill, user.supportLanguage)} /></dd></div><div><dt><TrainingCopy copy={trainingCopy('reward', user.supportLanguage)} /></dt><dd><TrainingCopy copy={trainingXpMaximum(user.supportLanguage, module.reward.xpMax)} /></dd></div></dl>
     <button aria-label="Start training" className="primary-button" onClick={() => { startedAt.current = performance.now(); setState({ phase: 'round', roundIndex: 0, evidence: [], successes: 0, errors: 0, streak: 0, longestStreak: 0 }); }}><TrainingCopy copy={trainingCopy('startTraining', user.supportLanguage)} /> <span>→</span></button>
   </main>;
@@ -88,7 +91,7 @@ export function TrainingSession({ module, attempt, user, finish, onExit, onHome,
     <div className="training-round-progress" aria-label={trainingRoundCompletion(user.supportLanguage, state.successes, attempt.rounds).en}>{Array.from({ length: attempt.rounds }, (_, index) => <span key={index} className={index < state.successes ? 'complete' : index === state.roundIndex ? 'current' : ''} />)}</div>
     <div className="training-workspace">
       <aside className="training-metrics"><div><TrainingCopy copy={trainingCopy('accuracy', user.supportLanguage)} /><strong>{accuracy}%</strong></div><div><TrainingCopy copy={trainingCopy('errors', user.supportLanguage)} /><strong>{state.errors}</strong></div><div><TrainingCopy copy={trainingCopy('streak', user.supportLanguage)} /><strong>{state.streak}</strong></div></aside>
-      <div className="training-terminal">{module.kind === 'systems-calibration'
+      <div className="training-terminal">{module.kind === 'keyboard' ? (()=>{const task=module.generateTask(attempt.seed,state.roundIndex);return <KeyboardChallenge key={`${attempt.attemptId}:${state.roundIndex}`} lesson={task.lesson} code={task.code} target={task.target} rounds={1} drill onComplete={evidence=>answer(JSON.stringify({code:task.code,target:task.target,evidence}))}/>;})() : module.kind === 'systems-calibration'
         ? <SystemsCalibrationTask task={module.generateTask(attempt.seed, state.roundIndex)} language={user.supportLanguage} onAnswer={answer} />
         : <DataTransferTask key={`${attempt.attemptId}:${state.roundIndex}`} task={module.generateTask(attempt.seed, state.roundIndex)} language={user.supportLanguage} onAnswer={answer} />}</div>
     </div>

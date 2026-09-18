@@ -16,6 +16,8 @@
     "src/training/catalog.ts",
     "src/training/systems-calibration.ts",
     "src/training/data-transfer.ts",
-    "src/training/robot-defense.ts"
+    "src/training/robot-defense.ts",
+    "src/domain/keyboard.ts",
+    "src/training/keyboard.ts"
   ]
 }

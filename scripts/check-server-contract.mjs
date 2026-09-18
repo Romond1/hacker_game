@@ -71,3 +71,8 @@ const forbiddenTeacherSecret = ['hack', '159', '357'].join('');
 assert.ok(!provisioner.includes(forbiddenStudentSecret), 'Student plaintext password must not be committed.');
 assert.ok(!provisioner.includes(forbiddenTeacherSecret), 'Teacher plaintext password must not be committed.');
 console.log('Server ownership, session, CSRF, password, event, and schema contracts present.');
+
+const keyboardMigration = await readFile('server/migrations/011_keyboard_chapter.sql', 'utf8');
+for (const id of ['mission-keyboard-9','mission-keyboard-10','mission-keyboard-11']) assert.ok(keyboardMigration.includes(id));
+assert.ok(api.includes('valid_keyboard_evidence'));
+assert.ok(training.includes("$definition['kind'] === 'keyboard'"));

@@ -104,7 +104,13 @@ export function finishTraining(
     if (round >= attempt.rounds || !entry) {
       throw new ProgressionError('validation_failed', 'Invalid training evidence.');
     }
-    const validation = module.kind === 'systems-calibration'
+    const validation = module.kind === 'keyboard' ? (() => {
+      if (!('keyboard' in entry) || typeof entry.keyboard !== 'string') throw new ProgressionError('validation_failed','Invalid keyboard evidence.');
+      const validation = module.validateTask(module.generateTask(attempt.seed,round),entry.keyboard);
+      if (!validation.valid) throw new ProgressionError('validation_failed','Incomplete keyboard practice.');
+      const payload=JSON.parse(entry.keyboard); errors+=payload.evidence.metrics.incorrectKeys;
+      return validation;
+    })() : module.kind === 'systems-calibration'
       ? (() => {
           if (!('selectedCode' in entry) || typeof entry.selectedCode !== 'string') throw new ProgressionError('validation_failed', 'Invalid training evidence.');
           const task = module.generateTask(attempt.seed, round);

@@ -3,6 +3,31 @@ declare(strict_types=1);
 
 class EconomyError extends RuntimeException {}
 
+function keyboard_sequence(int $lesson, bool $drill = false): array
+{
+    return match ($lesson) {
+        9 => $drill ? ['confirm','escape'] : ['open','confirm','escape','open-relay','activate','close'],
+        10 => ['select','copy','destination','paste','confirm','escape'],
+        11 => ['find','search','escape-search','record','all','copy','destination','paste','confirm','escape'],
+        default => [],
+    };
+}
+function valid_keyboard_evidence(mixed $value, int $lesson, int $rounds = 3, bool $drill = false): bool
+{
+    if (!is_array($value) || !in_array($lesson, [9,10,11], true) || ($value['lesson'] ?? null) !== $lesson || ($value['rounds'] ?? null) !== $rounds) return false;
+    $actions = $value['actions'] ?? null;
+    if (!is_array($actions) || count($actions) !== $rounds) return false;
+    foreach ($actions as $round) if ($round !== keyboard_sequence($lesson, $drill)) return false;
+    $metrics = $value['metrics'] ?? null;
+    $keys = ['enterPresses','correctEnter','escapePresses','correctEscape','incorrectKeys','typedCorrect','typedIncorrect','hints','copies','pastes','finds','selectAll'];
+    if (!is_array($metrics) || count($metrics) !== count($keys)) return false;
+    foreach ($keys as $key) if (!isset($metrics[$key]) || !is_int($metrics[$key]) || $metrics[$key] < 0) return false;
+    if ($metrics['correctEnter'] < $rounds * ($lesson === 9 ? ($drill ? 1 : 4) : ($lesson === 11 ? 2 : 1)) || $metrics['correctEscape'] < $rounds * (($lesson === 9 && !$drill) || $lesson === 11 ? 2 : 1)) return false;
+    if ($lesson !== 9 && ($metrics['copies'] < $rounds || $metrics['pastes'] < $rounds)) return false;
+    if ($lesson === 11 && ($metrics['finds'] < $rounds || $metrics['selectAll'] < $rounds)) return false;
+    return true;
+}
+
 function valid_recovery_evidence(mixed $value): bool
 {
     if (!is_array($value) || ($value['status'] ?? '') !== 'complete' || ($value['phase'] ?? -1) !== 2 || ($value['version'] ?? 0) !== 2 || ($value['step'] ?? 0) !== 19) return false;

@@ -71,6 +71,33 @@
       "maxRewardAttempts": 1,
       "replayXPMultiplier": 0.25,
       "replayCreditMultiplier": 0
+    },
+    "mission-keyboard-9": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-keyboard-10": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
+    },
+    "mission-keyboard-11": {
+      "xpMax": 1000,
+      "credits": 30,
+      "rookie": false,
+      "nodeId": "classified",
+      "maxRewardAttempts": 2,
+      "replayXPMultiplier": 1,
+      "replayCreditMultiplier": 1
     }
   },
   "ranks": [
@@ -3082,6 +3109,36 @@
         5
       ],
       "speedAchievementSeconds": 75
+    },
+    "keyboard-drill-9": {
+      "xpMax": 150,
+      "credits": 1,
+      "activityCreditCap": 20,
+      "linkedMissionId": "mission-keyboard-9",
+      "requiredCompletedMissions": [
+        9
+      ],
+      "speedAchievementSeconds": 90
+    },
+    "keyboard-drill-10": {
+      "xpMax": 150,
+      "credits": 1,
+      "activityCreditCap": 20,
+      "linkedMissionId": "mission-keyboard-10",
+      "requiredCompletedMissions": [
+        10
+      ],
+      "speedAchievementSeconds": 90
+    },
+    "keyboard-drill-11": {
+      "xpMax": 150,
+      "credits": 1,
+      "activityCreditCap": 20,
+      "linkedMissionId": "mission-keyboard-11",
+      "requiredCompletedMissions": [
+        11
+      ],
+      "speedAchievementSeconds": 90
     }
   },
   "robotTraining": {
@@ -3147,6 +3204,18 @@
       "id": "mission-3",
       "number": 8,
       "training": "robot_override"
+    },
+    {
+      "id": "mission-keyboard-9",
+      "number": 9
+    },
+    {
+      "id": "mission-keyboard-10",
+      "number": 10
+    },
+    {
+      "id": "mission-keyboard-11",
+      "number": 11
     }
   ],
   "recoveryRewardItems": [

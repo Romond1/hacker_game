@@ -74,13 +74,13 @@ describe('StudentHome', () => {
     expect(onMission).toHaveBeenCalledWith('mission-2');
   });
 
-  it('shows one available mission and three locked missions for a new student', () => {
+  it('shows one available mission and ten locked missions for a new student', () => {
     render(<StudentHome user={mirko} dashboard={dashboard([mission(1), mission(2), mission(3)])} onMission={vi.fn()} onSettings={vi.fn()} />);
-    expect(screen.getAllByRole('article')).toHaveLength(8);
+    expect(screen.getAllByRole('article')).toHaveLength(11);
     expect(screen.getByText('NEW SIGNAL')).toBeInTheDocument();
     expect(screen.getByRole('progressbar', { name: /Campaign progress/i })).toHaveAttribute('aria-valuenow', '0');
     expect(within(screen.getByRole('region', { name: 'Training missions' })).getByRole('button', { name: /Start Mission/i })).toBeInTheDocument();
-    expect(screen.getAllByText('Locked')).toHaveLength(7);
+    expect(screen.getAllByText('Locked')).toHaveLength(10);
     expect(screen.queryByRole('button', { name: /Replay/i })).not.toBeInTheDocument();
   });
 
@@ -90,7 +90,7 @@ describe('StudentHome', () => {
       mission(1, { unlocked: true, completed: true, bestScore: 820, bestTimeSeconds: 52, totalPoints: 1450, attemptCount: 2 }),
       mission(2, { unlocked: true }), mission(3),
     ])} onMission={onMission} onSettings={vi.fn()} />);
-    const first = screen.getByRole('article', { name: /Mission 1/i });
+    const first = screen.getByRole('article', { name: /Mission 1:/i });
     expect(within(first).getByText('820 pts')).toBeInTheDocument();
     expect(within(first).getByText('0:52')).toBeInTheDocument();
     fireEvent.click(within(first).getByRole('button', { name: /Replay/i }));

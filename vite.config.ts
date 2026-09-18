@@ -7,6 +7,14 @@ export default defineConfig(({ mode }) => {
   return {
     base: '/hacker/',
     plugins: [react(), ...(!usePhp ? [devAuthPlugin()] : [])],
+    build: {
+      rollupOptions: {
+        input: {
+          main: 'index.html',
+          stealth: 'TRAINING CENTER/Missions 8-12/index.html',
+        },
+      },
+    },
     server: {
       proxy: usePhp ? {
         '/hacker/api': {

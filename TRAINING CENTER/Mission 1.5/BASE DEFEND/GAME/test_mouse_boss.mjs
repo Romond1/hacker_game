@@ -123,7 +123,7 @@ async function runTests() {
     hasSkillClass: document.body.classList.contains('mouse-skill-mode'),
     pickerHasBoss: Boolean(document.querySelector('#debug-mode-select option[value="mouse_boss"]')),
     pickerValue: document.querySelector('#debug-mode-select') ? document.querySelector('#debug-mode-select').value : null,
-    ultraHidden: document.querySelector('.diff-btn.diff-ultra')?.style.display === 'none'
+    ultraVisible: document.querySelector('.diff-btn.diff-ultra')?.style.display !== 'none'
   })`);
 
   assert("Mode ID is 'mouse_boss'", modeInfo.modeId === "mouse_boss");
@@ -133,7 +133,7 @@ async function runTests() {
   assert("Body has 'mouse-skill-mode' class", modeInfo.hasSkillClass === true);
   assert("Debug picker contains 'mouse_boss' option", modeInfo.pickerHasBoss === true);
   assert("Debug picker selects 'mouse_boss'", modeInfo.pickerValue === "mouse_boss");
-  assert("Ultra difficulty button is hidden in Mouse Boss Fight", modeInfo.ultraHidden === true);
+  assert("Ultra difficulty button is visible in Mouse Boss Fight (Universal 6 difficulties)", modeInfo.ultraVisible === true);
 
   const miniGameMission7 = await evalInPage(`(() => {
     window.initMiniGame({ mission: 7 });

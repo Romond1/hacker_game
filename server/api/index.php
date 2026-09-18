@@ -71,7 +71,7 @@ try {
                 'totalPoints' => array_sum(array_map(fn(array $row): int => (int) $row['total_points'], $rows)),
                 'rank' => 'Rookie Agent',
                 'progression' => economy_transaction(db(), $user['id']),
-                'currentMission' => (int) ($pending[0]['mission_number'] ?? 7),
+                'currentMission' => (int) ($pending[0]['mission_number'] ?? 11),
                 'completedMissions' => array_values(array_map(fn(array $row): int => campaign_number($row['mission_id']), array_filter($rows, fn(array $row): bool => (bool) $row['completed']))),
                 'bestScore' => $missionOne ? (int) $missionOne['best_score'] : null,
                 'bestTimeSeconds' => $missionOne ? (int) $missionOne['best_time_seconds'] : null,
@@ -167,9 +167,10 @@ try {
                     $pdo->commit();
                     respond(['score' => (int) $attempt['score'], 'reward' => $reward]);
                 }
+                if (str_starts_with($attempt['mission_id'], 'mission-keyboard-') && !valid_keyboard_evidence($stats['keyboard'] ?? null, (int) substr($attempt['mission_id'], 17))) { $pdo->rollBack(); fail('validation_failed', 'Complete every keyboard stage first.', 422); }
                 if ($attempt['mission_id'] === 'mission-recovery' && !valid_recovery_evidence($stats['recovery'] ?? null)) { $pdo->rollBack(); fail('validation_failed', 'Complete all three levels, including file recovery and selected-text transfer.', 422); }
                 $pdo->prepare('UPDATE attempts SET completed_at = UTC_TIMESTAMP(), duration_seconds = ?, score = ?, completed = 1, hint_count = ?, translation_count = ?, correct_actions = ?, incorrect_actions = ? WHERE id = ? AND user_id = ? AND completed = 0')->execute([$duration, $score, $hints, $translations, $correct, $incorrect, $attemptId, $user['id']]);
-                $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration, 'recovery' => $stats['recovery'] ?? null], JSON_THROW_ON_ERROR)]);
+                $pdo->prepare('INSERT INTO attempt_events (attempt_id, event_type, event_data) VALUES (?, ?, ?)')->execute([$attemptId, 'mission_completed', json_encode(['score' => $score, 'durationSeconds' => $duration, 'keyboard' => $stats['keyboard'] ?? null, 'recovery' => $stats['recovery'] ?? null], JSON_THROW_ON_ERROR)]);
                 $pdo->prepare('INSERT INTO user_progress (user_id, mission_id, unlocked, completed, best_score, best_time_seconds, total_points, attempt_count, completed_at) VALUES (?, ?, 1, 1, ?, ?, ?, 1, UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE unlocked = 1, completed = 1, best_score = GREATEST(COALESCE(best_score, 0), VALUES(best_score)), best_time_seconds = IF(best_time_seconds IS NULL, VALUES(best_time_seconds), LEAST(best_time_seconds, VALUES(best_time_seconds))), total_points = total_points + VALUES(total_points), attempt_count = attempt_count + 1, completed_at = COALESCE(completed_at, UTC_TIMESTAMP())')->execute([$user['id'], $attempt['mission_id'], $score, $duration, $score]);
                 $rewardId = match ($attempt['mission_id']) { 'mission-1' => 'agent-card', 'mission-2' => 'pathfinder', 'mission-3' => 'file-detective', 'mission-4' => 'communication-node-secured', default => null };
                 if ($rewardId !== null) $pdo->prepare('INSERT IGNORE INTO user_achievements (user_id, achievement_id, attempt_id) VALUES (?, ?, ?)')->execute([$user['id'], $rewardId, $attemptId]);

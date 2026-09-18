@@ -5,6 +5,7 @@ import './styles.css';
 import './shop-polish.css';
 import './dashboard-juice.css';
 import './shop-armoury.css';
+import './home-command.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

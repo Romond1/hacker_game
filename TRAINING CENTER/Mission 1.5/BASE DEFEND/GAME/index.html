@@ -1462,18 +1462,20 @@
       border: 2px solid #334155;
       box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 240, 255, 0.15);
       border-radius: 18px;
-      padding: 28px 38px;
-      max-width: 620px;
+      padding: 18px 28px;
+      max-width: 680px;
       width: 100%;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 9px;
+      max-height: 96vh;
+      overflow-y: auto;
     }
 
     .screen-title {
-      font-size: 32px;
+      font-size: 26px;
       font-weight: 900;
       letter-spacing: 1px;
       color: var(--cyan-main);
@@ -1482,9 +1484,66 @@
     }
 
     .screen-subtitle {
-      font-size: 16px;
-      line-height: 1.5;
+      font-size: 13.5px;
+      line-height: 1.4;
       color: var(--text-muted);
+    }
+
+    /* Mission Selection on Splash Screen */
+    .mission-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .mission-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      width: 100%;
+    }
+
+    @media (max-width: 640px) {
+      .mission-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .mission-btn {
+      background: #162038;
+      border: 1.5px solid #334155;
+      color: var(--text-main);
+      padding: 6px 4px;
+      font-size: 11.5px;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .mission-btn:hover {
+      background: #223152;
+      border-color: var(--cyan-main);
+      transform: translateY(-1px);
+    }
+
+    .mission-btn.selected {
+      background: rgba(0, 240, 255, 0.18);
+      border-color: var(--cyan-main);
+      color: var(--cyan-main);
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .mission-btn .sub-lang {
+      font-size: 9px;
+      opacity: 0.8;
+      margin-top: 2px;
     }
 
     /* Language Selection in Intro Screen */
@@ -3516,6 +3575,201 @@
     .boss-chk-row.checked .boss-chk-box {
       color: #10b981;
     }
+
+    /* ==========================================================================
+       MISSION 5 TRAINING: ROBOT LINK CSS
+       ========================================================================== */
+    .robot-link-root {
+      position: absolute;
+      inset: 0;
+      z-index: 12;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .robot-link-svg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 18;
+      overflow: visible;
+    }
+
+    .robot-link-cable {
+      stroke: #ff5500;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 8 5;
+      filter: drop-shadow(0 0 6px #ff5500) drop-shadow(0 0 14px rgba(255, 85, 0, 0.7));
+      animation: robotLinkCablePulse 1s linear infinite;
+      transition: stroke 0.2s ease, stroke-width 0.2s ease;
+      pointer-events: stroke;
+      cursor: context-menu;
+    }
+
+    .robot-link-cable.warning-flash {
+      stroke: #ff0044 !important;
+      stroke-width: 8 !important;
+      stroke-dasharray: none !important;
+      filter: drop-shadow(0 0 15px #ff0044) drop-shadow(0 0 30px rgba(255, 0, 68, 0.9)) !important;
+      animation: robotLinkJitter 0.15s ease-in-out infinite alternate !important;
+    }
+
+    @keyframes robotLinkCablePulse {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -26; }
+    }
+
+    @keyframes robotLinkJitter {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(1px, -1px); }
+    }
+
+    .robot-entity.linked-bot {
+      cursor: context-menu;
+      pointer-events: auto !important;
+      transition: filter 0.25s ease;
+    }
+
+    .robot-entity.linked-bot.linked-active {
+      filter: drop-shadow(0 0 12px rgba(255, 85, 0, 0.8));
+    }
+
+    .robot-entity.linked-bot.unlinked-ready {
+      filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.85));
+      cursor: pointer;
+    }
+
+    .robot-entity.linked-bot.warning-pulse {
+      animation: robotLinkWarningPulse 0.35s ease-in-out;
+    }
+
+    @keyframes robotLinkWarningPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 12px rgba(255, 85, 0, 0.8)); }
+      50% { transform: translate(-50%, -50%) scale(1.18); filter: drop-shadow(0 0 25px #ff0044) brightness(1.4); }
+    }
+
+    /* Single-item context menu */
+    .link-unlink-menu {
+      position: absolute;
+      z-index: 60;
+      background: rgba(8, 24, 42, 0.96);
+      border: 2px solid var(--cyan-main, #00f0ff);
+      border-radius: 12px;
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.4), 0 8px 32px rgba(0, 0, 0, 0.9);
+      padding: 6px;
+      min-width: 175px;
+      pointer-events: auto;
+      user-select: none;
+      animation: linkMenuPop 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes linkMenuPop {
+      0% { opacity: 0; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .link-unlink-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(0, 160, 255, 0.08));
+      border: 1.5px solid rgba(0, 240, 255, 0.6);
+      border-radius: 8px;
+      color: #ffffff;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+
+    .link-unlink-btn:hover, .link-unlink-btn:focus {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.4), rgba(0, 200, 255, 0.25));
+      border-color: #00f0ff;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .link-unlink-btn .btn-main {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #00f0ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    .link-unlink-btn .btn-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: #a5f3fc;
+      margin-top: 3px;
+    }
+
+    /* Warning banner when clicking or double-clicking while still linked */
+    .link-warning-toast {
+      position: absolute;
+      top: 14%;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      background: rgba(220, 38, 38, 0.95);
+      border: 2px solid #f87171;
+      border-radius: 20px;
+      padding: 10px 22px;
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 14px;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6), 0 8px 24px rgba(0, 0, 0, 0.7);
+      z-index: 55;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 3px;
+      animation: linkToastPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .link-warning-toast.fade-out {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-10px);
+    }
+
+    .link-warning-toast .sub-lang {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #fed7aa;
+    }
+
+    @keyframes linkToastPop {
+      0% { opacity: 0; transform: translateX(-50%) scale(0.85); }
+      100% { opacity: 1; transform: translateX(-50%) scale(1); }
+    }
+
+    .link-floating-award {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-weight: 900;
+      font-size: 18px;
+      color: #00f0ff;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 2px 4px rgba(0,0,0,0.8);
+      pointer-events: none;
+      z-index: 50;
+      animation: linkFloatUp 0.85s ease-out forwards;
+    }
+
+    @keyframes linkFloatUp {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
+      100% { opacity: 0; transform: translate(-50%, -100px) scale(1.15); }
+    }
   </style>
 </head>
 <body class="lang-en">
@@ -3712,6 +3966,44 @@
           <span class="main-en" id="start-screen-sub-en">Hostile robots are descending on your base! <strong>Double-click each robot</strong> to blast it before it reaches the defense line.</span>
           <span class="sub-lang" id="start-screen-sub-sub" data-i18n="startSubtitle">てきの ロボットが きティに むかって おりてくるよ！ ぼうえいラインに とどくまえに、ダブルクリックで やっつけよう！</span>
         </p>
+
+        <!-- Mission / Game Selector (7 Games) -->
+        <div class="mission-select-group" id="mission-select-group">
+          <div class="setting-label dual-label">
+            <span class="main-en">Select Training Mission</span>
+            <span class="sub-lang" data-i18n="selectMission">ミッションを えらんでね</span>
+          </div>
+          <div class="mission-options" id="mission-options">
+            <button class="mission-btn selected" data-mode="base_defense" title="Mission 1.5: Base Defense">
+              <span class="main-en">M1.5: Base Defense</span>
+              <span class="sub-lang" data-i18n="mission1_5">ベース ディフェンス</span>
+            </button>
+            <button class="mission-btn" data-mode="reinforcements" title="Mission 2.5: Reinforcements">
+              <span class="main-en">M2.5: Reinforcements</span>
+              <span class="sub-lang" data-i18n="mission2_5">ぞうえん ロボ</span>
+            </button>
+            <button class="mission-btn" data-mode="scroll_training" title="Mission 3: Scroll Training">
+              <span class="main-en">M3: Scroll Training</span>
+              <span class="sub-lang" data-i18n="mission3">スクロール くんれん</span>
+            </button>
+            <button class="mission-btn" data-mode="robot_override" title="Mission 3.5: Robot Override">
+              <span class="main-en">M3.5: Robot Override</span>
+              <span class="sub-lang" data-i18n="mission3_5">ロボ オーバーライド</span>
+            </button>
+            <button class="mission-btn" data-mode="drag_rescue" title="Mission 4: Falling Debris">
+              <span class="main-en">M4: Falling Debris</span>
+              <span class="sub-lang" data-i18n="mission4">らっか デブリ</span>
+            </button>
+            <button class="mission-btn" data-mode="robot_link" title="Mission 5: Robot Link">
+              <span class="main-en">M5: Robot Link</span>
+              <span class="sub-lang" data-i18n="mission5">ロボット リンク</span>
+            </button>
+            <button class="mission-btn" data-mode="mouse_boss" title="Mission 7: Mouse Boss Fight">
+              <span class="main-en">M7: Mouse Boss</span>
+              <span class="sub-lang" data-i18n="mission7">マウスボスバトル</span>
+            </button>
+          </div>
+        </div>
 
         <!-- Language Selection (3 Options) -->
         <div class="lang-group">
@@ -4049,6 +4341,14 @@
         startSubtitle: "てきの ロボットが きティに むかって おりてくるよ！ ぼうえいラインに とどくまえに、ダブルクリックで やっつけよう！",
         selectLanguage: "ことばを えらんでね",
         selectDifficulty: "むずかしさを えらんでね",
+        selectMission: "ミッションを えらんでね",
+        mission1_5: "ベース ディフェンス",
+        mission2_5: "ぞうえん ロボ",
+        mission3: "スクロール くんれん",
+        mission3_5: "ロボ オーバーライド",
+        mission4: "らっか デブリ",
+        mission5: "ロボット リンク",
+        mission7: "マウスボスバトル",
         diffVeryEasy: "とても かんたん",
         diffEasy: "かんたん",
         diffNormal: "ふつう",
@@ -4200,7 +4500,15 @@
         gameTitle: "Difesa Doppio-Clic",
         startSubtitle: "I robot nemici stanno scendendo verso la tua base! Fai doppio clic su ogni robot per ripristinarlo prima che raggiunga la linea di difesa.",
         selectLanguage: "Scegli la lingua",
-        selectDifficulty: "Scegli la difficoltà",
+        selectDifficulty: "Scegli la difficolta",
+        selectMission: "Scegli la missione",
+        mission1_5: "Difesa Base",
+        mission2_5: "Rinforzi",
+        mission3: "Addestramento Rotella",
+        mission3_5: "Override Robot",
+        mission4: "Detriti Cadenti",
+        mission5: "Collega Robot",
+        mission7: "Scontro Boss",
         diffVeryEasy: "Molto Facile",
         diffEasy: "Facile",
         diffNormal: "Normale",
@@ -4349,6 +4657,14 @@
         timeExpiredMsg: "Non tutti i robot sono stati ripristinati in tempo. Riprova!"
       },
       en: {
+        selectMission: "Select Training Mission",
+        mission1_5: "Base Defense",
+        mission2_5: "Reinforcements",
+        mission3: "Scroll Training",
+        mission3_5: "Robot Override",
+        mission4: "Falling Debris",
+        mission5: "Robot Link",
+        mission7: "Mouse Boss Fight",
         ultraPromptTitle: "Expert Trainee Warning",
         ultraPromptMsg: "Are you sure you want to proceed here? This level is for expert trainees.",
         ultraProceed: "Proceed",
@@ -4541,6 +4857,40 @@
         },
         allowedRobots: ["standard"],
         mechanic: "mouse_boss_mastery"
+      },
+      drag_rescue: {
+        id: "drag_rescue",
+        mission: 4,
+        name: "Falling Debris",
+        titleEn: "Mission 4 Training · Falling Debris",
+        titleSub: { en: "Falling Debris", ja: "ミッション 4: らっか デブリ", it: "Missione 4: Detriti Cadenti" },
+        subtitleEn: "Falling debris is threatening our defenses! DRAG and DROP each piece of falling space debris to protect the base.",
+        subtitleSub: {
+          en: "Drag and drop falling debris away from the base!",
+          ja: "おちてくる デブリを ドラッグ＆ドロップ して きティを まもろう！",
+          it: "Trascina e rilascia i detriti che cadono per proteggere la base!"
+        },
+        allowedRobots: ["debris"],
+        mechanic: "drag_and_drop"
+      },
+      robot_link: {
+        id: "robot_link",
+        mission: 5,
+        name: "Robot Link",
+        fullName: "Mission 5 Robot Link",
+        name_ja: "ロボット リンク",
+        desc: "Linked robots descend in pairs. Right-click either robot to unlink them, then double-click each robot to recover them!",
+        desc_ja: "つながった ロボットが ふたりで おりてくる！ みぎクリックで リンクを かいじょして、ダブルクリックで ロボットを なおそう！",
+        titleEn: "Mission 5 Training · Robot Link",
+        titleSub: { en: "Robot Link", ja: "ミッション 5: ロボット リンク", it: "Missione 5: Collega Robot" },
+        subtitleEn: "Linked robots incoming in tandem! RIGHT-CLICK either robot to open the UNLINK menu. Click UNLINK to sever the link, then DOUBLE-CLICK each robot to restore it to cyan!",
+        subtitleSub: {
+          en: "Right-click to open UNLINK menu, then double-click to restore!",
+          ja: "ロボットを みぎクリックして UNLINK で かいじょ！ かいじょしたら ダブルクリックで なおそう！",
+          it: "Fai clic destro per aprire il menu UNLINK, poi doppio clic per ripristinare!"
+        },
+        allowedRobots: ["standard", "heavy", "speeder", "tank"],
+        mechanic: "context_menu_unlink_restore"
       }
     };
     GAME_MODES.baseDefense = GAME_MODES.base_defense;
@@ -4550,6 +4900,13 @@
     GAME_MODES.mouseBoss = GAME_MODES.mouse_boss;
     GAME_MODES.mouse_boss_fight = GAME_MODES.mouse_boss;
     GAME_MODES.mouseBossFight = GAME_MODES.mouse_boss;
+    GAME_MODES.robot_untangle = GAME_MODES.robot_link;
+    GAME_MODES.robotLink = GAME_MODES.robot_link;
+    GAME_MODES.robotUntangle = GAME_MODES.robot_link;
+    GAME_MODES.dragRescue = GAME_MODES.drag_rescue;
+    GAME_MODES.falling_debris = GAME_MODES.drag_rescue;
+    GAME_MODES.fallingDebris = GAME_MODES.drag_rescue;
+    window.GAME_MODES = GAME_MODES;
 
     const DIFFICULTY_SETTINGS = {
       veryEasy: {
@@ -4607,6 +4964,7 @@
         spawnIntervalBaseMs: 1500
       }
     };
+    window.DIFFICULTY_SETTINGS = DIFFICULTY_SETTINGS;
 
     const HELP_CONFIG = {
       defeatThreshold: 2,
@@ -5165,6 +5523,7 @@
     }
 
     const audioManager = new AudioManager();
+    window.audioManager = audioManager;
 
     /**
      * =========================================================================
@@ -9490,6 +9849,1105 @@
       }
     }
 
+    /**
+     * =========================================================================
+     * MISSION 5 TRAINING: ROBOT LINK LEVEL ENGINE
+     * =========================================================================
+     * Descending pairs of robots linked in tandem.
+     * Player Action 1: Right-click on robot/cable to open UNLINK context menu (1 item: UNLINK).
+     * Player Action 2: Double-click each unlinked robot to restore to cyan!
+     * Double-clicking while linked is blocked and shows warning toast.
+     */
+    class RobotLinkLevel {
+      constructor(game) {
+        this.game = game;
+        this.active = false;
+        this.currentWave = 1;
+        this.totalWaves = 3;
+        this.pairs = [];
+        this.tangledPairs = this.pairs;
+        this.robots = [];
+        this.robotsRestored = 0;
+        this.robotsTotal = 0;
+        this.unlinkedPairs = 0;
+        this.activeContextMenu = null;
+        this.warningToast = null;
+        this.toastTimeout = null;
+        this.svgLayer = null;
+        this.root = null;
+        this.ready = true;
+        this.typeConfig = {
+          standard: {
+            spriteHacked: "../ART/robots/hacked-restored/robot1-hacked.png",
+            spriteRestored: "../ART/robots/hacked-restored/robot1-restored.png"
+          },
+          heavy: {
+            spriteHacked: "../ART/robots/hacked-restored/robot2-hacked.png",
+            spriteRestored: "../ART/robots/hacked-restored/robot2-restored.png"
+          },
+          speeder: {
+            spriteHacked: "../ART/robots/hacked-restored/robot3-hacked.png",
+            spriteRestored: "../ART/robots/hacked-restored/robot3-restored.png"
+          },
+          tank: {
+            spriteHacked: "../ART/robots/hacked-restored/robot4-hacked.png",
+            spriteRestored: "../ART/robots/hacked-restored/robot4-restored.png"
+          }
+        };
+        this.checkpoints = {
+          unlinkedPair: false,
+          untangledPair: false,
+          restoredBot: false
+        };
+        this.onDocClick = null;
+        this.onDocKey = null;
+      }
+
+      get wave() {
+        return this.currentWave;
+      }
+      set wave(v) {
+        this.currentWave = v;
+      }
+
+      get restoredCount() {
+        return this.robotsRestored;
+      }
+      set restoredCount(v) {
+        this.robotsRestored = v;
+      }
+
+      restoreRobot(bot) {
+        return this.restoreBot(bot, bot?.pair);
+      }
+
+      mount() {
+        this.dispose();
+        this.active = true;
+        this.ready = true;
+
+        const pf = this.game.playfieldEl || document.getElementById("playfield");
+        if (!pf) return;
+
+        this.root = document.createElement("div");
+        this.root.id = "robot-link-root";
+        this.root.className = "robot-link-root";
+        pf.appendChild(this.root);
+
+        this.svgLayer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.svgLayer.setAttribute("id", "robot-link-svg");
+        this.svgLayer.setAttribute("class", "robot-link-svg-layer");
+        this.svgLayer.setAttribute("width", "100%");
+        this.svgLayer.setAttribute("height", "100%");
+        this.root.appendChild(this.svgLayer);
+
+        this.onDocClick = (e) => {
+          if (this.activeContextMenu && !this.activeContextMenu.contains(e.target)) {
+            this.closeContextMenu();
+          }
+        };
+        this.onDocKey = (e) => {
+          if (e.key === "Escape") {
+            this.closeContextMenu();
+          }
+        };
+        document.addEventListener("pointerdown", this.onDocClick);
+        document.addEventListener("keydown", this.onDocKey);
+      }
+
+      startWave(waveNum = 1) {
+        if (!this.root || !this.root.parentNode) this.mount();
+        this.active = true;
+        this.currentWave = waveNum;
+        this.game.currentWave = waveNum;
+
+        const diffKey = this.game.selectedDifficulty || "veryEasy";
+        const diffConfig = DIFFICULTY_SETTINGS[diffKey] || DIFFICULTY_SETTINGS.veryEasy;
+        this.totalWaves = diffConfig.isEndless ? Infinity : 3;
+        this.game.totalWaves = this.totalWaves;
+        this.clearPairs();
+
+        const defenseLineY = (typeof GAME_CONFIG !== 'undefined' && GAME_CONFIG.defenseLineYNorm) ? GAME_CONFIG.defenseLineYNorm : 0.80;
+        let travelTime = diffConfig.travelTimeSec || 12.0;
+        if (diffConfig.isEndless) {
+          travelTime = Math.max(3.2, diffConfig.travelTimeSec - (waveNum - 1) * 0.22);
+        }
+        // Direct Base Defend travel speed (0.88 distance / travelTimeSec)
+        const baseSpeed = (defenseLineY - (-0.08)) / travelTime;
+
+        // Announcements
+        const curLang = this.game.currentLanguage || "en";
+        const titles = {
+          1: {
+            en: "Level 1: LINKED INVASION",
+            ja: "レベル 1: リンク ロボット しゅうらい！",
+            it: "Livello 1: Invasione Collegata",
+            subEn: "Right-click to UNLINK, then double-click to restore!",
+            subJa: "みぎクリックで UNLINK、ダブルクリックで なおそう！",
+            subIt: "Clic destro per SCOLLEGARE, doppio clic per ripristinare!"
+          },
+          2: {
+            en: "Level 2: ARMORED PAIRS",
+            ja: "レベル 2: そうこう ロボット ペア！",
+            it: "Livello 2: Coppie Corazzate",
+            subEn: "More robots and faster speed! Unlink quickly!",
+            subJa: "スピードアップ！ すばやく リンクを かいじょしよう！",
+            subIt: "Più veloci e più robot! Scollega rapidamente!"
+          },
+          3: {
+            en: "Level 3: FINAL LINK ASSAULT",
+            ja: "レベル 3: さいしゅう リンク けっせん！",
+            it: "Livello 3: Assalto Finale Collegato",
+            subEn: "Maximum speed! Protect the base from the link armada!",
+            subJa: "さいこう スピード！ ぜんりょくで きティを まもれ！",
+            subIt: "Massima velocità! Proteggi la base!"
+          }
+        };
+
+        let titleEn = `Level ${waveNum}: LINK ASSAULT`;
+        let titleSub = (curLang === "ja") ? `レベル ${waveNum}` : ((curLang === "it") ? `Livello ${waveNum}` : `Level ${waveNum}`);
+        let subEn = "Right-click to UNLINK, then double-click to restore!";
+        let subSub = (curLang === "ja") ? "みぎクリックで UNLINK、ダブルクリックで なおそう！" : ((curLang === "it") ? "Clic destro per SCOLLEGARE, doppio clic per ripristinare!" : "Right-click to UNLINK, then double-click to restore!");
+
+        if (diffConfig.isEndless && waveNum >= 4) {
+          titleEn = `Level ${waveNum}: ULTRA SURVIVAL`;
+          titleSub = (curLang === "ja") ? `レベル ${waveNum}: ウルトラ サバイバル！` : ((curLang === "it") ? `Livello ${waveNum}: Sopravvivenza Ultra` : `Level ${waveNum}: ULTRA SURVIVAL`);
+          subEn = "ENDLESS LINK ASSAULT! PROTECT THE BASE!";
+          subSub = (curLang === "ja") ? "エンドレス リンク！ きティを まもりぬけ！" : ((curLang === "it") ? "ASSALTO INFINITO! DIFENDI LA BASE!" : "ENDLESS LINK ASSAULT!");
+        } else if (titles[waveNum]) {
+          const info = titles[waveNum];
+          titleEn = info.en;
+          titleSub = (curLang === "ja") ? info.ja : ((curLang === "it") ? info.it : info.en);
+          subEn = info.subEn;
+          subSub = (curLang === "ja") ? info.subJa : ((curLang === "it") ? info.subIt : info.subEn);
+        }
+
+        if (typeof this.game.showAnnouncement === "function") {
+          this.game.showAnnouncement(titleEn, titleSub, subEn, subSub);
+        }
+
+        let waveConfigs = [];
+        if (diffKey === "veryEasy") {
+          if (waveNum === 1) {
+            // Level 1: Gentle speed, 2 pairs, wide spacing (easy in the beginning)
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.40, lanes: [1, 2], types: ["standard", "standard"], y: -0.08, speed: baseSpeed * 0.85 },
+              { id: "p2", centerNormX: 0.60, lanes: [2, 3], types: ["standard", "standard"], y: -0.50, speed: baseSpeed * 0.85 }
+            ];
+          } else if (waveNum === 2) {
+            // Level 2: Faster speed, 3 pairs, introduces speeders & heavies
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.35, lanes: [0, 1], types: ["standard", "speeder"], y: -0.08, speed: baseSpeed * 1.18 },
+              { id: "p2", centerNormX: 0.65, lanes: [3, 4], types: ["speeder", "standard"], y: -0.44, speed: baseSpeed * 1.18 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["standard", "heavy"], y: -0.80, speed: baseSpeed * 1.15 }
+            ];
+          } else {
+            // Level 3: Fastest speed, 4 pairs, tough compositions
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.50, lanes: [1, 2], types: ["standard", "speeder"], y: -0.08, speed: baseSpeed * 1.40 },
+              { id: "p2", centerNormX: 0.32, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.38, speed: baseSpeed * 1.42 },
+              { id: "p3", centerNormX: 0.68, lanes: [3, 4], types: ["heavy", "speeder"], y: -0.68, speed: baseSpeed * 1.40 },
+              { id: "p4", centerNormX: 0.42, lanes: [1, 2], types: ["speeder", "tank"], y: -0.98, speed: baseSpeed * 1.38 }
+            ];
+          }
+        } else if (diffKey === "easy") {
+          if (waveNum === 1) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.40, lanes: [1, 2], types: ["standard", "standard"], y: -0.08, speed: baseSpeed * 0.90 },
+              { id: "p2", centerNormX: 0.60, lanes: [2, 3], types: ["standard", "standard"], y: -0.48, speed: baseSpeed * 0.90 }
+            ];
+          } else if (waveNum === 2) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.32, lanes: [0, 1], types: ["standard", "speeder"], y: -0.08, speed: baseSpeed * 1.22 },
+              { id: "p2", centerNormX: 0.68, lanes: [3, 4], types: ["heavy", "standard"], y: -0.42, speed: baseSpeed * 1.20 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["speeder", "standard"], y: -0.74, speed: baseSpeed * 1.22 }
+            ];
+          } else {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.32, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.48 },
+              { id: "p2", centerNormX: 0.68, lanes: [3, 4], types: ["heavy", "speeder"], y: -0.36, speed: baseSpeed * 1.48 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["tank", "standard"], y: -0.64, speed: baseSpeed * 1.44 },
+              { id: "p4", centerNormX: 0.35, lanes: [0, 1], types: ["speeder", "speeder"], y: -0.92, speed: baseSpeed * 1.52 },
+              { id: "p5", centerNormX: 0.65, lanes: [3, 4], types: ["tank", "heavy"], y: -1.20, speed: baseSpeed * 1.42 }
+            ];
+          }
+        } else if (diffKey === "normal") {
+          if (waveNum === 1) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.35, lanes: [0, 1], types: ["standard", "standard"], y: -0.08, speed: baseSpeed * 0.95 },
+              { id: "p2", centerNormX: 0.65, lanes: [3, 4], types: ["standard", "standard"], y: -0.46, speed: baseSpeed * 0.95 }
+            ];
+          } else if (waveNum === 2) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["standard", "speeder"], y: -0.08, speed: baseSpeed * 1.25 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["heavy", "standard"], y: -0.38, speed: baseSpeed * 1.22 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["speeder", "heavy"], y: -0.68, speed: baseSpeed * 1.25 },
+              { id: "p4", centerNormX: 0.38, lanes: [0, 1], types: ["standard", "tank"], y: -0.98, speed: baseSpeed * 1.20 }
+            ];
+          } else {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.55 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["tank", "standard"], y: -0.34, speed: baseSpeed * 1.50 },
+              { id: "p3", centerNormX: 0.40, lanes: [1, 2], types: ["heavy", "speeder"], y: -0.60, speed: baseSpeed * 1.55 },
+              { id: "p4", centerNormX: 0.60, lanes: [2, 3], types: ["tank", "speeder"], y: -0.86, speed: baseSpeed * 1.52 },
+              { id: "p5", centerNormX: 0.48, lanes: [1, 2], types: ["speeder", "tank"], y: -1.12, speed: baseSpeed * 1.50 }
+            ];
+          }
+        } else if (diffKey === "difficult") {
+          if (waveNum === 1) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["standard", "standard"], y: -0.08, speed: baseSpeed * 1.05 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["standard", "speeder"], y: -0.40, speed: baseSpeed * 1.05 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["speeder", "standard"], y: -0.72, speed: baseSpeed * 1.05 }
+            ];
+          } else if (waveNum === 2) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.35 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["heavy", "speeder"], y: -0.34, speed: baseSpeed * 1.35 },
+              { id: "p3", centerNormX: 0.40, lanes: [1, 2], types: ["standard", "tank"], y: -0.62, speed: baseSpeed * 1.30 },
+              { id: "p4", centerNormX: 0.60, lanes: [2, 3], types: ["speeder", "standard"], y: -0.90, speed: baseSpeed * 1.38 }
+            ];
+          } else {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.65 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["tank", "standard"], y: -0.30, speed: baseSpeed * 1.60 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["heavy", "speeder"], y: -0.52, speed: baseSpeed * 1.65 },
+              { id: "p4", centerNormX: 0.35, lanes: [0, 1], types: ["tank", "speeder"], y: -0.74, speed: baseSpeed * 1.62 },
+              { id: "p5", centerNormX: 0.65, lanes: [3, 4], types: ["heavy", "tank"], y: -0.96, speed: baseSpeed * 1.58 },
+              { id: "p6", centerNormX: 0.50, lanes: [1, 2], types: ["speeder", "speeder"], y: -1.18, speed: baseSpeed * 1.70 }
+            ];
+          }
+        } else if (diffKey === "hard") {
+          if (waveNum === 1) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["standard", "speeder"], y: -0.08, speed: baseSpeed * 1.10 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["speeder", "standard"], y: -0.38, speed: baseSpeed * 1.10 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["heavy", "standard"], y: -0.68, speed: baseSpeed * 1.08 }
+            ];
+          } else if (waveNum === 2) {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.42 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["heavy", "speeder"], y: -0.32, speed: baseSpeed * 1.42 },
+              { id: "p3", centerNormX: 0.40, lanes: [1, 2], types: ["tank", "speeder"], y: -0.56, speed: baseSpeed * 1.38 },
+              { id: "p4", centerNormX: 0.60, lanes: [2, 3], types: ["heavy", "tank"], y: -0.80, speed: baseSpeed * 1.36 },
+              { id: "p5", centerNormX: 0.50, lanes: [1, 2], types: ["speeder", "standard"], y: -1.04, speed: baseSpeed * 1.44 }
+            ];
+          } else {
+            waveConfigs = [
+              { id: "p1", centerNormX: 0.30, lanes: [0, 1], types: ["speeder", "heavy"], y: -0.08, speed: baseSpeed * 1.78 },
+              { id: "p2", centerNormX: 0.70, lanes: [3, 4], types: ["tank", "speeder"], y: -0.28, speed: baseSpeed * 1.72 },
+              { id: "p3", centerNormX: 0.50, lanes: [1, 2], types: ["heavy", "tank"], y: -0.48, speed: baseSpeed * 1.68 },
+              { id: "p4", centerNormX: 0.32, lanes: [0, 1], types: ["speeder", "speeder"], y: -0.68, speed: baseSpeed * 1.82 },
+              { id: "p5", centerNormX: 0.68, lanes: [3, 4], types: ["tank", "heavy"], y: -0.88, speed: baseSpeed * 1.70 },
+              { id: "p6", centerNormX: 0.40, lanes: [1, 2], types: ["heavy", "speeder"], y: -1.08, speed: baseSpeed * 1.75 },
+              { id: "p7", centerNormX: 0.60, lanes: [2, 3], types: ["tank", "speeder"], y: -1.28, speed: baseSpeed * 1.72 }
+            ];
+          }
+        } else {
+          // Ultra endless mode
+          const numPairs = Math.min(8, 3 + Math.floor(waveNum / 2));
+          const centers = [0.30, 0.70, 0.50, 0.38, 0.62, 0.32, 0.68];
+          const pool = ["speeder", "heavy", "tank", "standard"];
+          const stepY = Math.max(0.18, 0.28 - waveNum * 0.012);
+          const ultraSpeedMult = Math.min(2.5, 1.15 + (waveNum - 1) * 0.18);
+          for (let i = 0; i < numPairs; i++) {
+            const tA = pool[(i + waveNum) % pool.length];
+            const tB = pool[(i + waveNum + 1) % pool.length];
+            const cX = centers[i % centers.length];
+            let pairSpd = baseSpeed * ultraSpeedMult;
+            if (tA === "speeder" || tB === "speeder") pairSpd *= 1.08;
+            if (tA === "tank" || tB === "tank") pairSpd *= 0.92;
+            waveConfigs.push({
+              id: `p${i + 1}`,
+              centerNormX: cX,
+              lanes: cX < 0.45 ? [0, 1] : [3, 4],
+              types: [tA, tB],
+              y: -0.08 - i * stepY,
+              speed: pairSpd
+            });
+          }
+        }
+
+        this.robotsTotal = waveConfigs.length * 2;
+        this.robotsRestored = 0;
+
+        waveConfigs.forEach((cfg, idx) => {
+          this.spawnPair(cfg, idx);
+        });
+
+        this.updateHUD();
+      }
+
+      spawnPair(cfg, idx) {
+        const pair = {
+          id: cfg.id || `pair-${idx}`,
+          y: cfg.y,
+          speed: cfg.speed,
+          unlinked: false,
+          untangled: false,
+          resolved: false,
+          botA: null,
+          botB: null,
+          bot1: null,
+          bot2: null,
+          cableEl: null
+        };
+
+        // Determine horizontal center
+        let centerNormX = 0.50;
+        if (cfg.centerNormX !== undefined) {
+          centerNormX = cfg.centerNormX;
+        } else if (cfg.lanes && cfg.lanes.length >= 2) {
+          const midLane = (cfg.lanes[0] + cfg.lanes[1]) / 2;
+          centerNormX = (midLane + 0.5) / 5;
+        }
+
+        // Tightly linked: centers are 0.108 apart (~86px on 800px playfield, leaving a tight ~10-14px gap for 76px robots)
+        const halfSpacing = 0.054;
+        const normXA = Math.max(0.08, centerNormX - halfSpacing);
+        const normXB = Math.min(0.92, centerNormX + halfSpacing);
+
+        const laneA = cfg.lanes ? cfg.lanes[0] : (centerNormX < 0.4 ? 0 : (centerNormX < 0.6 ? 1 : 3));
+        const laneB = cfg.lanes ? cfg.lanes[1] : (centerNormX < 0.4 ? 1 : (centerNormX < 0.6 ? 2 : 4));
+
+        const botA = this.createBot(`${pair.id}-a`, laneA, cfg.types[0], pair, normXA);
+        const botB = this.createBot(`${pair.id}-b`, laneB, cfg.types[1], pair, normXB);
+        pair.botA = botA;
+        pair.botB = botB;
+        pair.bot1 = botA;
+        pair.bot2 = botB;
+
+        const cable = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        cable.setAttribute("class", "robot-link-cable");
+        cable.setAttribute("x1", "0");
+        cable.setAttribute("y1", "0");
+        cable.setAttribute("x2", "0");
+        cable.setAttribute("y2", "0");
+        cable.style.cursor = "context-menu";
+        cable.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          this.openContextMenu(pair, e.clientX, e.clientY);
+        });
+        cable.addEventListener("click", (e) => {
+          if (!pair.unlinked) {
+            this.triggerWarning(pair, botA);
+          }
+        });
+        this.svgLayer.appendChild(cable);
+        pair.cableEl = cable;
+
+        this.pairs.push(pair);
+        this.tangledPairs = this.pairs;
+        this.robots.push(botA, botB);
+        this.updatePairPositions(pair);
+      }
+
+      createBot(id, laneIndex, type, pair, customNormX) {
+        const normX = (customNormX !== undefined) ? customNormX : (laneIndex + 0.5) / 5;
+        const normY = pair.y;
+
+        const el = document.createElement("div");
+        let typeClass = "";
+        if (type === "heavy") typeClass = " robot-heavy";
+        else if (type === "speeder") typeClass = " robot-speeder";
+        else if (type === "tank") typeClass = " robot-tank";
+
+        el.className = `robot-entity hacked linked-bot linked-active${typeClass}`;
+        el.setAttribute("data-id", id);
+        el.setAttribute("role", "button");
+        el.setAttribute("aria-label", `Linked Robot ${type}`);
+        el.style.left = `${(normX * 100).toFixed(2)}%`;
+        el.style.top = `${(normY * 100).toFixed(2)}%`;
+        el.style.transform = "translate(-50%, -50%)";
+
+        const reticle = document.createElement("div");
+        reticle.className = "targeting-reticle";
+        el.appendChild(reticle);
+
+        const clickTag = document.createElement("div");
+        clickTag.className = "click-again-tag dual-label";
+        const curLang = this.game.currentLanguage || "en";
+        const tagSub = (curLang === "ja") ? "もういちど クリック！" : "CLICK AGAIN!";
+        clickTag.innerHTML = `
+          <span class="main-en">CLICK AGAIN!</span>
+          <span class="sub-lang">${tagSub}</span>
+        `;
+        el.appendChild(clickTag);
+
+        const visual = document.createElement("div");
+        visual.className = "robot-visual";
+
+        const cfg = this.typeConfig[type] || this.typeConfig.standard;
+        const hackedSrc = cfg.spriteHacked;
+        const restoredSrc = cfg.spriteRestored;
+
+        const img = document.createElement("img");
+        img.className = "robot-image-art";
+        img.src = hackedSrc;
+        img.alt = `${type.toUpperCase()} BOT`;
+        img.onerror = () => {
+          img.src = "../ART/robots/hacked-restored/robot1-hacked.png";
+        };
+        visual.appendChild(img);
+        el.appendChild(visual);
+
+        const botData = {
+          id,
+          laneIndex,
+          type,
+          pair,
+          normX,
+          normY,
+          x: normX,
+          y: normY,
+          hackedSrc,
+          restoredSrc,
+          element: el,
+          el: el,
+          img,
+          hacked: true,
+          linked: true,
+          restored: false,
+          resolved: false,
+          heldTimestamp: 0
+        };
+
+        el.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          this.openContextMenu(pair, e.clientX, e.clientY);
+        });
+
+        el.addEventListener("click", (e) => {
+          this.handleRobotClick(botData, pair, e);
+        });
+
+        el.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          this.handleRobotDoubleClick(botData, pair, e);
+        });
+
+        this.root.appendChild(el);
+        return botData;
+      }
+
+      handleRobotClick(bot, pair, e) {
+        if (bot.restored || bot.resolved) return;
+        if (!pair.unlinked) {
+          this.triggerWarning(pair, bot);
+          return;
+        }
+
+        const now = Date.now();
+        if (bot.heldTimestamp && (now - bot.heldTimestamp) < 750) {
+          this.handleRobotDoubleClick(bot, pair, e);
+          bot.heldTimestamp = 0;
+          return;
+        }
+
+        bot.heldTimestamp = now;
+        bot.element.classList.add("held");
+        if (this.game.audioManager?.playLockOn) {
+          this.game.audioManager.playLockOn();
+        } else if (typeof playSfx === "function") {
+          playSfx("lockOn");
+        }
+        setTimeout(() => {
+          if (bot.element && !bot.restored) {
+            bot.element.classList.remove("held");
+          }
+        }, 750);
+      }
+
+      handleRobotDoubleClick(bot, pair, e) {
+        if (bot.restored || bot.resolved) return;
+        if (!pair.unlinked) {
+          this.triggerWarning(pair, bot);
+          return;
+        }
+
+        this.restoreBot(bot, pair);
+      }
+
+      triggerWarning(pair, bot) {
+        if (this.game.audioManager?.playWrongKey) {
+          this.game.audioManager.playWrongKey();
+        } else if (typeof playSfx === "function") {
+          playSfx("wrongKey");
+        }
+
+        if (pair.cableEl) {
+          pair.cableEl.classList.remove("warning-flash");
+          void pair.cableEl.offsetWidth;
+          pair.cableEl.classList.add("warning-flash");
+          setTimeout(() => pair.cableEl?.classList.remove("warning-flash"), 450);
+        }
+
+        [pair.botA, pair.botB].forEach(b => {
+          if (b?.element) {
+            b.element.classList.remove("warning-pulse");
+            void b.element.offsetWidth;
+            b.element.classList.add("warning-pulse");
+            setTimeout(() => b.element?.classList.remove("warning-pulse"), 450);
+          }
+        });
+
+        this.showWarningToast();
+      }
+
+      showWarningToast() {
+        if (this.warningToast) {
+          this.warningToast.remove();
+          this.warningToast = null;
+        }
+        if (this.toastTimeout) {
+          clearTimeout(this.toastTimeout);
+          this.toastTimeout = null;
+        }
+
+        const pf = this.game.playfieldEl || document.getElementById("playfield");
+        if (!pf) return;
+
+        const curLang = this.game.currentLanguage || "en";
+        const toast = document.createElement("div");
+        toast.className = "link-warning-toast";
+        const jaText = "ロボットを リンクかいじょしよう！ みぎクリックで UNLINK を えらんでね。";
+        const itText = "Scollega i robot! Clic destro per selezionare UNLINK.";
+        const enText = "Unlink the robots! Right-click to unlink robots.";
+        const subText = (curLang === "ja") ? jaText : ((curLang === "it") ? itText : enText);
+
+        toast.innerHTML = `
+          <span class="main-en">⚠️ ${enText}</span>
+          ${curLang !== "en" ? `<span class="sub-lang">${subText}</span>` : ""}
+        `;
+        pf.appendChild(toast);
+        this.warningToast = toast;
+
+        this.toastTimeout = setTimeout(() => {
+          toast.classList.add("fade-out");
+          setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+            if (this.warningToast === toast) this.warningToast = null;
+          }, 320);
+        }, 2200);
+      }
+
+      openContextMenu(pair, clientX, clientY) {
+        if (pair.unlinked || pair.resolved) return;
+        this.closeContextMenu();
+
+        const pf = this.game.playfieldEl || document.getElementById("playfield");
+        if (!pf) return;
+        const pfRect = pf.getBoundingClientRect();
+
+        const menu = document.createElement("div");
+        menu.id = "link-context-menu";
+        menu.className = "link-unlink-menu boss-context-menu";
+
+        let posX = clientX - pfRect.left + 8;
+        let posY = clientY - pfRect.top + 8;
+        if (posX + 185 > pfRect.width) posX = pfRect.width - 190;
+        if (posY + 75 > pfRect.height) posY = pfRect.height - 80;
+        menu.style.left = `${Math.max(10, posX)}px`;
+        menu.style.top = `${Math.max(10, posY)}px`;
+
+        const curLang = this.game.currentLanguage || "en";
+        const btnSub = (curLang === "ja") ? "ひだりクリックで かいじょ" : ((curLang === "it") ? "Clic sinistro per scollegare" : "Left-click to sever link");
+
+        const btn = document.createElement("button");
+        btn.className = "link-unlink-btn boss-context-btn";
+        btn.innerHTML = `
+          <span class="btn-main">🔗 UNLINK</span>
+          <span class="btn-sub">${btnSub}</span>
+        `;
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.unlinkPair(pair);
+          this.closeContextMenu();
+        });
+
+        menu.appendChild(btn);
+        pf.appendChild(menu);
+        this.activeContextMenu = menu;
+      }
+
+      closeContextMenu() {
+        if (this.activeContextMenu) {
+          this.activeContextMenu.remove();
+          this.activeContextMenu = null;
+        }
+      }
+
+      unlinkPair(pair) {
+        if (pair.unlinked) return;
+        pair.unlinked = true;
+        pair.untangled = true;
+        this.unlinkedPairs++;
+        this.checkpoints.unlinkedPair = true;
+        this.checkpoints.untangledPair = true;
+
+        if (pair.botA) pair.botA.linked = false;
+        if (pair.botB) pair.botB.linked = false;
+        if (pair.bot1) pair.bot1.linked = false;
+        if (pair.bot2) pair.bot2.linked = false;
+
+        if (pair.cableEl) {
+          pair.cableEl.style.transition = "opacity 0.25s ease, stroke-width 0.25s ease";
+          pair.cableEl.style.opacity = "0";
+          setTimeout(() => {
+            if (pair.cableEl?.parentNode) {
+              pair.cableEl.parentNode.removeChild(pair.cableEl);
+            }
+          }, 250);
+        }
+
+        [pair.botA, pair.botB].forEach(b => {
+          if (b?.element) {
+            b.element.classList.remove("linked-active");
+            b.element.classList.add("unlinked-ready");
+          }
+        });
+
+        if (this.game.audioManager?.playLockOn) {
+          this.game.audioManager.playLockOn();
+        } else if (typeof playSfx === "function") {
+          playSfx("lockOn");
+        }
+
+        const midX = ((pair.botA.normX + pair.botB.normX) / 2) * 100;
+        const midY = pair.y * 100;
+        this.spawnFloatingAward(midX, midY, "+50 UNLINKED!");
+        this.game.score = (this.game.score || 0) + 50;
+        this.game.updateHUD();
+      }
+
+      restoreBot(bot, pair) {
+        if (bot.restored) return;
+        bot.restored = true;
+        bot.hacked = false;
+        this.robotsRestored++;
+        this.checkpoints.restoredBot = true;
+        this.game.robotsDestroyed = (this.game.robotsDestroyed || 0) + 1;
+        this.game.robotsRestored = (this.game.robotsRestored || 0) + 1;
+
+        // Combo Streak Tracking (exact Base Defend progression)
+        this.game.currentCombo = (this.game.currentCombo || 0) + 1;
+        if (this.game.currentCombo > (this.game.maxCombo || 0)) {
+          this.game.maxCombo = this.game.currentCombo;
+        }
+
+        const xpGained = 15 + (this.game.currentCombo * 3);
+        const creditsGained = 5 + Math.min(15, this.game.currentCombo * 2);
+        this.game.earnedXP = (this.game.earnedXP || 0) + xpGained;
+        this.game.earnedCredits = (this.game.earnedCredits || 0) + creditsGained;
+
+        let pointsEarned = 150;
+        if (bot.type === "heavy") pointsEarned = 180;
+        else if (bot.type === "speeder") pointsEarned = 160;
+        else if (bot.type === "tank") pointsEarned = 200;
+        this.game.score = (this.game.score || 0) + pointsEarned;
+
+        const pf = this.game.playfieldEl || document.getElementById("playfield");
+        const w = pf ? pf.clientWidth : 800;
+        const h = pf ? pf.clientHeight : 600;
+        const px = bot.normX * w;
+        const py = bot.normY * h;
+
+        // Base Core emitter coordinates (exact Base Defend emitter)
+        const baseEl = document.getElementById("base-image") || document.getElementById("base-structure");
+        const pfRect = pf ? pf.getBoundingClientRect() : null;
+        let bx = w * 0.5;
+        let by = h * 0.88;
+        if (baseEl && pfRect) {
+          const bRect = baseEl.getBoundingClientRect();
+          bx = (bRect.left + bRect.width * 0.5) - pfRect.left;
+          by = bRect.top - pfRect.top + 8;
+        }
+
+        // 1. Fire Extended Cyber Circuit Snap Lightning Bolt from Base to Robot
+        if (this.game.effects && typeof this.game.effects.triggerCircuitSnap === "function") {
+          this.game.effects.triggerCircuitSnap(bx, by, px, py);
+        }
+
+        // 2. Play Audio: Circuit Snap zap
+        if (this.game.audioManager && typeof this.game.audioManager.playCircuitSnap === "function") {
+          this.game.audioManager.playCircuitSnap();
+        }
+
+        // 3. Initiate Robot Malware Purge (Flicker & Circuit Aura, then locks cyan and continues downward to base)
+        bot.element.classList.remove("hacked", "held", "linked-active", "unlinked-ready");
+        bot.element.classList.add("restoring");
+
+        // Inject animated circular circuit aura with orthogonal branch traces
+        const aura = document.createElement("div");
+        aura.className = "restoration-circuit-aura";
+        aura.innerHTML = `
+          <svg viewBox="0 0 120 120" width="100%" height="100%" style="overflow: visible;">
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#00f0ff" stroke-width="2" stroke-dasharray="8 6" opacity="0.85" />
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.65" />
+            <path d="M 60 8 L 60 22 L 72 22" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="72" cy="22" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 60 112 L 60 98 L 48 98" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="48" cy="98" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 8 60 L 22 60 L 22 48" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="22" cy="48" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+            <path d="M 112 60 L 98 60 L 98 72" fill="none" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="98" cy="72" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+          </svg>
+        `;
+        bot.element.appendChild(aura);
+
+        const flickerSteps = [
+          { delay: 80, src: bot.restoredSrc },
+          { delay: 160, src: bot.hackedSrc },
+          { delay: 240, src: bot.restoredSrc },
+          { delay: 320, src: bot.hackedSrc },
+          { delay: 400, src: bot.restoredSrc, final: true }
+        ];
+
+        flickerSteps.forEach(step => {
+          setTimeout(() => {
+            if (!bot.element) return;
+            if (bot.img) bot.img.src = step.src;
+            if (step.final) {
+              bot.element.classList.remove("restoring");
+              bot.element.classList.add("restored", "purge-flash");
+              if (this.game.audioManager && typeof this.game.audioManager.playRestoreChime === "function") {
+                this.game.audioManager.playRestoreChime();
+              }
+              if (aura.parentNode) aura.parentNode.removeChild(aura);
+              setTimeout(() => {
+                if (bot.element) bot.element.classList.remove("purge-flash");
+              }, 120);
+            }
+          }, step.delay);
+        });
+
+        // 4. Floating Score Callout: RESTORED! +{pts} / なおした！ +{pts}
+        const curLang = this.game.currentLanguage || "en";
+        const dict = TRANSLATIONS[curLang] || {};
+        const restoreWord = dict.restored || "RESTORED!";
+        if (this.game.effects && typeof this.game.effects.spawnScoreText === "function") {
+          this.game.effects.spawnScoreText(px, py, `${restoreWord} +${pointsEarned}`);
+        } else {
+          this.spawnFloatingAward(bot.normX * 100, bot.normY * 100, `+${pointsEarned}`);
+        }
+
+        // Celebratory Combo Float Banner & Melodic Pitch Chime for Streaks >= 2
+        if (this.game.currentCombo >= 2) {
+          if (this.game.effects && typeof this.game.effects.spawnComboCallout === "function") {
+            this.game.effects.spawnComboCallout(px, py, this.game.currentCombo, curLang);
+          }
+          if (this.game.audioManager && typeof this.game.audioManager.playComboChime === "function") {
+            this.game.audioManager.playComboChime(this.game.currentCombo);
+          }
+        }
+
+        this.game.updateHUD();
+      }
+
+      spawnFloatingAward(xPercent, yPercent, text) {
+        const pf = this.game.playfieldEl || document.getElementById("playfield");
+        if (!pf) return;
+        const award = document.createElement("div");
+        award.className = "link-floating-award";
+        award.style.left = `${xPercent}%`;
+        award.style.top = `${yPercent}%`;
+        award.textContent = text;
+        pf.appendChild(award);
+        setTimeout(() => {
+          if (award.parentNode) award.parentNode.removeChild(award);
+        }, 900);
+      }
+
+      update(dtSec) {
+        if (!this.active) return;
+        const DEFENSE_LINE_Y = (typeof GAME_CONFIG !== 'undefined' && GAME_CONFIG.defenseLineYNorm) ? GAME_CONFIG.defenseLineYNorm : 0.78;
+
+        for (const pair of this.pairs) {
+          if (pair.resolved) continue;
+
+          if (!pair.unlinked) {
+            pair.y += pair.speed * dtSec;
+            pair.botA.normY = pair.y;
+            pair.botB.normY = pair.y;
+            pair.botA.y = pair.y;
+            pair.botB.y = pair.y;
+            this.updatePairPositions(pair);
+
+            if (pair.y >= DEFENSE_LINE_Y) {
+              pair.resolved = true;
+              const pf = this.game.playfieldEl || document.getElementById("playfield");
+              const w = pf ? pf.clientWidth : 800;
+              const h = pf ? pf.clientHeight : 600;
+
+              // Each robot passing the defense line inflicts 1 shield point of damage
+              for (const b of [pair.botA, pair.botB]) {
+                if (!b.resolved) {
+                  b.resolved = true;
+                  this.game.shields = Math.max(0, this.game.shields - 1);
+                  this.game.fxManager?.spawnDestructionFrames?.(b.normX * w, b.normY * h);
+                  b.element?.remove();
+                }
+              }
+
+              if (this.game.audioManager?.playHit) {
+                this.game.audioManager.playHit();
+              } else if (this.game.audioManager?.playBaseDamage) {
+                this.game.audioManager.playBaseDamage();
+              }
+
+              if (this.game.effects?.triggerBaseHit) {
+                this.game.effects.triggerBaseHit();
+              } else if (typeof this.game.triggerBaseHit === "function") {
+                this.game.triggerBaseHit();
+              }
+
+              const defLine = document.getElementById("defense-line");
+              if (defLine) {
+                defLine.classList.remove("damaged");
+                void defLine.offsetWidth;
+                defLine.classList.add("damaged");
+                setTimeout(() => defLine.classList.remove("damaged"), 400);
+              }
+
+              if (pair.cableEl?.parentNode) pair.cableEl.parentNode.removeChild(pair.cableEl);
+
+              this.game.updateHUD();
+              if (this.game.shields <= 0) {
+                this.game.endGame(false);
+                return;
+              }
+            }
+          } else {
+            for (const bot of [pair.botA, pair.botB]) {
+              if (bot.resolved) continue;
+
+              if (bot.restored) {
+                bot.normY += pair.speed * 2.2 * dtSec;
+                bot.y = bot.normY;
+                bot.element.style.top = `${(bot.normY * 100).toFixed(2)}%`;
+                if (bot.normY >= 0.84) {
+                  bot.resolved = true;
+                  bot.element.classList.add("docking");
+
+                  // Command Base Core Pulse Animation (exact Base Defend reaction)
+                  const baseEl = document.getElementById("base-image") || document.getElementById("base-structure");
+                  if (baseEl) {
+                    baseEl.classList.remove("pulse");
+                    void baseEl.offsetWidth;
+                    baseEl.classList.add("pulse");
+                    setTimeout(() => baseEl.classList.remove("pulse"), 450);
+                  }
+
+                  if (this.game.audioManager?.playSafeArrival) {
+                    this.game.audioManager.playSafeArrival();
+                  }
+
+                  setTimeout(() => {
+                    if (bot.element?.parentNode) bot.element.parentNode.removeChild(bot.element);
+                  }, 400);
+
+                  this.game.updateHUD();
+                }
+              } else {
+                bot.normY += pair.speed * dtSec;
+                bot.y = bot.normY;
+                bot.element.style.top = `${(bot.normY * 100).toFixed(2)}%`;
+                if (bot.normY >= DEFENSE_LINE_Y) {
+                  bot.resolved = true;
+                  this.game.shields = Math.max(0, this.game.shields - 1);
+                  if (this.game.audioManager?.playHit) {
+                    this.game.audioManager.playHit();
+                  } else if (this.game.audioManager?.playBaseDamage) {
+                    this.game.audioManager.playBaseDamage();
+                  }
+
+                  if (this.game.effects?.triggerBaseHit) {
+                    this.game.effects.triggerBaseHit();
+                  } else if (typeof this.game.triggerBaseHit === "function") {
+                    this.game.triggerBaseHit();
+                  }
+
+                  const defLine = document.getElementById("defense-line");
+                  if (defLine) {
+                    defLine.classList.remove("damaged");
+                    void defLine.offsetWidth;
+                    defLine.classList.add("damaged");
+                    setTimeout(() => defLine.classList.remove("damaged"), 400);
+                  }
+
+                  const pf = this.game.playfieldEl || document.getElementById("playfield");
+                  const w = pf ? pf.clientWidth : 800;
+                  const h = pf ? pf.clientHeight : 600;
+                  this.game.fxManager?.spawnDestructionFrames?.(bot.normX * w, bot.normY * h);
+                  bot.element?.remove();
+
+                  this.game.updateHUD();
+                  if (this.game.shields <= 0) {
+                    this.game.endGame(false);
+                    return;
+                  }
+                }
+              }
+            }
+
+            if (pair.botA.resolved && pair.botB.resolved) {
+              pair.resolved = true;
+            }
+          }
+        }
+
+        this.checkWaveProgress();
+      }
+
+      updatePairPositions(pair) {
+        if (!pair.botA.element || !pair.botB.element) return;
+        pair.botA.element.style.top = `${(pair.botA.normY * 100).toFixed(2)}%`;
+        pair.botB.element.style.top = `${(pair.botB.normY * 100).toFixed(2)}%`;
+
+        if (pair.cableEl && !pair.unlinked && this.svgLayer) {
+          const pf = this.game.playfieldEl || document.getElementById("playfield");
+          if (!pf) return;
+          const rect = pf.getBoundingClientRect();
+          const rA = pair.botA.element.getBoundingClientRect();
+          const rB = pair.botB.element.getBoundingClientRect();
+
+          let x1 = pair.botA.normX * rect.width;
+          let y1 = pair.botA.normY * rect.height;
+          let x2 = pair.botB.normX * rect.width;
+          let y2 = pair.botB.normY * rect.height;
+
+          if (rA.width > 0 && rect.width > 0) {
+            x1 = rA.left + rA.width / 2 - rect.left;
+            y1 = rA.top + rA.height / 2 - rect.top;
+            x2 = rB.left + rB.width / 2 - rect.left;
+            y2 = rB.top + rB.height / 2 - rect.top;
+          }
+
+          pair.cableEl.setAttribute("x1", String(x1.toFixed(1)));
+          pair.cableEl.setAttribute("y1", String(y1.toFixed(1)));
+          pair.cableEl.setAttribute("x2", String(x2.toFixed(1)));
+          pair.cableEl.setAttribute("y2", String(y2.toFixed(1)));
+        }
+      }
+
+      checkWaveProgress() {
+        if (!this.active) return;
+        const allResolved = this.pairs.length > 0 && this.pairs.every(p => p.resolved);
+        if (allResolved && this.game.shields > 0) {
+          this.active = false;
+          if (typeof this.game.handleWaveCompleted === "function") {
+            this.game.handleWaveCompleted();
+          } else if (this.currentWave < this.totalWaves) {
+            setTimeout(() => {
+              if (this.game.shields > 0) {
+                this.startWave(this.currentWave + 1);
+              }
+            }, 1800);
+          } else {
+            setTimeout(() => {
+              if (this.game.shields > 0) {
+                this.game.endGame(true);
+              }
+            }, 800);
+          }
+        }
+      }
+
+      clearPairs() {
+        this.closeContextMenu();
+        for (const p of this.pairs) {
+          p.botA?.element?.remove();
+          p.botB?.element?.remove();
+          if (p.cableEl?.parentNode) p.cableEl.parentNode.removeChild(p.cableEl);
+        }
+        this.pairs = [];
+        this.tangledPairs = this.pairs;
+        this.robots = [];
+      }
+
+      updateHUD() {
+        const curLang = this.game.currentLanguage || "en";
+        const isJa = curLang === "ja";
+        const isIt = curLang === "it";
+        const levelLabelJa = "レベル";
+        const levelLabelIt = "LIVELLO";
+        const levelLabelEn = "LEVEL";
+        const subLevelLabel = isJa ? levelLabelJa : (isIt ? levelLabelIt : levelLabelEn);
+
+        const totalStr = (this.totalWaves === Infinity) ? "∞" : this.totalWaves;
+        const totalSubStr = (this.totalWaves === Infinity) ? (isJa ? "むげん" : "∞") : this.totalWaves;
+
+        const waveTextEl = document.getElementById("hud-wave-text");
+        const waveSubEl = document.getElementById("hud-wave-sub");
+        if (waveTextEl) waveTextEl.textContent = `LEVEL ${this.currentWave} / ${totalStr}`;
+        if (waveSubEl) waveSubEl.textContent = `${subLevelLabel} ${this.currentWave} / ${totalSubStr}`;
+
+        const scoreTextEl = document.getElementById("hud-score-text");
+        const scoreSubEl = document.getElementById("hud-score-sub");
+        const restoredLabelJa = "なおした";
+        const restoredLabelIt = "RIPARATI";
+        const restoredLabelEn = "RESTORED";
+        const subRestoredLabel = isJa ? restoredLabelJa : (isIt ? restoredLabelIt : restoredLabelEn);
+        if (scoreTextEl) scoreTextEl.textContent = `RESTORED: ${this.robotsRestored} / ${this.robotsTotal}`;
+        if (scoreSubEl) scoreSubEl.textContent = `${subRestoredLabel}: ${this.robotsRestored} / ${this.robotsTotal}`;
+
+        // Large Shields Indicator
+        const pipsContainer = document.getElementById("base-shield-pips");
+        if (pipsContainer) {
+          pipsContainer.innerHTML = "";
+          for (let i = 0; i < this.game.maxShields; i++) {
+            const pip = document.createElement("div");
+            pip.className = `large-shield-pip ${i < this.game.shields ? '' : 'lost'}`;
+            pipsContainer.appendChild(pip);
+          }
+        }
+        const numericEl = document.getElementById("base-shields-numeric");
+        if (numericEl) {
+          numericEl.textContent = `${Math.max(0, this.game.shields)} / ${this.game.maxShields}`;
+        }
+
+        const timerBadge = document.getElementById("hud-timer-badge");
+        if (timerBadge) timerBadge.style.display = "none";
+      }
+
+      pause() {
+        this.closeContextMenu();
+      }
+
+      resume() {}
+
+      dispose() {
+        this.active = false;
+        this.clearPairs();
+        this.closeContextMenu();
+        if (this.warningToast) {
+          this.warningToast.remove();
+          this.warningToast = null;
+        }
+        if (this.toastTimeout) {
+          clearTimeout(this.toastTimeout);
+          this.toastTimeout = null;
+        }
+        if (this.onDocClick) {
+          document.removeEventListener("pointerdown", this.onDocClick);
+          this.onDocClick = null;
+        }
+        if (this.onDocKey) {
+          document.removeEventListener("keydown", this.onDocKey);
+          this.onDocKey = null;
+        }
+        if (this.root?.parentNode) {
+          this.root.parentNode.removeChild(this.root);
+          this.root = null;
+          this.svgLayer = null;
+        }
+      }
+    }
+
+    window.RobotLinkLevel = RobotLinkLevel;
+    window.RobotUntangleLevel = RobotLinkLevel;
+
     class GameEngine {
       constructor() {
         this.state = GAME_STATES.START;
@@ -9523,12 +10981,16 @@
         const paramMode = urlParams.get("mode") || urlParams.get("game");
         const paramMission = urlParams.get("mission");
 
-        if (paramMission === "2" || paramMode === "reinforcements") {
+        if (paramMission === "2" || paramMission === "2.5" || paramMode === "reinforcements") {
           this.currentModeId = "reinforcements";
-        } else if (paramMission === "3" || paramMode === "robot_override" || paramMode === "robotOverride") {
+        } else if (paramMission === "3.5" || paramMission === "override" || paramMode === "robot_override" || paramMode === "robotOverride") {
           this.currentModeId = "robot_override";
-        } else if (paramMode === "scroll_training" || paramMode === "scroll" || paramMode === "scrollTraining" || paramMission === "scroll") {
+        } else if (paramMission === "3" || paramMode === "scroll_training" || paramMode === "scroll" || paramMode === "scrollTraining" || paramMission === "scroll") {
           this.currentModeId = "scroll_training";
+        } else if (paramMission === "4" || paramMode === "drag_rescue" || paramMode === "falling_debris" || paramMode === "dragRescue" || paramMode === "fallingDebris") {
+          this.currentModeId = "drag_rescue";
+        } else if (paramMission === "5" || paramMode === "robot_link" || paramMode === "robot_untangle" || paramMode === "robotLink" || paramMode === "robotUntangle") {
+          this.currentModeId = "robot_link";
         } else if (paramMission === "7" || paramMode === "mouse_boss" || paramMode === "mouse_boss_fight" || paramMode === "mouseBoss") {
           this.currentModeId = "mouse_boss";
         } else {
@@ -9537,6 +10999,8 @@
         this.currentMode = GAME_MODES[this.currentModeId] || GAME_MODES.base_defense;
         this.scrollTrainingLevel = null;
         this.mouseBossLevel = null;
+        this.robotLinkLevel = null;
+        this.untangleLevel = null;
 
         this.waveRobotsToSpawn = 0;
         this.waveRobotsSpawned = 0;
@@ -9550,6 +11014,7 @@
         this.practiceStep = 0;
 
         this.playfieldEl = document.getElementById("playfield");
+        this.audioManager = audioManager;
         this.inputEngine = new DoubleClickEngine(this);
         this.effects = new EffectsManager(this.playfieldEl);
         this.tutorialEngine = new TutorialEngine(this);
@@ -9570,7 +11035,7 @@
       }
 
       playGame() {
-        if (this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss") {
+        if (this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss" || this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
           return this.startRun();
         }
         if (this.selectedDifficulty === "veryEasy") {
@@ -9599,6 +11064,11 @@
           this.mouseBossLevel.dispose();
           this.mouseBossLevel = null;
         }
+        if (this.robotLinkLevel) {
+          this.robotLinkLevel.dispose();
+          this.robotLinkLevel = null;
+          this.untangleLevel = null;
+        }
         const timerBadge = document.getElementById("hud-timer-badge");
         if (timerBadge) {
           timerBadge.style.display = "none";
@@ -9618,10 +11088,19 @@
           }
         }
 
+        const isDragRescue = this.currentModeId === "drag_rescue" || this.currentModeId === "falling_debris";
         const isScroll = this.currentModeId === "scroll_training";
         const isMouseBoss = this.currentModeId === "mouse_boss";
+        const isRobotLink = this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle";
+        document.body.classList.toggle("drag-rescue-mode", isDragRescue);
         document.body.classList.toggle("scroll-training-mode", isScroll);
         document.body.classList.toggle("mouse-boss-mode", isMouseBoss);
+        document.body.classList.toggle("robot-link-mode", isRobotLink);
+
+        if (isRobotLink && !this.robotLinkLevel) {
+          this.robotLinkLevel = new RobotLinkLevel(this);
+          this.untangleLevel = this.robotLinkLevel;
+        }
 
         if (applyDisplay) {
           this.updateModeDisplay();
@@ -9629,8 +11108,8 @@
         }
       }
 
-      cycleNextMode() {
-        const order = ["base_defense", "reinforcements", "robot_override", "scroll_training", "mouse_boss"];
+      cycleNextMode(fullCurriculum = false) {
+        const order = ["base_defense", "reinforcements", "scroll_training", "robot_override", "drag_rescue", "robot_link", "mouse_boss"];
         const nextIdx = (order.indexOf(this.currentModeId) + 1) % order.length;
         this.setMode(order[nextIdx]);
         if (this.state === GAME_STATES.ACTIVE || this.state === GAME_STATES.PAUSED) {
@@ -9657,22 +11136,22 @@
         if (modeDisplay) modeDisplay.textContent = `Mission ${m.mission}: ${m.name}`;
         if (modeBtn) modeBtn.textContent = `Mode: ${m.name}`;
 
-        // Ultra mode is available ONLY in Mission 1 (Base Defense) and Mission 2 (Reinforcements)
-        // Hidden and disabled in Mission 3 (Robot Override), Scroll Training, and Mouse Boss Fight
+        // Ultra mode is universally available across all missions and training modes
         const ultraBtn = document.querySelector(".diff-btn.diff-ultra");
         if (ultraBtn) {
-          if (this.currentModeId === "robot_override" || this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss") {
-            ultraBtn.style.display = "none";
-            if (this.selectedDifficulty === "ultra") {
-              this.selectedDifficulty = "normal";
-              this.totalWaves = 3;
-              document.querySelectorAll(".diff-btn").forEach(b => {
-                b.classList.toggle("selected", b.getAttribute("data-diff") === "normal");
-              });
-            }
-          } else {
-            ultraBtn.style.display = "flex";
-          }
+          ultraBtn.style.display = "flex";
+        }
+
+        // Sync mission selector buttons on splash screen
+        document.querySelectorAll(".mission-btn").forEach(btn => {
+          const mode = btn.getAttribute("data-mode");
+          const isSelected = mode === this.currentModeId || (mode === "robot_link" && this.currentModeId === "robot_untangle") || (mode === "drag_rescue" && this.currentModeId === "falling_debris");
+          btn.classList.toggle("selected", isSelected);
+        });
+
+        const picker = document.getElementById("debug-mode-select");
+        if (picker && picker.value !== this.currentModeId) {
+          picker.value = this.currentModeId;
         }
       }
 
@@ -9834,6 +11313,16 @@
         // HUD Language Toggle Button
         document.getElementById("hud-lang-toggle-btn").addEventListener("click", () => {
           this.toggleNextLanguage();
+        });
+
+        // Mission Selection Buttons on Splash Screen
+        document.querySelectorAll(".mission-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const targetMode = btn.getAttribute("data-mode");
+            if (targetMode && targetMode !== this.currentModeId) {
+              this.setMode(targetMode);
+            }
+          });
         });
 
         // Mode switch button in footer
@@ -10076,6 +11565,15 @@
             this.mouseBossLevel = new MouseBossLevel(this);
           }
           this.mouseBossLevel.startWave(waveNum);
+          return;
+        }
+
+        if (this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
+          if (!this.robotLinkLevel) {
+            this.robotLinkLevel = new RobotLinkLevel(this);
+            this.untangleLevel = this.robotLinkLevel;
+          }
+          this.robotLinkLevel.startWave(waveNum);
           return;
         }
 
@@ -10327,6 +11825,13 @@
         if (this.currentModeId === "mouse_boss") {
           if (this.mouseBossLevel) {
             this.mouseBossLevel.update(dtSec);
+          }
+          return;
+        }
+
+        if (this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
+          if (this.robotLinkLevel) {
+            this.robotLinkLevel.update(dtSec);
           }
           return;
         }
@@ -10748,13 +12253,20 @@
         if (this.shields <= 0) return;
 
         const diff = DIFFICULTY_SETTINGS[this.selectedDifficulty];
+        const isLevelMode = (this.currentModeId === "scroll_training" || this.currentModeId === "mouse_boss" || this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle");
+        const modeWordEn = isLevelMode ? "Level" : "Wave";
+
         if (diff.isEndless || this.currentWave < this.totalWaves) {
           this.state = GAME_STATES.INTERMISSION;
           this.inputEngine.reset();
 
           const dict = TRANSLATIONS[this.currentLanguage] || {};
-          const titleEn = `Wave ${this.currentWave} Cleared!`;
-          const titleSub = (dict.waveCleared ? dict.waveCleared.replace("{n}", this.currentWave) : "");
+          const titleEn = `${modeWordEn} ${this.currentWave} Cleared!`;
+          const titleSub = (this.currentLanguage === "ja")
+            ? (isLevelMode ? `レベル ${this.currentWave} クリア！` : (dict.waveCleared ? dict.waveCleared.replace("{n}", this.currentWave) : `ウェーブ ${this.currentWave} クリア！`))
+            : ((this.currentLanguage === "it")
+              ? (isLevelMode ? `Livello ${this.currentWave} Superato!` : (dict.waveCleared ? dict.waveCleared.replace("{n}", this.currentWave) : `Ondata ${this.currentWave} Superata!`))
+              : titleEn);
 
           // In endless mode, show up to 3 stars as celebratory progression
           const starCount = Math.min(3, this.currentWave);
@@ -10769,8 +12281,12 @@
           this.inputEngine.reset();
 
           const dict = TRANSLATIONS[this.currentLanguage] || {};
-          const titleEn = "All Waves Defended!";
-          const titleSub = dict.baseDefended || "きティを まもりきった！";
+          const titleEn = isLevelMode ? "All Levels Cleared!" : "All Waves Defended!";
+          const titleSub = (this.currentLanguage === "ja")
+            ? (isLevelMode ? "ぜんレベル クリア！" : (dict.baseDefended || "きティを まもりきった！"))
+            : ((this.currentLanguage === "it")
+              ? (isLevelMode ? "Tutti i Livelli Superati!" : "Tutte le Ondate Difese!")
+              : titleEn);
 
           this.showWaveStars(3, titleEn, titleSub, () => {
             this.endGame(true);
@@ -10839,6 +12355,15 @@
         this.state = isVictory ? GAME_STATES.VICTORY : GAME_STATES.DEFEAT;
         this.inputEngine.reset();
         document.getElementById("announcement-overlay").innerHTML = "";
+
+        if (this.robotLinkLevel) {
+          this.robotLinkLevel.closeContextMenu?.();
+          if (this.robotLinkLevel.warningToast) {
+            this.robotLinkLevel.warningToast.remove();
+            this.robotLinkLevel.warningToast = null;
+          }
+        }
+        document.querySelectorAll(".link-warning-toast").forEach(el => el.remove());
 
         const diff = DIFFICULTY_SETTINGS[this.selectedDifficulty];
         const isUltra = !!diff.isEndless;
@@ -10966,6 +12491,17 @@
               rankEn = "TRY AGAIN!";
               rankSubKey = "star0Rank";
             }
+          } else if (this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
+            if (this.starsEarned === 3) {
+              rankEn = "LINK MASTER!";
+              rankSubKey = "linkMasterRank";
+            } else if (this.starsEarned === 2) {
+              rankEn = "GREAT UNLINKER!";
+              rankSubKey = "star2Rank";
+            } else {
+              rankEn = "BASE SECURED!";
+              rankSubKey = "star1Rank";
+            }
           } else if (this.starsEarned === 3) {
             rankEn = "DEFENSE MASTER!";
             rankSubKey = "star3Rank";
@@ -10983,6 +12519,8 @@
             rankSubEl.textContent = (this.currentLanguage === "ja") ? "スクロール マスター！" : (this.currentLanguage === "it" ? "MAESTRO DELLO SCORRIMENTO!" : "SCROLL MASTER!");
           } else if (this.currentModeId === "mouse_boss" && this.starsEarned === 3) {
             rankSubEl.textContent = (this.currentLanguage === "ja") ? "マウス マスター！" : (this.currentLanguage === "it" ? "MAESTRO DEL MOUSE!" : "MOUSE MASTER!");
+          } else if ((this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") && this.starsEarned === 3) {
+            rankSubEl.textContent = (this.currentLanguage === "ja") ? "リンク マスター！" : (this.currentLanguage === "it" ? "MAESTRO DEL COLLEGAMENTO!" : "LINK MASTER!");
           } else {
             rankSubEl.textContent = dict[rankSubKey] || "";
           }
@@ -11044,6 +12582,23 @@
             msgEl.textContent = `${restored} / ${total} Robots Restored. Combine all your mouse skills to conquer the facility!`;
             msgSubEl.textContent = (this.currentLanguage === "ja") ? `${restored} / ${total} なおしたよ。 すべての マウスわざで ちょうせん しよう！` : "";
           }
+        } else if (this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
+          extraHelpBtn.style.display = "none";
+          if (isVictory) {
+            titleEl.textContent = "Link Master!";
+            titleEl.style.color = "var(--cyan-main)";
+            titleSubEl.textContent = (this.currentLanguage === "ja") ? "リンク マスター！" : (this.currentLanguage === "it" ? "Maestro del Collegamento!" : "Link Master!");
+
+            msgEl.textContent = "Outstanding unlink coordination! You severed every energy link and restored the defense base.";
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? "みぎクリックで リンクを かいじょして、ダブルクリックで すべての ロボットを なおしたよ！" : (this.currentLanguage === "it" ? "Coordinazione eccezionale! Hai scollegato tutti i robot e ripristinato la base." : "Outstanding unlink coordination!");
+          } else {
+            titleEl.textContent = "The Robots Got Through!";
+            titleEl.style.color = "var(--orange-main)";
+            titleSubEl.textContent = dict.defeatTitle || "";
+
+            msgEl.textContent = "Right-click linked robots to sever the cable, then double-click each robot to protect your base!";
+            msgSubEl.textContent = (this.currentLanguage === "ja") ? "みぎクリックで リンクを かいじょしてから、ダブルクリックで ロボットを なおそう！" : "";
+          }
         } else if (isVictory) {
           titleEl.textContent = "Base Defended!";
           titleEl.style.color = "var(--cyan-main)";
@@ -11090,6 +12645,11 @@
           document.getElementById("res-stat-waves").textContent = `${isVictory ? 4 : (this.mouseBossLevel?.currentWave || 1)} / 4`;
           document.getElementById("res-stat-bots").textContent = this.mouseBossLevel?.robotsRestored || this.robotsDestroyed;
           document.getElementById("res-stat-shields").textContent = "-- / --";
+        } else if (this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") {
+          const totalStr = isUltra ? "∞" : 3;
+          document.getElementById("res-stat-waves").textContent = `${isVictory ? (isUltra ? this.currentWave : 3) : (this.robotLinkLevel?.currentWave || 1)} / ${totalStr}`;
+          document.getElementById("res-stat-bots").textContent = this.robotLinkLevel?.robotsRestored || this.robotsDestroyed;
+          document.getElementById("res-stat-shields").textContent = `${Math.max(0, this.shields)} / ${this.maxShields}`;
         } else if (isUltra) {
           document.getElementById("res-stat-waves").textContent = `${wavesSurvived} / ∞`;
           document.getElementById("res-stat-bots").textContent = this.robotsDestroyed;
@@ -11185,6 +12745,9 @@
           if (this.mouseBossLevel) {
             this.mouseBossLevel.pause();
           }
+          if (this.robotLinkLevel) {
+            this.robotLinkLevel.pause();
+          }
           document.getElementById("screen-pause").classList.add("active");
         }
       }
@@ -11199,6 +12762,9 @@
           }
           if (this.mouseBossLevel) {
             this.mouseBossLevel.resume();
+          }
+          if (this.robotLinkLevel) {
+            this.robotLinkLevel.resume();
           }
           if (targetState === GAME_STATES.COUNTDOWN) {
             this.startCountdown(() => this.startWave(this.currentWave));
@@ -11241,6 +12807,11 @@
           this.mouseBossLevel.dispose();
           this.mouseBossLevel = null;
         }
+        if (this.robotLinkLevel) {
+          this.robotLinkLevel.dispose();
+          this.robotLinkLevel = null;
+          this.untangleLevel = null;
+        }
         this.robots.forEach(r => {
           if (r.element && r.element.parentNode) {
             r.element.parentNode.removeChild(r.element);
@@ -11281,6 +12852,11 @@
       updateHUD() {
         if (this.currentModeId === "mouse_boss" && this.mouseBossLevel) {
           this.mouseBossLevel.updateHUD();
+          return;
+        }
+
+        if ((this.currentModeId === "robot_link" || this.currentModeId === "robot_untangle") && this.robotLinkLevel) {
+          this.robotLinkLevel.updateHUD();
           return;
         }
 
@@ -11381,13 +12957,12 @@
     window.initMiniGame = function(config = {}) {
       if (!window.gameInstance) return null;
       if (config.mode || config.mission) {
-        let targetMode = config.mode;
-        if (config.mission === 1 || config.mission === "1" || config.mission === 1.5) targetMode = "base_defense";
-        else if (config.mission === 2 || config.mission === "2" || config.mission === 2.5) targetMode = "reinforcements";
-        else if (config.mission === 3 || config.mission === "3" || config.mission === 3.5) {
-          targetMode = (config.mode === "scroll_training" || config.mode === "scroll" || config.mission === "scroll") ? "scroll_training" : "robot_override";
-        }
-        else if (config.mode === "scroll_training" || config.mode === "scroll" || config.mission === "scroll") targetMode = "scroll_training";
+        if (config.mission === 1 || config.mission === "1" || config.mission === 1.5 || config.mission === "1.5" || config.mode === "base_defense") targetMode = "base_defense";
+        else if (config.mission === 2 || config.mission === "2" || config.mission === 2.5 || config.mission === "2.5" || config.mode === "reinforcements") targetMode = "reinforcements";
+        else if (config.mission === 3.5 || config.mission === "3.5" || config.mode === "robot_override" || config.mode === "robotOverride") targetMode = "robot_override";
+        else if (config.mission === 3 || config.mission === "3" || config.mode === "scroll_training" || config.mode === "scroll" || config.mission === "scroll") targetMode = "scroll_training";
+        else if (config.mission === 4 || config.mission === "4" || config.mode === "drag_rescue" || config.mode === "falling_debris" || config.mode === "dragRescue" || config.mode === "fallingDebris") targetMode = "drag_rescue";
+        else if (config.mission === 5 || config.mission === "5" || config.mode === "robot_link" || config.mode === "robot_untangle" || config.mode === "robotLink" || config.mode === "robotUntangle") targetMode = "robot_link";
         else if (config.mission === 7 || config.mission === "7" || config.mode === "mouse_boss" || config.mode === "mouse_boss_fight" || config.mode === "mouseBoss") targetMode = "mouse_boss";
         window.gameInstance.setMode(targetMode);
       }

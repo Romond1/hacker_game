@@ -5,8 +5,8 @@ import { missionThree } from './mission-three';
 import { missionFour } from './mission-four';
 
 describe('mission catalog', () => {
-  it('contains the eight missions in progression order', () => {
-    expect(MISSIONS.map((mission) => mission.id)).toEqual(['mission-1', 'mission-2', 'mission-scroll', 'mission-drag', 'mission-context', 'mission-4', 'mission-recovery', 'mission-3']);
+  it('contains the eleven missions in progression order', () => {
+    expect(MISSIONS.map((mission) => mission.id)).toEqual(['mission-1', 'mission-2', 'mission-scroll', 'mission-drag', 'mission-context', 'mission-4', 'mission-recovery', 'mission-3', 'mission-keyboard-9', 'mission-keyboard-10', 'mission-keyboard-11']);
     expect(getMission('mission-2')?.title.en).toBe('Follow the Trail');
     expect(getMissionByNumber(8)?.completion).toEqual({ type: 'confirm_code', targetObjectiveId: 'open-report', code: 'ORBIT' });
   });

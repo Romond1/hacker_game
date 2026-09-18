@@ -1,3 +1,6 @@
+import { KeyboardGameModeButton } from './KeyboardGameScope';
+import { KeyboardChallenge } from './KeyboardChallenge';
+import type { KeyboardEvidence } from '../../domain/keyboard';
 import { createDetectiveCodes, detectiveLevel } from '../../domain/detective';
 import { ScrollMissionArchive } from './ScrollArchive';
 import { CoreRecovery } from './CoreRecovery';
@@ -64,6 +67,7 @@ export function MissionRunner({ mission: baseMission, user, attemptId, preview =
   const [contextMenu, setContextMenu] = useState<'copy' | 'paste'>();
   const startedAt = useMemo(() => Date.now(), []);
   const finished = useRef(false);
+  const keyboardEvidence = useRef<KeyboardEvidence | undefined>(undefined);
   const recoveryEvidence = useRef<RecoveryState | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [saveFailed, setSaveFailed] = useState(false);
@@ -98,6 +102,7 @@ export function MissionRunner({ mission: baseMission, user, attemptId, preview =
       completed: true, objectivesCompleted: nextObjectives.size, totalObjectives: mission.objectives.length,
       correctActions: nextCorrect, incorrectActions: nextIncorrect, hintsUsed: usedHints.length,
       translationsUsed: translatedIds.size, durationSeconds: duration,
+      ...(keyboardEvidence.current ? { keyboard: keyboardEvidence.current, hintsUsed: keyboardEvidence.current.metrics.hints } : {}),
       ...(recoveryEvidence.current ? { recovery: recoveryEvidence.current, hintsUsed: recoveryEvidence.current.metrics.hints } : {}),
     };
     const score = calculateScore(mission.scoring, stats);
@@ -260,6 +265,16 @@ export function MissionRunner({ mission: baseMission, user, attemptId, preview =
   const transfer = mission.transferChallenge;
 
   const missionHeader = <header className="mission-header" inert={saving || saveFailed ? true : undefined}><div><p>MISSION {String(mission.number).padStart(2, '0')}</p><strong>{mission.title.en.toUpperCase()}</strong></div><div className="mission-objective"><span>OBJECTIVE</span><p>{mission.translations.objective.en}</p>{objectiveTranslated && <small lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</small>}</div><button className="translate-button" onClick={() => void translate('objective')} disabled={objectiveTranslated}>◎ {objectiveTranslated ? 'Translated' : 'Translate'}</button><div className="score-live"><span>PROGRESS</span><strong>{completedObjectives.size}/{mission.objectives.length}</strong></div></header>;
+
+  if (mission.keyboardLesson) return <main className="mission-screen">
+    {missionHeader}<div className="keyboard-mission-main">{mission.keyboardLesson===11&&<KeyboardGameModeButton/>}<KeyboardChallenge lesson={mission.keyboardLesson} disabled={preview || saving || saveFailed || finished.current} muted={muted} onCheckpoint={(evidence, step) => {
+      setCompletedObjectives(new Set(evidence.actions.map((_,i) => `keyboard-stage-${i}`)));
+      void log('objective_completed', { objectiveId: step, keyboard: evidence }).catch(() => undefined);
+    }} onComplete={evidence => {
+      keyboardEvidence.current = evidence;
+      void finish(new Set(mission.objectives.map(o=>o.id)), evidence.actions.flat().length, evidence.metrics.incorrectKeys);
+    }}/></div>{(saving || saveFailed) && <div className="mission-save-overlay" role="dialog" aria-label="Saving mission"><div>{saveFailed ? <><p role="alert">Your result is safe. Try saving again.</p><button className="primary-button" onClick={()=>void saveResult()}>Retry saving</button></> : <p>Saving keyboard progress…</p>}</div></div>}
+  </main>;
 
   if (mission.recoveryChallenge) return <main className="mission-screen">{missionHeader}<CoreRecovery disabled={preview || saving || saveFailed || finished.current} muted={muted} onCheckpoint={(step, file, state) => { setCompletedObjectives(new Set(state.secured.map(name => `recover-${name}`))); void log('objective_completed', { objectiveId: `${file}:${step}`, skill: step, phase: state.phase + 1 }).catch(() => undefined); }} onComplete={state => {
     recoveryEvidence.current = state;

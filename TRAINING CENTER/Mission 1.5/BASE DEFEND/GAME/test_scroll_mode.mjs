@@ -126,7 +126,7 @@ async function runTests() {
       isBodyClass,
       selectHasScroll: Array.from(select?.options || []).some(o => o.value === "scroll_training"),
       selectVal: select?.value,
-      ultraHidden: ultraBtn ? window.getComputedStyle(ultraBtn).display === "none" : true
+      ultraVisible: ultraBtn ? window.getComputedStyle(ultraBtn).display !== "none" : false
     };
   })()`);
 
@@ -136,7 +136,7 @@ async function runTests() {
   assert("Body has 'scroll-training-mode' class", modeData.isBodyClass === true);
   assert("Debug picker contains 'scroll_training' option", modeData.selectHasScroll === true);
   assert("Debug picker selects 'scroll_training'", modeData.selectVal === "scroll_training");
-  assert("Ultra difficulty button is hidden in Scroll Training", modeData.ultraHidden === true);
+  assert("Ultra difficulty button is visible in Scroll Training (Universal 6 difficulties)", modeData.ultraVisible === true);
 
   // 2. Zero-Kanji Japanese Verification
   console.log("\n--- TEST 2: Zero-Kanji Verification for Scroll Training Translations ---");

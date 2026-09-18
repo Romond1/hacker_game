@@ -1,0 +1,127 @@
+/* Home-only command deck. Semantic tokens keep the game surfaces coherent. */
+.app-shell .cyber-home {
+  --home-surface: #0d1924; --home-raised: #122331; --home-text: #edf5fa;
+  --home-muted: #a9bdca; --home-line: #294251; --home-accent: #79e7dc; --home-reward: #ffc578;
+  width: min(1120px, calc(100% - 48px)); padding: 28px 0 40px; color: var(--home-text);
+}
+.cyber-home .home-heading { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:24px; }
+.cyber-home .home-heading .eyebrow { color:var(--home-accent); font-size:12px; letter-spacing:.16em; margin:0 0 8px; }
+.cyber-home .home-heading h1 { font:750 clamp(28px,3vw,42px)/1.15 'Space Grotesk',sans-serif; letter-spacing:-.04em; margin:0; }
+.cyber-home .home-heading h1 span { color:var(--home-accent); }
+.cyber-home .home-heading p:last-child { color:var(--home-muted); font-size:14px; margin:10px 0 0; }
+.cyber-home .home-campaign-shortcut { display:flex; gap:20px; align-items:center; min-height:44px; color:var(--home-accent); font-size:13px; text-decoration:none; white-space:nowrap; }
+.app-shell .cyber-home .cyber-home-status { background:transparent; border:0; box-shadow:none; padding:0 2px; min-height:26px; margin-bottom:12px; font-size:11px; color:var(--home-muted); }
+.cyber-home-status > span { display:none; }
+.app-shell .cyber-home .cyber-glass { background:linear-gradient(120deg,#10212bed,#0c1722f5); border-radius:16px; box-shadow:0 12px 35px #0003; }
+.app-shell .cyber-home .cyber-glass.spectral-border::before { padding:1px; opacity:.6; }
+.app-shell .cyber-home .cyber-home-echo { grid-template-columns:190px minmax(0,1fr); padding:20px; gap:24px; margin-bottom:16px; min-height:0; }
+.app-shell .cyber-home .echo-portrait { min-height:0; max-height:350px; border-radius:12px; align-self:stretch; }
+.cyber-home .echo-portrait img { object-fit:cover; object-position:center; }
+.app-shell .cyber-home .echo-portrait > span { font-size:10px; padding:10px 6px; }
+.cyber-home .echo-command { min-width:0; padding:0; }
+.cyber-home .echo-command > .eyebrow { font-size:11px; margin-bottom:12px; }
+.cyber-home .echo-header-row { flex-wrap:wrap; align-items:flex-start; gap:12px; padding:0; border:0; }
+.cyber-home .echo-title { gap:10px; flex-wrap:wrap; }
+.cyber-home .echo-title h1 { font-size:28px; }
+.cyber-home .identity-pending-title { font:700 22px/1.2 'Space Grotesk',sans-serif; }
+.app-shell .cyber-home .echo-title > span { font-size:11px; color:var(--home-reward); }
+.app-shell .cyber-home .echo-welcome { font-size:14px; margin:12px 0 3px; line-height:1.5; }
+.cyber-home .echo-command > small { font-size:12px; color:var(--home-muted); }
+.app-shell .cyber-home .cyber-home-launch { width:100%; order:2; padding:10px 12px; gap:12px; justify-content:space-between; flex-shrink:1; }
+.app-shell .cyber-home .cyber-home-launch p strong { max-width:none; white-space:normal; font-size:13px!important; letter-spacing:0; }
+.app-shell .cyber-home .cyber-home-launch p small { font-size:10px; margin-bottom:5px; }
+.app-shell .cyber-home .cyber-home-launch p em { font-size:11px; white-space:normal; }
+.app-shell .cyber-home .cyber-home-launch button { min-width:172px; min-height:50px; background:var(--home-reward); box-shadow:none; border:0; border-radius:8px; }
+.app-shell .cyber-home .cyber-home-launch button strong { font-size:12px!important; letter-spacing:.02em; }
+.cyber-home .echo-readouts { display:flex; gap:24px; margin:14px 0; }
+.cyber-home .echo-readouts > div { flex:1; padding:0 0 0 12px; background:none; border:0; border-left:2px solid var(--home-line); border-radius:0; }
+.app-shell .cyber-home .echo-readouts span { font-size:11px; color:var(--home-muted); }
+.cyber-home .echo-readouts span small { display:none; }
+.app-shell .cyber-home .echo-readouts strong { font-size:23px; color:var(--home-text); text-shadow:none; }
+.cyber-home .echo-quick-utilities { gap:12px; margin:12px 0 0; }
+.cyber-home .echo-utility-card { padding:12px; gap:8px; }
+.app-shell .cyber-home .echo-utility-card .echo-utility-header strong { font-size:12px; }
+.cyber-home .echo-utility-header small { font-size:11px; }
+.cyber-home .echo-utility-tag { font-size:10px; }
+.cyber-home .echo-utility-card .utility-heading, .cyber-home .echo-utility-body { display:none; }
+.cyber-home .echo-utility-card:has(.echo-loadout[open]) .echo-utility-body { display:block; }
+.cyber-home .echo-utility-card .cyber-outline-button,.cyber-home .cyber-shop-button { min-height:44px; width:fit-content; max-width:100%; padding:7px 12px; font-size:12px; animation:none!important; box-shadow:none; }
+.cyber-home .cyber-shop-button strong { font-size:12px; }
+.cyber-home .cyber-shop-button small,.cyber-home .cyber-outline-button small { font-size:11px; }
+.app-shell .cyber-home .cyber-home-operation { grid-template-columns:1fr 130px; min-height:0; padding:18px 22px; gap:20px; margin-bottom:24px; }
+.cyber-home .operation-priority { display:none; }
+.app-shell .cyber-home .cyber-home-operation h2 { font-size:20px; line-height:1.3; margin:7px 0 4px; }
+.app-shell .cyber-home .cyber-home-operation h3 { font-size:13px; margin:0 0 8px; }
+.app-shell .cyber-home .cyber-home-operation p:not(.eyebrow),.app-shell .cyber-home .cyber-home-operation small { font-size:13px; line-height:1.5; color:var(--home-muted); }
+.cyber-home .operation-copy .eyebrow { font-size:11px; }
+.cyber-home .operation-radar { width:130px; aspect-ratio:1; }
+.cyber-home .operation-radar small { display:none; }
+.app-shell .cyber-home .cyber-home-network { padding:20px; scroll-margin-top:100px; }
+.app-shell .cyber-home .cyber-home-network header strong { font-size:13px; letter-spacing:.04em; }
+.app-shell .cyber-home .cyber-home-network header small { font-size:12px; }
+.app-shell .cyber-home .cyber-home-network > header > b { font-size:11px; white-space:nowrap; }
+.app-shell .cyber-home .mission-card-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:16px; align-items:stretch; }
+.app-shell .cyber-home .mission-card { min-height:218px; padding:16px; gap:8px; border:1px solid var(--home-line); background:var(--home-surface); border-radius:12px; }
+.app-shell .cyber-home .mission-card.current { background:linear-gradient(140deg,#30291d,#111f29); border-color:var(--home-reward); box-shadow:inset 0 3px var(--home-reward); }
+.app-shell .cyber-home .mission-card.completed { background:#102823; border-color:#34584b; }
+.app-shell .cyber-home .mission-card.locked { opacity:1; background:#0d1822; }
+.app-shell .cyber-home .mission-card .mission-number span { font-size:10px; color:var(--home-muted); }
+.app-shell .cyber-home .mission-card .mission-number strong { font-size:20px; color:var(--home-muted); }
+.app-shell .cyber-home .mission-card.current .mission-number strong { color:var(--home-reward); }
+.app-shell .cyber-home .mission-summary h2 { font-size:17px; line-height:1.25; margin:8px 0 4px; text-transform:none; letter-spacing:0; }
+.app-shell .cyber-home .mission-summary h3 { font-size:12px; line-height:1.5; color:var(--home-muted); }
+.app-shell .cyber-home .mission-summary .status-chip { display:inline; font-size:11px; }
+.app-shell .cyber-home .status-support { display:inline; margin-left:6px; font-size:11px; color:var(--home-muted); }
+.cyber-home .mission-summary .new-signal { display:none; }
+.app-shell .cyber-home .mission-action .primary-button { width:fit-content; min-width:140px; min-height:44px; padding:8px 14px; font-size:12px; border-radius:8px; }
+.app-shell .cyber-home .locked-note { border:0; border-top:1px solid var(--home-line); border-radius:0; padding:10px 0 0; font-size:11px; line-height:1.5; color:var(--home-muted); }
+.cyber-home .mission-training-link { min-height:54px; margin-top:4px; padding:8px 10px; font-size:11px; box-shadow:none; }
+.cyber-home .mission-training-link strong { font-size:13px; }
+.cyber-home .mission-training-link span { font-size:10px; letter-spacing:0; }
+.cyber-home .mission-training-link::before { animation:none; }
+.cyber-home .cyber-home-system { padding:18px 20px; min-height:0; grid-template-columns:1fr auto; }
+.cyber-home .system-stream { display:none; }
+.cyber-home .cyber-home-system p:last-child,.cyber-home .cyber-home-footer { font-size:11px; }
+.cyber-home .cyber-home-background .cyber-login-shape { opacity:.26; animation-duration:28s; }
+.cyber-home .cyber-home-background .cyber-login-scan { opacity:.2; animation-duration:14s; }
+.cyber-home button:focus-visible,.cyber-home a:focus-visible,.cyber-home summary:focus-visible { outline:3px solid var(--home-accent); outline-offset:4px; }
+@media(max-width:1000px) {
+  .app-shell .cyber-home .cyber-home-echo { grid-template-columns:140px minmax(0,1fr); }
+  .app-shell .cyber-home .mission-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .cyber-home .echo-quick-utilities { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:700px) {
+  .app-shell .cyber-home { width:calc(100% - 28px); padding-top:20px; }
+  .cyber-home .home-heading { align-items:flex-start; }
+  .cyber-home .home-campaign-shortcut { display:none; }
+  .app-shell .cyber-home .cyber-home-status { flex-direction:row; font-size:9px; }
+  .app-shell .cyber-home .cyber-home-echo { display:block; padding:16px; }
+  .app-shell .cyber-home .echo-portrait { float:right; width:64px; height:72px; min-height:0; margin:0 0 10px 10px; }
+  .cyber-home .echo-portrait > span { display:none; }
+  .cyber-home .echo-command > .eyebrow { font-size:10px; }
+  .cyber-home .echo-header-row { display:block; }
+  .cyber-home .echo-title { margin-bottom:16px; }
+  .app-shell .cyber-home .cyber-home-launch { clear:both; display:flex; align-items:flex-start; gap:12px; padding:12px; }
+  .app-shell .cyber-home .cyber-home-launch button { width:fit-content; }
+  .cyber-home .echo-quick-utilities { grid-template-columns:1fr; }
+  .app-shell .cyber-home .cyber-home-operation { grid-template-columns:1fr; padding:16px; }
+  .cyber-home .operation-radar { display:none; }
+  .app-shell .cyber-home .cyber-home-network { padding:14px; }
+  .cyber-home .cyber-home-network > header { align-items:flex-start; flex-wrap:wrap; }
+  .app-shell .cyber-home .mission-card-grid { grid-template-columns:1fr; gap:10px; }
+  .app-shell .cyber-home .mission-card { min-height:195px; }
+  .cyber-home .cyber-home-system { grid-template-columns:1fr; gap:12px; }
+  .cyber-home .cyber-home-system .settings-link { min-width:0; min-height:44px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .cyber-home *, .cyber-home *::before, .cyber-home *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+}
+/* Keep equipment disclosure and unlock instructions available. */
+.cyber-home .echo-utility-body { display:block; }
+.cyber-home .echo-utility-body > p { margin:0; }
+.cyber-home .echo-loadout summary { min-height:44px; font-size:11px; color:var(--home-muted); cursor:pointer; }
+.cyber-home .echo-utility-card.is-locked { opacity:1; }
+.app-shell .cyber-home .mission-card .mission-number { padding:0; min-height:24px; border:0; border-radius:0; background:none; box-shadow:none; }
+.app-shell .cyber-home .mission-card.locked .status-chip { color:var(--home-muted); }
+.app-shell .cyber-home .mission-card.current .mission-action .primary-button { background:var(--home-reward); color:#17120a; box-shadow:none; }
+.app-shell .cyber-home .locked-note small { font-size:11px; }

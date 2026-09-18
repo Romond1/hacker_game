@@ -1,3 +1,4 @@
+import { validKeyboardEvidence, type KeyboardEvidence, type KeyboardLesson } from '../src/domain/keyboard.ts';
 import { validRecoveryEvidence, type RecoveryState } from '../src/domain/recovery.ts';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
 import { emptyProgression, type PlayerProgression, type RewardReceipt } from '../src/domain/progression.ts';
@@ -43,6 +44,7 @@ type Attempt = {
   correctActions: number;
   incorrectActions: number;
   recovery?: RecoveryState;
+  keyboard?: KeyboardEvidence;
 };
 
 type MissionProgressState = {
@@ -199,7 +201,7 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
     const completed = missions.filter((mission) => mission.completed);
     const scores = missions.flatMap((mission) => mission.bestScore === null ? [] : [mission.bestScore]);
     const times = missions.flatMap((mission) => mission.bestTimeSeconds === null ? [] : [mission.bestTimeSeconds]);
-    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? missions.find(m => !m.completed)?.missionNumber ?? 8;
+    const currentMission = missions.find((mission) => mission.unlocked && !mission.completed)?.missionNumber ?? missions.find(m => !m.completed)?.missionNumber ?? 11;
     return {
       progression: structuredClone(progressionFor(userId)),
       totalPoints: missions.reduce((sum, mission) => sum + mission.totalPoints, 0), rank: 'Rookie Agent', currentMission,
@@ -319,6 +321,11 @@ export function createDevAuthService(credentials: DevCredentialFile, saved?: Dev
       const attempt = attempts.get(attemptId);
       if (!attempt || attempt.userId !== userId || attempt.completed) return false;
       if (!Number.isInteger(durationSeconds) || durationSeconds < 1 || durationSeconds > 86400) throw new ProgressionError('validation_failed', 'Invalid mission result.');
+      if (attempt.missionId.startsWith('mission-keyboard-')) {
+        const lesson = Number(attempt.missionId.split('-').at(-1)) as KeyboardLesson;
+        if (!validKeyboardEvidence(stats.keyboard,lesson)) throw new ProgressionError('validation_failed','Complete every keyboard stage first.');
+        attempt.keyboard = structuredClone(stats.keyboard);
+      }
       if (attempt.missionId === 'mission-recovery' && !validRecoveryEvidence(stats.recovery)) throw new ProgressionError('validation_failed', 'Complete all three levels, including file recovery and selected-text transfer.');
       const receipt = awardMission(progressionFor(userId), attempt.missionId, attemptId, score);
       if (attempt.missionId === 'mission-recovery') attempt.recovery = structuredClone(stats.recovery as RecoveryState);

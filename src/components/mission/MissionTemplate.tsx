@@ -1,3 +1,4 @@
+import { KeyboardGameScope } from './KeyboardGameScope';
 import { useEffect, useRef, useState } from 'react';
 import { api, type MissionProgress, type SessionUser } from '../../api/client';
 import type { MissionDefinition, ScoreResult } from '../../domain/mission';
@@ -28,6 +29,7 @@ type MissionTemplateProps = {
   onRewardContinue?: () => void;
   onShop?: () => void;
   onKeyboard?: () => void;
+  onNextMission?: () => void;
   /** Completion notification; the host owns dashboard refresh and follow-up story flows. */
   onComplete?: (result: MissionTemplateResult) => void | Promise<void>;
   onAttemptChange?: (attemptId: string | undefined) => void;
@@ -38,8 +40,8 @@ export function MissionTemplate(props: MissionTemplateProps) {
   return <MissionLifecycle key={`${props.user.id}:${props.mission.id}:${props.progress.unlocked}`} {...props} />;
 }
 
-function MissionLifecycle({ mission, user, progress, progression, onHome, onShop, onKeyboard, onRewardContinue, onComplete, onAttemptChange, request = api }: MissionTemplateProps) {
-  const usesOverlays = !!mission.recoveryChallenge || !!mission.mouseChallenge || mission.number <= 3 || mission.id === 'mission-4' || mission.id === 'mission-3';
+function MissionLifecycle({ mission, user, progress, progression, onHome, onShop, onKeyboard, onNextMission, onRewardContinue, onComplete, onAttemptChange, request = api }: MissionTemplateProps) {
+  const usesOverlays = !!mission.keyboardLesson || !!mission.recoveryChallenge || !!mission.mouseChallenge || mission.number <= 3 || mission.id === 'mission-4' || mission.id === 'mission-3';
   const [screen, setScreen] = useState<MissionLifecycleScreen>(progress.unlocked ? usesOverlays ? 'tutorial' : 'available' : 'locked');
   const [attemptId, setAttemptId] = useState<string>();
   const pendingAttemptId = useRef<string | undefined>(undefined);
@@ -100,14 +102,14 @@ function MissionLifecycle({ mission, user, progress, progression, onHome, onShop
     setScreen(usesOverlays ? 'tutorial' : 'briefing');
   }
 
-  if (usesOverlays && screen !== 'locked') return <div className="mission-overlay-layout">
+  if (usesOverlays && screen !== 'locked') return <KeyboardGameScope enabled={mission.keyboardLesson === 11 && (screen === 'tutorial' || screen === 'active')}>
     <div className="mission-overlay-underlay" inert={screen === 'active' ? undefined : true} aria-hidden={screen !== 'active'}>
       <MissionRunner key={attemptId ?? 'preview'} mission={mission} user={user} attemptId={attemptId ?? ''} preview={!attemptId} muted={progression?.settings.muted ?? true} onComplete={completeMission} />
     </div>
     {screen === 'tutorial' && <MissionIntroOverlay mission={mission} user={user} busy={busy} error={error} leaving={introLeaving} muted={progression?.settings.muted ?? true} onStart={() => void beginMission()} onHome={onHome} />}
-    {screen === 'completion' && result && <MissionOutcomeOverlay key="access" mission={mission} user={user} result={result} stage="access" muted={progression?.settings.muted ?? true} onNext={() => setScreen('results')} onHome={onHome} onReplay={replay} onShop={onShop} onKeyboard={onKeyboard} />}
-    {screen === 'results' && result && <MissionOutcomeOverlay key="score" mission={mission} user={user} result={result} stage="score" muted={progression?.settings.muted ?? true} onNext={() => setScreen('results')} onHome={onRewardContinue ?? onHome} onReplay={replay} onShop={onShop} onKeyboard={onKeyboard} />}
-  </div>;
+    {screen === 'completion' && result && <MissionOutcomeOverlay key="access" mission={mission} user={user} result={result} stage="access" muted={progression?.settings.muted ?? true} onNext={() => setScreen('results')} onHome={onHome} onReplay={replay} onShop={onShop} onKeyboard={onKeyboard} onNextMission={onNextMission} />}
+    {screen === 'results' && result && <MissionOutcomeOverlay key="score" mission={mission} user={user} result={result} stage="score" muted={progression?.settings.muted ?? true} onNext={() => setScreen('results')} onHome={onRewardContinue ?? onHome} onReplay={replay} onShop={onShop} onKeyboard={onKeyboard} onNextMission={onNextMission} />}
+  </KeyboardGameScope>;
 
   if (screen === 'locked' || screen === 'available') return <main className="page narrow-page">
     <button className="back-link" onClick={onHome}>← Agent Home</button>

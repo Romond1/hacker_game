@@ -26,16 +26,27 @@
       allowedRobots: [],
       mechanic: 'drag_base_avoidance'
     },
+    robot_link: {
+      id: 'robot_link',
+      mission: 5,
+      name: 'Mission 5 Robot Link',
+      titleEn: 'Mission 5 Training · Robot Link',
+      titleSub: { it: 'Collega Robot', ja: 'ミッション 5: ロボット リンク' },
+      subtitleEn: 'Linked robots incoming in tandem! RIGHT-CLICK either robot to open the UNLINK menu. Click UNLINK to sever the link, then DOUBLE-CLICK each robot to restore it to cyan!',
+      subtitleSub: { it: 'Fai clic destro per aprire il menu UNLINK, poi doppio clic per ripristinare!', ja: 'ロボットを みぎクリックして UNLINK で かいじょ！ かいじょしたら ダブルクリックで なおそう！' },
+      allowedRobots: ['standard', 'heavy', 'speeder', 'tank'],
+      mechanic: 'context_menu_unlink_restore'
+    },
     robot_untangle: {
       id: 'robot_untangle',
       mission: 5,
-      name: 'Robot Untangle',
-      titleEn: 'Training 5 · Robot Untangle',
-      titleSub: { it: 'Sblocca i robot', ja: 'ロボットを解放' },
-      subtitleEn: 'RIGHT-click a tangled robot to show its actions. LEFT-click UNTANGLE. Then double-click to activate it. Left-click chooses; right-click shows options.',
-      subtitleSub: { it: 'Clic DESTRO per mostrare le azioni. Clic SINISTRO su UNTANGLE, poi doppio clic per attivare il robot.', ja: '右クリックで操作を表示。UNTANGLEを左クリックし、ダブルクリックで起動します。' },
-      allowedRobots: [],
-      mechanic: 'robot_untangle'
+      name: 'Mission 5 Robot Link',
+      titleEn: 'Mission 5 Training · Robot Link',
+      titleSub: { it: 'Collega Robot', ja: 'ミッション 5: ロボット リンク' },
+      subtitleEn: 'Linked robots incoming in tandem! RIGHT-CLICK either robot to open the UNLINK menu. Click UNLINK to sever the link, then DOUBLE-CLICK each robot to restore it to cyan!',
+      subtitleSub: { it: 'Fai clic destro per aprire il menu UNLINK, poi doppio clic per ripristinare!', ja: 'ロボットを みぎクリックして UNLINK で かいじょ！ かいじょしたら ダブルクリックで なおそう！' },
+      allowedRobots: ['standard', 'heavy', 'speeder', 'tank'],
+      mechanic: 'context_menu_unlink_restore'
     },
     mouse_boss: {
       id: 'mouse_boss',
@@ -102,6 +113,9 @@
     GAME_MODES.falling_debris = modes.drag_rescue;
     GAME_MODES.mouse_boss_fight = modes.mouse_boss;
     GAME_MODES.mouseBoss = modes.mouse_boss;
+    GAME_MODES.robot_untangle = modes.robot_link;
+    GAME_MODES.robotLink = modes.robot_link;
+    GAME_MODES.robotUntangle = modes.robot_link;
   }
 
   // Inject Dedicated Style Layer for Falling Debris
@@ -475,7 +489,6 @@
     .mouse-options button { display:block; width:100%; text-align:left; background:transparent; color:inherit; padding:10px; border:0; font:16px sans-serif; }
     .mouse-options button:hover,.mouse-options button:focus { background:#b9e7f4; }
     .mouse-options small { display:block; font-size:12px; }
-    body.mouse-context-mode .difficulty-group { display:none; }
 
     /* Enlarged End Screen (Results Screen) in Falling Debris - Fills the Screen */
     body.drag-rescue-mode #screen-results {
@@ -1213,143 +1226,35 @@
     }
   }
 
-  // Robot Untangle Mode Engine (Mission 5 Preview)
-  class RobotUntangleLevel {
+  // Mission 5 Robot Link Mode Engine Delegate
+  class ProxyRobotLinkLevel {
     constructor(game) {
+      if (typeof window !== 'undefined' && window.RobotLinkLevel && window.RobotLinkLevel !== ProxyRobotLinkLevel) {
+        return new window.RobotLinkLevel(game);
+      }
       this.game = game;
-      this.active = true;
+      this.active = false;
       this.robots = [];
-      this.menu = null;
+      this.pairs = [];
       this.ready = true;
-      this.mount();
     }
-
-    mount() {
-      this.dispose();
-      this.root = document.createElement('div');
-      this.root.className = 'mouse-training robot-untangle-active';
-      this.game.playfieldEl.appendChild(this.root);
-
-      this.instruction = document.createElement('div');
-      this.instruction.className = 'mouse-training-instruction';
-      this.instruction.innerHTML = 'RIGHT-click a tangled robot to show its actions. LEFT-click UNTANGLE.<small>Left-click chooses; right-click shows options.</small>';
-      this.root.appendChild(this.instruction);
-
-      this.spawnUntangleBots();
-    }
-
-    spawnUntangleBots() {
-      this.robots = [];
-      const positions = [
-        { x: 30, y: 55 },
-        { x: 50, y: 65 },
-        { x: 70, y: 55 }
-      ];
-
-      positions.forEach((pos, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'mouse-bot tangled';
-        btn.style.left = `${pos.x}%`;
-        btn.style.top = `${pos.y}%`;
-        btn.innerHTML = '<img src="../ART/robot1.png" alt="Tangled Robot">';
-        this.root.appendChild(btn);
-
-        const botData = {
-          id: idx + 1,
-          element: btn,
-          state: 'tangled',
-          xPercent: pos.x,
-          yPercent: pos.y
-        };
-
-        btn.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          this.openContextMenu(botData, e.clientX, e.clientY);
-        });
-
-        btn.addEventListener('dblclick', (e) => {
-          e.preventDefault();
-          if (botData.state === 'untangled') {
-            this.activateBot(botData);
-          }
-        });
-
-        this.robots.push(botData);
-      });
-    }
-
-    openContextMenu(botData, clientX, clientY) {
-      if (this.menu) this.menu.remove();
-      if (botData.state !== 'tangled') return;
-
-      const pfRect = this.game.playfieldEl.getBoundingClientRect();
-      const menu = document.createElement('div');
-      menu.className = 'mouse-options';
-      menu.style.left = `${clientX - pfRect.left + 5}px`;
-      menu.style.top = `${clientY - pfRect.top + 5}px`;
-
-      const untangleBtn = document.createElement('button');
-      untangleBtn.innerHTML = 'UNTANGLE<small>Left-click to free robot</small>';
-      untangleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.untangleBot(botData);
-        menu.remove();
-        this.menu = null;
-      });
-
-      menu.appendChild(untangleBtn);
-      this.root.appendChild(menu);
-      this.menu = menu;
-
-      const closeMenu = (e) => {
-        if (!menu.contains(e.target)) {
-          menu.remove();
-          this.menu = null;
-          document.removeEventListener('pointerdown', closeMenu);
+    startWave(w) {
+      if (typeof window !== 'undefined' && window.RobotLinkLevel && window.RobotLinkLevel !== ProxyRobotLinkLevel) {
+        const inst = new window.RobotLinkLevel(this.game);
+        if (this.game) {
+          this.game.robotLinkLevel = inst;
+          this.game.untangleLevel = inst;
         }
-      };
-      setTimeout(() => document.addEventListener('pointerdown', closeMenu), 50);
-    }
-
-    untangleBot(botData) {
-      botData.state = 'untangled';
-      botData.element.classList.remove('tangled');
-      botData.element.classList.add('selected');
-      playSfx('lockOn');
-
-      this.instruction.innerHTML = 'Great! Now DOUBLE-CLICK the free robot to activate it.<small>Quick double-click with the left button.</small>';
-    }
-
-    activateBot(botData) {
-      botData.state = 'active';
-      botData.element.classList.remove('selected');
-      botData.element.style.filter = 'drop-shadow(0 0 25px #00ffaa) brightness(1.3)';
-      playSfx('victory');
-
-      this.game.robotsDestroyed = (this.game.robotsDestroyed || 0) + 1;
-      this.game.score = (this.game.score || 0) + 200;
-      this.game.updateHUD();
-
-      const allActive = this.robots.every(r => r.state === 'active');
-      if (allActive) {
-        setTimeout(() => this.game.endGame(true), 800);
+        inst.startWave(w);
       }
     }
-
     update(dt) {}
-
     dispose() {
       this.active = false;
-      if (this.menu) {
-        this.menu.remove();
-        this.menu = null;
-      }
-      if (this.root && this.root.parentNode) {
-        this.root.remove();
-      }
-      this.robots = [];
     }
   }
+  const RobotLinkLevel = (typeof window !== 'undefined' && window.RobotLinkLevel) ? window.RobotLinkLevel : ProxyRobotLinkLevel;
+  const RobotUntangleLevel = RobotLinkLevel;
 
   // Hook into GameEngine / CyberHeroGame Prototype
   const GameClass = (typeof GameEngine !== 'undefined') ? GameEngine : (typeof CyberHeroGame !== 'undefined' ? CyberHeroGame : window.GameEngine);
@@ -1425,6 +1330,10 @@
       this.fallingDebrisLevel.dispose();
       this.fallingDebrisLevel = null;
     }
+    if (this.robotLinkLevel) {
+      this.robotLinkLevel.dispose();
+      this.robotLinkLevel = null;
+    }
     if (this.untangleLevel) {
       this.untangleLevel.dispose();
       this.untangleLevel = null;
@@ -1437,12 +1346,13 @@
     original.setMode.call(this, modeId);
 
     const isFallingDebris = this.currentModeId === 'drag_rescue';
-    const isUntangle = this.currentModeId === 'robot_untangle';
+    const isUntangle = this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle';
     const isScroll = this.currentModeId === 'scroll_training';
     const isBoss = this.currentModeId === 'mouse_boss';
     document.body.classList.toggle('drag-rescue-mode', isFallingDebris);
     document.body.classList.toggle('scroll-training-mode', isScroll);
     document.body.classList.toggle('mouse-boss-mode', isBoss);
+    document.body.classList.toggle('robot-link-mode', isUntangle);
     document.body.classList.toggle('mouse-skill-mode', isFallingDebris || isUntangle || isScroll || isBoss);
     document.body.classList.toggle('mouse-context-mode', isUntangle);
 
@@ -1476,14 +1386,14 @@
       }
       return this.startRun();
     }
-    if (this.currentModeId === 'robot_untangle' || this.currentModeId === 'scroll_training' || this.currentModeId === 'mouse_boss') {
+    if (this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle' || this.currentModeId === 'scroll_training' || this.currentModeId === 'mouse_boss') {
       return this.startRun();
     }
     return original.playGame.call(this);
   };
 
   proto.startTutorial = function(...args) {
-    if (this.currentModeId === 'robot_untangle' || this.currentModeId === 'scroll_training' || this.currentModeId === 'mouse_boss') {
+    if (this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle' || this.currentModeId === 'scroll_training' || this.currentModeId === 'mouse_boss') {
       return this.startRun();
     }
     return original.startTutorial.apply(this, args);
@@ -1516,12 +1426,20 @@
       }
       return;
     }
-    if (this.currentModeId === 'robot_untangle') {
+    if (this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle') {
       this.state = STATES.ACTIVE;
       this.currentWave = waveNum;
-      this.updateHUD();
-      if (!this.untangleLevel) {
-        this.untangleLevel = new RobotUntangleLevel(this);
+      this.totalWaves = (this.selectedDifficulty === 'ultra') ? Infinity : 3;
+      if (!this.robotLinkLevel) {
+        const Cls = window.RobotLinkLevel || RobotUntangleLevel;
+        this.robotLinkLevel = new Cls(this);
+      }
+      this.untangleLevel = this.robotLinkLevel;
+      this.robotLinkLevel.startWave(waveNum);
+      if (this.robotLinkLevel.updateHUD) {
+        this.robotLinkLevel.updateHUD();
+      } else {
+        this.updateHUD();
       }
       return;
     }
@@ -1536,11 +1454,12 @@
         console.error('FallingDebris update error:', err);
       }
     }
-    if (this.currentModeId === 'robot_untangle' && this.untangleLevel) {
+    if ((this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle') && (this.robotLinkLevel || this.untangleLevel)) {
       try {
-        return this.untangleLevel.update(dt);
+        const lvl = this.robotLinkLevel || this.untangleLevel;
+        return lvl.update(dt);
       } catch (err) {
-        console.error('RobotUntangle update error:', err);
+        console.error('RobotLink update error:', err);
       }
     }
     return original.updateActiveGame.call(this, dt, ms);
@@ -1550,6 +1469,10 @@
     if (this.fallingDebrisLevel) {
       this.fallingDebrisLevel.dispose();
       this.fallingDebrisLevel = null;
+    }
+    if (this.robotLinkLevel) {
+      this.robotLinkLevel.dispose();
+      this.robotLinkLevel = null;
     }
     if (this.untangleLevel) {
       this.untangleLevel.dispose();
@@ -1562,8 +1485,12 @@
     if (this.fallingDebrisLevel) {
       this.fallingDebrisLevel.cancelDrag();
     }
+    if (this.robotLinkLevel) {
+      this.robotLinkLevel.closeContextMenu?.();
+    }
     if (this.untangleLevel) {
-      this.untangleLevel.menu?.remove();
+      this.untangleLevel.closeContextMenu?.();
+      this.untangleLevel.menu?.remove?.();
     }
     return original.togglePause.apply(this, args);
   };
@@ -1571,17 +1498,19 @@
   proto.updateModeDisplay = function() {
     original.updateModeDisplay.call(this);
     const isFallingDebris = this.currentModeId === 'drag_rescue';
-    const isUntangle = this.currentModeId === 'robot_untangle';
+    const isUntangle = this.currentModeId === 'robot_link' || this.currentModeId === 'robot_untangle';
     const isScroll = this.currentModeId === 'scroll_training';
     const isBoss = this.currentModeId === 'mouse_boss';
     document.body.classList.toggle('drag-rescue-mode', isFallingDebris);
     document.body.classList.toggle('scroll-training-mode', isScroll);
     document.body.classList.toggle('mouse-boss-mode', isBoss);
+    document.body.classList.toggle('robot-link-mode', isUntangle);
     document.body.classList.toggle('mouse-skill-mode', isFallingDebris || isUntangle || isScroll || isBoss);
     document.body.classList.toggle('mouse-context-mode', isUntangle);
 
-    if (isUntangle) {
-      this.selectedDifficulty = 'veryEasy';
+    if (this.selectedDifficulty === 'ultra') {
+      this.totalWaves = Infinity;
+    } else {
       this.totalWaves = 3;
     }
 
@@ -1590,10 +1519,18 @@
       picker.value = this.currentModeId;
     }
 
+    // Ultra mode is universally available across all missions
     const ultraBtn = document.querySelector('.diff-btn.diff-ultra');
-    if (ultraBtn && isFallingDebris) {
+    if (ultraBtn) {
       ultraBtn.style.display = 'flex';
     }
+
+    // Sync mission selector buttons on splash screen
+    document.querySelectorAll('.mission-btn').forEach(btn => {
+      const mode = btn.getAttribute('data-mode');
+      const isSelected = mode === this.currentModeId || (mode === 'robot_link' && this.currentModeId === 'robot_untangle') || (mode === 'drag_rescue' && this.currentModeId === 'falling_debris');
+      btn.classList.toggle('selected', isSelected);
+    });
   };
 
   proto.handleWaveCompleted = function() {
@@ -2070,6 +2007,8 @@
       game.setMode('scroll_training');
     } else if (mode === 'falling_debris' || mission === '4') {
       game.setMode('drag_rescue');
+    } else if (mode === 'robot_link' || mode === 'robot_untangle' || mission === '5') {
+      game.setMode('robot_link');
     } else if (mode === 'mouse_boss' || mode === 'mouse_boss_fight' || mode === 'mouseBoss' || mission === '7') {
       game.setMode('mouse_boss');
     }
@@ -2089,7 +2028,7 @@
           '<option value="robot_override">Mission 3.5: Robot Override</option>' +
           '<option value="scroll_training">Mission 3: Scroll Training</option>' +
           '<option value="drag_rescue">Mission 4: Falling Debris</option>' +
-          '<option value="robot_untangle">Mission 5: Robot Untangle</option>' +
+          '<option value="robot_link">Mission 5: Robot Link</option>' +
           '<option value="mouse_boss">Mission 7: Mouse Boss Fight</option>';
         picker.value = game.currentModeId;
         picker.addEventListener('change', (e) => {
@@ -2116,7 +2055,7 @@
       modeBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        const modeSequence = ['base_defense', 'reinforcements', 'robot_override', 'scroll_training', 'drag_rescue', 'robot_untangle', 'mouse_boss'];
+        const modeSequence = ['base_defense', 'reinforcements', 'robot_override', 'scroll_training', 'drag_rescue', 'robot_link', 'mouse_boss'];
         const currentIdx = modeSequence.indexOf(game.currentModeId);
         const nextMode = modeSequence[(currentIdx + 1) % modeSequence.length];
         game.setMode(nextMode);
@@ -2133,7 +2072,9 @@
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         game.fallingDebrisLevel?.cancelDrag();
-        game.untangleLevel?.menu?.remove();
+        game.robotLinkLevel?.closeContextMenu?.();
+        game.untangleLevel?.closeContextMenu?.();
+        game.untangleLevel?.menu?.remove?.();
         game.mouseBossLevel?.closeContextMenu();
       }
     });
@@ -2169,18 +2110,24 @@
           totalWaves: 3
         });
       }
-      if (game.currentModeId === 'robot_untangle') {
+      if (game.currentModeId === 'robot_link' || game.currentModeId === 'robot_untangle') {
+        const lvl = game.robotLinkLevel || game.untangleLevel;
         return JSON.stringify({
           mode: game.currentModeId,
           state: game.state,
           round: game.currentWave,
+          wave: game.currentWave,
+          level: game.currentWave,
           score: game.score,
-          restored: game.robotsDestroyed,
+          shields: game.shields,
+          activePairs: lvl?.pairs?.filter(p => !p.resolved)?.length || 0,
+          unlinkedPairs: lvl?.unlinkedPairs || 0,
+          robotsRestored: lvl?.robotsRestored || game.robotsDestroyed || 0,
+          robotsTotal: lvl?.robotsTotal || 0,
+          totalWaves: (game.selectedDifficulty === 'ultra') ? Infinity : (lvl?.totalWaves || game.totalWaves || 3),
           holding: false,
-          ready: game.untangleLevel?.ready,
-          instruction: game.untangleLevel?.instruction?.textContent,
-          difficulty: game.selectedDifficulty,
-          totalWaves: game.totalWaves
+          ready: true,
+          difficulty: game.selectedDifficulty
         });
       }
       return JSON.stringify({

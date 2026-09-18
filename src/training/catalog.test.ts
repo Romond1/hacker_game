@@ -14,7 +14,7 @@ describe('training catalog', () => {
     expect(module!.generateTask(42, 0)).toEqual(module!.generateTask(42, 0));
     expect(module!.generateTask(42, 0)).not.toEqual(module!.generateTask(42, 1));
     expect(getTrainingModule('unknown-module')).toBeUndefined();
-    expect(TRAINING_MODULES).toHaveLength(2);
+    expect(TRAINING_MODULES).toHaveLength(5);
   });
 
   it('reports mission locks and completed credit rewards without disabling play', () => {
@@ -74,7 +74,7 @@ describe('training catalog', () => {
 
   it('registers Data Transfer before Mission 6 with an independent 20 Credit cap', () => {
     const module = getTrainingModule('data-transfer');
-    expect(TRAINING_MODULES.map(item => item.id)).toEqual(['systems-calibration', 'data-transfer']);
+    expect(TRAINING_MODULES.map(item => item.id)).toEqual(['systems-calibration', 'data-transfer', 'keyboard-drill-9', 'keyboard-drill-10', 'keyboard-drill-11']);
     expect(module).toMatchObject({ kind: 'data-transfer', linkedMissionId: 'mission-4', requiredCompletedMissions: [1, 2, 3, 4, 5], rounds: 5 });
     expect(module?.reward).toEqual({ xpMax: 150, creditsPerRun: 1, creditCap: 20 });
     expect(trainingStatus(module!, [1, 2, 3], 0)).toBe('locked');

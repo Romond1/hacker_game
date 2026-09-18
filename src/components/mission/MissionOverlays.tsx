@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { KeyboardGameModeButton } from './KeyboardGameScope';
+import { CtrlHelperTutorial } from './CtrlHelperTutorial';
+import { KeyboardChallenge } from './KeyboardChallenge';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 import type { SessionUser } from '../../api/client';
 import type { MissionDefinition } from '../../domain/mission';
@@ -59,6 +62,10 @@ type IntroProps = {
 export function MissionIntroOverlay({ mission, user, busy, error, leaving = false, muted = true, onStart, onHome }: IntroProps) {
   useEffect(() => { if (mission.recoveryChallenge) playEffect('transmission', muted); }, [mission.recoveryChallenge, muted]);
   const [step, setStep] = useState(0);
+  const [keyboardPracticed, setKeyboardPracticed] = useState(false);
+  const helperFormId = useId();
+  const [helperCanNext, setHelperCanNext] = useState(true);
+  const helperNavigation = (mission.keyboardLesson === 10 || mission.keyboardLesson === 11) && !keyboardPracticed;
   const [mousePracticed, setMousePracticed] = useState(false);
   const [scrollPracticed, setScrollPracticed] = useState(false);
   const [transferPracticed, setTransferPracticed] = useState(false);
@@ -71,8 +78,8 @@ export function MissionIntroOverlay({ mission, user, busy, error, leaving = fals
   useEffect(() => { closeRef.current?.focus(); return () => window.clearTimeout(stepTimer.current); }, []);
   const current = mission.tutorial[step];
   const last = step === mission.tutorial.length - 1;
-  const mayStart = (!mission.mouseChallenge || mousePracticed) && (!mission.tutorial.some(item => item.action === 'practice_transfer') || transferPracticed) && (!mission.scrollChallenge || scrollPracticed);
-  const canAdvance = (current.action === 'practice_mouse' && mousePracticed) || (current.action === 'practice_scroll' && scrollPracticed) || (current.action === 'practice_transfer' && transferPracticed) || current.action === 'continue' || (current.action === 'open_practice' && practiceOpen) || (current.action === 'go_back' && !practiceOpen);
+  const mayStart = (!mission.keyboardLesson || keyboardPracticed) && (!mission.mouseChallenge || mousePracticed) && (!mission.tutorial.some(item => item.action === 'practice_transfer') || transferPracticed) && (!mission.scrollChallenge || scrollPracticed);
+  const canAdvance = (current.action === 'practice_keyboard' && keyboardPracticed) || (current.action === 'practice_mouse' && mousePracticed) || (current.action === 'practice_scroll' && scrollPracticed) || (current.action === 'practice_transfer' && transferPracticed) || current.action === 'continue' || (current.action === 'open_practice' && practiceOpen) || (current.action === 'go_back' && !practiceOpen);
 
   function changeStep(next: number) {
     if (changingStep) return;
@@ -82,8 +89,8 @@ export function MissionIntroOverlay({ mission, user, busy, error, leaving = fals
   }
   function advance() { if (last) { if (mayStart) onStart(); } else changeStep(step + 1); }
 
-  return <div className="mission-overlay-backdrop">
-    <section ref={panelRef} className={`mission-overlay-panel spectral-border ${mission.recoveryChallenge || mission.id === 'mission-3' ? 'recovery-boss-intro' : ''} ${['practice_transfer','practice_scroll','practice_mouse'].includes(current.action) ? 'mission-practice-intro' : ''} ${leaving || changingStep ? 'mission-panel-leaving' : ''}`} data-rgb-pattern="mission-wave" role="dialog" aria-modal="true" aria-labelledby="mission-intro-title" aria-describedby="mission-intro-body" aria-busy={busy}>
+  return <div className={`mission-overlay-backdrop ${(mission.keyboardLesson === 10 || mission.keyboardLesson === 11) ? 'ctrl-helper-backdrop' : ''}`}>
+    <section ref={panelRef} className={`mission-overlay-panel spectral-border ${mission.keyboardLesson ? 'keyboard-intro' : ''} ${(mission.keyboardLesson === 10 || mission.keyboardLesson === 11) ? 'ctrl-helper-intro' : ''} ${mission.recoveryChallenge || mission.id === 'mission-3' ? 'recovery-boss-intro' : ''} ${['practice_transfer','practice_scroll','practice_mouse'].includes(current.action) ? 'mission-practice-intro' : ''} ${leaving || changingStep ? 'mission-panel-leaving' : ''}`} data-rgb-pattern="mission-wave" role="dialog" aria-modal="true" aria-labelledby="mission-intro-title" aria-describedby="mission-intro-body" aria-busy={busy}>
       <div className="mission-overlay-topline"><span>{mission.recoveryChallenge ? '⚠ EMERGENCY OPERATION' : 'INCOMING MISSION'} // {String(mission.number).padStart(2, '0')}</span><button ref={closeRef} className="mission-overlay-close" aria-label="Close tutorial and start mission" title="Close tutorial and start mission" disabled={busy || changingStep || !mayStart} onClick={() => { if (mayStart) onStart(); }}>×</button></div>
       <div className="mission-overlay-content">
         <div className="mission-overlay-copy" key={current.id}>
@@ -91,12 +98,12 @@ export function MissionIntroOverlay({ mission, user, busy, error, leaving = fals
           <div className="mission-overlay-progress" aria-label={`Tutorial step ${step + 1} of ${mission.tutorial.length}`}>{mission.tutorial.map((item, index) => <span key={item.id} className={index <= step ? 'active' : ''} />)}</div>
           <h1 id="mission-intro-title">{current.title.en}</h1>
           <h2 lang={user.supportLanguage}>{current.title[user.supportLanguage]}</h2>
-          <p id="mission-intro-body" className="mission-overlay-lead">{mission.recoveryChallenge || mission.id === 'mission-3' ? current.body.en : <TypewriterText text={current.body.en} />}</p>
+          <p id="mission-intro-body" className="mission-overlay-lead">{mission.keyboardLesson || mission.recoveryChallenge || mission.id === 'mission-3' ? current.body.en : <TypewriterText text={current.body.en} />}</p>
           <p className="mission-overlay-support" lang={user.supportLanguage}>{current.body[user.supportLanguage]}</p>
           {!mission.recoveryChallenge && mission.id !== 'mission-3' && <div className="mission-overlay-objective"><small>YOUR OBJECTIVE</small><strong>{mission.translations.objective.en}</strong><span lang={user.supportLanguage}>{mission.translations.objective[user.supportLanguage]}</span></div>}
         </div>
-        <div className="mission-overlay-visual" aria-hidden={mission.number !== 1 && !['practice_transfer','practice_scroll','practice_mouse'].includes(current.action)}>
-          {mission.recoveryChallenge ? <div className="recovery-boss-emblem"><p>END OF CHAPTER ONE</p><strong>◈</strong><h2>MOUSE MASTERY</h2><p>CORE DATA AT RISK<br />3 LEVELS · FILES + TEXT · ONE HERO</p></div> : current.action === 'practice_mouse' && mission.mouseChallenge ? <MouseSkillLesson kind={mission.mouseChallenge.kind} language={user.supportLanguage} onSuccess={() => setMousePracticed(true)} /> : current.action === 'practice_scroll' ? <ScrollLesson files={mission.filesystem.children ?? []} language={user.supportLanguage} onSuccess={() => setScrollPracticed(true)} /> : current.action === 'practice_transfer' ? <CopyPastePractice language={user.supportLanguage} onSuccess={() => setTransferPracticed(true)} /> : mission.number === 1 ? <div className="mission-overlay-practice">
+        <div className="mission-overlay-visual" aria-hidden={!mission.keyboardLesson && mission.number !== 1 && !['practice_transfer','practice_scroll','practice_mouse'].includes(current.action)}>
+          {(mission.keyboardLesson === 10 || mission.keyboardLesson === 11) ? <CtrlHelperTutorial lesson={mission.keyboardLesson as 10|11} navigationId={helperFormId} onNavigationChange={setHelperCanNext} muted={muted} disabled={keyboardPracticed || busy} onComplete={()=>setKeyboardPracticed(true)} /> : mission.keyboardLesson ? <KeyboardChallenge lesson={mission.keyboardLesson} rounds={1} muted={muted} disabled={keyboardPracticed || busy} onComplete={()=>setKeyboardPracticed(true)} /> : mission.recoveryChallenge ? <div className="recovery-boss-emblem"><p>END OF CHAPTER ONE</p><strong>◈</strong><h2>MOUSE MASTERY</h2><p>CORE DATA AT RISK<br />3 LEVELS · FILES + TEXT · ONE HERO</p></div> : current.action === 'practice_mouse' && mission.mouseChallenge ? <MouseSkillLesson kind={mission.mouseChallenge.kind} language={user.supportLanguage} onSuccess={() => setMousePracticed(true)} /> : current.action === 'practice_scroll' ? <ScrollLesson files={mission.filesystem.children ?? []} language={user.supportLanguage} onSuccess={() => setScrollPracticed(true)} /> : current.action === 'practice_transfer' ? <CopyPastePractice language={user.supportLanguage} onSuccess={() => setTransferPracticed(true)} /> : mission.number === 1 ? <div className="mission-overlay-practice">
             <div className="mission-overlay-windowbar"><i /><i /><i /><strong>PRACTICE COMPUTER</strong></div>
             <div className="mission-overlay-path"><button onClick={() => current.action === 'go_back' && setPracticeOpen(false)} disabled={!practiceOpen || current.action !== 'go_back'}>← Back</button><span>Desktop{practiceOpen ? ' > Practice Folder' : ''}</span></div>
             <div className="mission-overlay-filegrid">{practiceOpen ? <div className="mission-overlay-file"><b>TXT</b><strong>Practice Note.txt</strong></div> : <button className="mission-overlay-file" onDoubleClick={() => current.action === 'open_practice' && setPracticeOpen(true)}><span className="folder-icon" /><strong>Practice Folder</strong><small>{current.action === 'open_practice' ? 'Double-click to open' : 'Practice here'}</small></button>}</div>
@@ -104,7 +111,7 @@ export function MissionIntroOverlay({ mission, user, busy, error, leaving = fals
           </div> : <div className="mission-overlay-schematic"><div className="mission-overlay-windowbar"><i /><i /><i /><strong>TRAINING COMPUTER</strong></div><div className="mission-overlay-map"><span>⌂ DESKTOP</span><b>→</b><span>{mission.id === 'mission-4' ? 'DOWNLOADS / INTERCEPTED_SIGNAL.txt' : mission.number === 2 ? 'TRAINING / DOCUMENTS / DOWNLOADS' : 'DOCUMENTS / REPORT'}</span></div><div className="mission-overlay-target">{mission.id === 'mission-4' ? 'COPY → SECURE CHANNEL → PASTE' : mission.number === 2 ? 'FOLLOW THE CLUES' : 'INSPECT THE FILES'}<strong>⌕</strong></div><p>THE LIVE COMPUTER IS READY BEHIND THIS GUIDE</p></div>}
         </div>
       </div>
-      <footer className="mission-overlay-footer"><button className="quiet-button" onClick={onHome} disabled={busy || changingStep}>← Agent Home</button><p>Guide time does not count toward your score.</p><div className="mission-overlay-footer-actions">{step > 0 && <button className="quiet-button" onClick={() => changeStep(step - 1)} disabled={busy || changingStep}>Previous</button>}<button className="primary-button" onClick={advance} disabled={busy || changingStep || !canAdvance}>{busy ? 'Connecting…' : last ? mission.recoveryChallenge ? 'Start Operation' : 'Start Mission' : 'Next'} <span>→</span></button></div></footer>
+      <footer className="mission-overlay-footer"><button className="quiet-button" onClick={onHome} disabled={busy || changingStep}>← Agent Home</button>{mission.keyboardLesson === 11 ? <KeyboardGameModeButton/> : <p>Guide time does not count toward your score.</p>}<div className="mission-overlay-footer-actions">{step > 0 && <button className="quiet-button" onClick={() => changeStep(step - 1)} disabled={busy || changingStep}>Previous</button>}<button className="primary-button" form={helperNavigation ? helperFormId : undefined} type={helperNavigation ? 'submit' : 'button'} onClick={helperNavigation ? undefined : advance} disabled={busy || changingStep || (helperNavigation ? !helperCanNext : !canAdvance)}>{busy ? 'Connecting…' : (mission.keyboardLesson === 10 || mission.keyboardLesson === 11) ? 'Next' : last ? mission.recoveryChallenge ? 'Start Operation' : 'Start Mission' : 'Next'} <span>→</span></button></div></footer>
       {error && <div className="mission-overlay-error"><p role="alert">{error}</p><button className="primary-button" onClick={onStart} disabled={busy}>Retry starting mission</button></div>}
     </section>
   </div>;
@@ -121,10 +128,11 @@ type OutcomeProps = {
   onReplay: () => void;
   onShop?: () => void;
   onKeyboard?: () => void;
+  onNextMission?: () => void;
 };
 function formatTime(seconds: number | null) { return seconds === null ? '—' : `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; }
 
-export function MissionOutcomeOverlay({ mission, user, result, stage, muted = true, onNext, onHome, onReplay, onShop, onKeyboard }: OutcomeProps) {
+export function MissionOutcomeOverlay({ mission, user, result, stage, muted = true, onNext, onHome, onReplay, onShop, onKeyboard, onNextMission }: OutcomeProps) {
   const [leaving, setLeaving] = useState(false);
   const [scoreFinished, setScoreFinished] = useState(false);
   const [xpFinished, setXpFinished] = useState(false);
@@ -167,7 +175,7 @@ export function MissionOutcomeOverlay({ mission, user, result, stage, muted = tr
           <div><small>XP EARNED</small><strong>{result.reward ? `+${result.reward.xp}` : '—'}</strong><span>{result.reward ? 'Saved to your profile' : 'No receipt available'}</span></div>
           <div><small>CREDITS</small><strong>{result.reward ? `+${result.reward.credits}` : '—'}</strong><span>{result.reward ? 'Awarded by server' : 'No receipt available'}</span></div>
         </div>
-        <div className="mission-score-actions">{mission.recoveryChallenge && <><button className="quiet-button" onClick={() => depart(onShop ?? onHome)}>Visit Shop</button><button className="primary-button" onClick={() => depart(onKeyboard ?? onHome)}>Continue to Mission 8 →</button></>}<button className="quiet-button" onClick={() => depart(onReplay)} disabled={leaving}>↻ Replay Mission</button><button ref={primaryRef} className="primary-button" onClick={() => depart(onHome)} disabled={leaving}>Return Home <span>→</span></button></div>
+        <div className="mission-score-actions">{mission.keyboardLesson && mission.number < 11 && onNextMission && <button className="primary-button" onClick={()=>depart(onNextMission)}>Continue to Mission {mission.number+1} →</button>}{mission.recoveryChallenge && <><button className="quiet-button" onClick={() => depart(onShop ?? onHome)}>Visit Shop</button><button className="primary-button" onClick={() => depart(onKeyboard ?? onHome)}>Continue to Mission 8 →</button></>}<button className="quiet-button" onClick={() => depart(onReplay)} disabled={leaving}>↻ Replay Mission</button><button ref={primaryRef} className="primary-button" onClick={() => depart(onHome)} disabled={leaving}>Return Home <span>→</span></button></div>
       </div>}
     </section>
   </div>;

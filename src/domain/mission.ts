@@ -33,7 +33,7 @@ export type TutorialStep = {
   id: string;
   title: LocalizedText;
   body: LocalizedText;
-  action: 'continue' | 'open_practice' | 'go_back' | 'practice_transfer' | 'practice_scroll' | 'practice_mouse';
+  action: 'practice_keyboard' | 'continue' | 'open_practice' | 'go_back' | 'practice_transfer' | 'practice_scroll' | 'practice_mouse';
 };
 
 export type ScoringRules = {
@@ -61,6 +61,7 @@ export type MissionLifecycleConfig = {
 };
 
 export type MissionDefinition = {
+  keyboardLesson?: 9 | 10 | 11;
   id: string;
   slug: string;
   number: number;

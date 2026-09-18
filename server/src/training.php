@@ -8,7 +8,8 @@ class TrainingError extends RuntimeException {}
 function training_definition(string $trainingId): array
 {
     $policy = economy_catalog()['trainingModules'][$trainingId] ?? null;
-    if (!is_array($policy) || !in_array($trainingId, ['systems-calibration', 'data-transfer'], true)) throw new TrainingError('training_not_found');
+    if (!is_array($policy) || !in_array($trainingId, ['systems-calibration', 'data-transfer', 'keyboard-drill-9', 'keyboard-drill-10', 'keyboard-drill-11'], true)) throw new TrainingError('training_not_found');
+    if (str_starts_with($trainingId, 'keyboard-drill-')) return $policy + ['id'=>$trainingId,'kind'=>'keyboard','difficulty'=>'beginner','generatorVersion'=>1,'rounds'=>3,'scoreRules'=>['basePerSuccess'=>900,'errorPenalty'=>200,'targetSeconds'=>90,'timeBonus'=>500]];
     $rules = $trainingId === 'data-transfer'
         ? ['basePerSuccess'=>900, 'errorPenalty'=>200, 'targetSeconds'=>75, 'timeBonus'=>500]
         : ['basePerSuccess'=>900, 'errorPenalty'=>200, 'targetSeconds'=>30, 'timeBonus'=>500];
@@ -28,6 +29,11 @@ function training_generate_task(int $seed, int $roundIndex, string $trainingId =
 {
     if ($seed < 0 || $seed > 0xffffffff || $roundIndex < 0) throw new TrainingError('invalid_generator_input');
     $state = ($seed + $roundIndex * 7919) & 0xffffffff;
+    if (str_starts_with($trainingId, 'keyboard-drill-')) {
+        $code = 'KEY-' . (100 + (int) floor(training_random($state) * 900));
+        $target = 'NODE-' . (10 + (int) floor(training_random($state) * 90));
+        return ['lesson'=>(int) substr($trainingId, 15),'code'=>$code,'target'=>$target];
+    }
     if ($trainingId === 'data-transfer') {
         $prefixes = ['K9','BLUE','NOVA','VECTOR','ECHO','CYBER'];
         $suffixes = ['ALPHA','773','OMEGA','42','DELTA','900'];
@@ -154,7 +160,12 @@ function training_finish(PDO $pdo, string $userId, string $attemptId, array $evi
         foreach ($evidence as $entry) {
             if ($round >= $definition['rounds'] || !is_array($entry)) throw new TrainingError('invalid_training_evidence');
             $task = training_generate_task((int) $attempt['seed'], $round, $definition['id']);
-            if ($definition['kind'] === 'systems-calibration') {
+            if ($definition['kind'] === 'keyboard') {
+                $payload = is_string($entry['keyboard'] ?? null) ? json_decode($entry['keyboard'], true) : null;
+                if (!is_array($payload) || ($payload['code'] ?? null) !== $task['code'] || ($payload['target'] ?? null) !== $task['target'] || !valid_keyboard_evidence($payload['evidence'] ?? null, $task['lesson'], 1, true)) throw new TrainingError('invalid_training_evidence');
+                $errors += $payload['evidence']['metrics']['incorrectKeys'];
+                $valid = true;
+            } elseif ($definition['kind'] === 'systems-calibration') {
                 $selected = $entry['selectedCode'] ?? null;
                 if (!is_string($selected) || !in_array($selected, $task['choices'], true)) throw new TrainingError('invalid_training_evidence');
                 $valid = $selected === $task['correctCode'];

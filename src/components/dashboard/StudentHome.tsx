@@ -173,6 +173,11 @@ export function StudentHome({
       </div>
       <AmbientLayer variant="grid" />
 
+      <div className="home-heading">
+        <div><p className="eyebrow">CYBER HERO / HOME</p><h1>Mission control<span>.</span></h1><p>Your next challenge starts here. Build skills. Unlock your identity.</p></div>
+        <a className="home-campaign-shortcut" href="#home-campaign">Explore missions <span aria-hidden="true">↘</span></a>
+      </div>
+
       <header className="cyber-home-status">
         <div><i /><strong>NEURAL LINK: SYNCHRONIZED</strong></div>
         <span>{operativeName ? `◇ ${operativeName} ONLINE · QUANTUM UPLINK ESTABLISHED` : "◇ IDENTITY PROTOCOL PENDING · SECURE CHANNEL ACTIVE"}</span>
@@ -358,7 +363,7 @@ export function StudentHome({
         </div>
       </section>
 
-      <section className="cyber-home-network cyber-glass spectral-border" data-rgb-pattern="campaign-diagonal">
+      <section id="home-campaign" className="cyber-home-network cyber-glass spectral-border" data-rgb-pattern="campaign-diagonal">
         <header>
           <div><span>⌘</span><p><strong>CAMPAIGN PROGRESSION NETWORK</strong><small lang={user.supportLanguage}>{support.campaignNetwork}</small></p></div>
           <b>{dashboard.completedMissions.length} / {MISSIONS.length} SECURED</b>
@@ -464,6 +469,7 @@ export function StudentHome({
                   </button>
                 )}
               </div>
+              {mission.keyboardLesson && dashboard.completedMissions.includes(mission.number) && <button className="mission-training-link" onClick={onTraining}>Keyboard repetition practice → Training Center</button>}
               {mission.number === 6 && dashboard.completedMissions.includes(5) && <button className="mission-training-link" onClick={onTraining}>Training 6 → Data Transfer → Mission 6</button>}
               {robotMode && onRobotDefense && robotDefenseUnlocked(robotMode, dashboard.completedMissions) && <button className="mission-training-link" aria-label={`Train ${robotMode.name}`} onClick={() => onRobotDefense(robotMode.id)}><span>✦ {mission.number > 3 ? `TRAINING ${mission.number} → MISSION ${mission.number}` : "BONUS TRAINING · READY"} <small lang={user.supportLanguage}>{support.trainingCenter}</small></span><strong>{robotMode.name}</strong><small lang={user.supportLanguage}>{robotMode.support[user.supportLanguage]}</small><b>→</b></button>}
             </article>

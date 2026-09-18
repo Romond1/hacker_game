@@ -1,13 +1,14 @@
+import { keyboardTraining, type KeyboardTask, type KeyboardTrainingEvidence } from './keyboard.ts';
 import { systemsCalibration } from './systems-calibration.ts';
 import { dataTransfer } from './data-transfer.ts';
 import type { CalibrationEvidence, CalibrationTask } from './systems-calibration.ts';
 import type { DataTransferEvidence, DataTransferTask } from './data-transfer.ts';
 
-export const TRAINING_MODULES = [systemsCalibration, dataTransfer] as const;
+export const TRAINING_MODULES = [systemsCalibration, dataTransfer, ...keyboardTraining] as const;
 
 export type TrainingModule = typeof TRAINING_MODULES[number];
-export type TrainingTask = CalibrationTask | DataTransferTask;
-export type TrainingEvidence = CalibrationEvidence | DataTransferEvidence;
+export type TrainingTask = CalibrationTask | DataTransferTask | KeyboardTask;
+export type TrainingEvidence = CalibrationEvidence | DataTransferEvidence | KeyboardTrainingEvidence;
 export type TrainingStatus = 'locked' | 'available' | 'reward-complete';
 
 export function getTrainingModule(id: 'systems-calibration'): typeof systemsCalibration;

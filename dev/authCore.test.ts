@@ -74,7 +74,7 @@ describe('local development authentication', () => {
     const open = service.startAttempt('dev-test', 'mission-1');
     service.resetMission('dev-teacher', 'dev-test', 'mission-1');
     expect(service.dashboard('dev-test')).toMatchObject({ totalPoints: 700, completedMissions: [2], currentMission: 1 });
-    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, true, true, false, false, false, false, false]);
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, true, true, false, false, false, false, false, false, false, false]);
     expect(service.teacherStudent('dev-test')?.attempts.map(a => a.missionId)).toEqual(['mission-2']);
     expect(service.finishAttempt('dev-test', open.attemptId, 999, 1, {})).toBe(false);
     expect(service.dashboard('dev-himari').totalPoints).toBe(1400);
@@ -88,7 +88,7 @@ describe('local development authentication', () => {
     expect(() => service.resetMission('dev-teacher', 'dev-teacher', 'mission-1')).toThrow('student_not_found');
     expect(() => service.resetMission('dev-teacher', 'dev-test', 'missing')).toThrow('mission_not_found');
     service.resetMission('dev-teacher', 'dev-test', 'mission-3');
-    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, false, false, false, false, false, false, false]);
+    expect(service.dashboard('dev-test').missions.map(m => m.unlocked)).toEqual([true, false, false, false, false, false, false, false, false, false, false]);
   });
 
   it('accepts the shared student credential and rejects a wrong credential', () => {
@@ -120,7 +120,7 @@ describe('local development authentication', () => {
     const himari = service.login('himari.hacker', 'student-test-secret')!;
     const mirko = service.login('mirko.hacker', 'student-test-secret')!;
 
-    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false]);
+    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false, false, false, false]);
     expect(() => service.startAttempt(himari.user.id, 'mission-2')).toThrowError('mission_locked');
 
     const first = service.startAttempt(himari.user.id, 'mission-1');
@@ -128,8 +128,8 @@ describe('local development authentication', () => {
       hintsUsed: 1, translationsUsed: 1, correctActions: 4, incorrectActions: 1,
     });
 
-    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, true, false, false, false, false, false, false]);
-    expect(service.dashboard(mirko.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false]);
+    expect(service.dashboard(himari.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, true, false, false, false, false, false, false, false, false, false]);
+    expect(service.dashboard(mirko.user.id).missions.map(({ unlocked }) => unlocked)).toEqual([true, false, false, false, false, false, false, false, false, false, false]);
   });
 
   it('keeps per-mission personal bests while accumulating replay points', () => {
